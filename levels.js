@@ -2202,7 +2202,7 @@ const ALL_LEVELS = [
       {
         "id": "A",
         "x": 6,
-        "y": 2
+        "y": 3
       }
     ],
     "walls": [
