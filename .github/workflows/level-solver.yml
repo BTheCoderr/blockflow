@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   solve:
@@ -25,15 +25,9 @@ jobs:
       - name: Validate level structure
         run: node tools/validate-levels.mjs
       - name: Solve every level
-        run: node tools/solve-levels.mjs --json solver-results.json
-      - name: Save solver results
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add solver-results.json
-          if ! git diff --cached --quiet; then
-            git commit -m "chore: update solver results [skip ci]"
-            git push
-          fi
-      - name: Fail on unresolved puzzles
-        run: node tools/solve-levels.mjs --strict
+        run: node tools/solve-levels.mjs --json solver-results-ci.json --strict
+      - name: Upload solver report
+        uses: actions/upload-artifact@v4
+        with:
+          name: blockflow-solver-results
+          path: solver-results-ci.json
