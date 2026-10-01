@@ -89,7 +89,7 @@ function renderLevelSelect() {
     button.className = `level-card ${index===state.levelIndex ? "current" : ""} ${available ? "" : "locked"}`;
     button.disabled = !available;
     button.setAttribute("aria-label", available ? `Level ${index+1}: ${item.name}` : `Level ${index+1} locked`);
-    button.innerHTML = `<span class="level-number">${available ? index+1 : "🔒"}</span><strong>${item.name}</strong><span class="level-stars">${available ? starsFor(index) : "•••"}</span><small>${best == null ? (available ? "Not cleared" : "Locked") : `Best ${best} · Target ${item.par}`}</small>`;
+    button.innerHTML = `<span class="level-number">${available ? index+1 : "🔒"}</span><strong>${item.name}</strong><span class="level-stars">${available ? starsFor(index) : "•••"}</span><small>${best == null ? (available ? "Not cleared" : "Locked") : `Best ${best} · Perfect ${item.par}`}</small>`;
     if (available) button.addEventListener("click", () => {
       state.levelIndex = index;
       localStorage.setItem("bf-level", String(index));
@@ -363,7 +363,7 @@ function checkWin() {
   const target=level().par, delta=state.moves-target;
   const starCount=delta<=0?3:delta<=3?2:1;
   els.stars.textContent="★".repeat(starCount)+"☆".repeat(3-starCount);
-  els.winSummary.textContent=delta<=0?"Clean solve. You hit the target.":`Cleared in ${state.moves} moves.`;
+  els.winSummary.textContent=delta<=0?"Perfect flow. No wasted moves.":`Cleared in ${state.moves} moves.`;
   els.yourMoves.textContent=state.moves; els.perfectMoves.textContent=target;
   els.win.classList.remove("hidden");
   const bestKey=`bf-best-${ACTIVE_DIFFICULTY}-${state.levelIndex}`;
