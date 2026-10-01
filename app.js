@@ -29,7 +29,8 @@ const els = {
   sound: document.getElementById("soundBtn"),
   levelModal: document.getElementById("levelModal"),
   levelGrid: document.getElementById("levelGrid"),
-  levelPickerTitle: document.getElementById("levelPickerTitle")
+  levelPickerTitle: document.getElementById("levelPickerTitle"),
+  gestureTip: document.getElementById("gestureTip")
 };
 
 let state = {
@@ -47,6 +48,8 @@ let state = {
   exitStep: 0
 };
 state.levelIndex = Math.max(0, Math.min(state.levelIndex, LEVELS.length - 1));
+let dragSession = null;
+const REDUCE_MOTION = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 
 function cloneBlocks(blocks) { return blocks.map(b => ({w:1,h:1,...b})); }
 function level() { return LEVELS[state.levelIndex]; }
@@ -208,6 +211,9 @@ function renderAll() {
   if (els.mechanics) {
     els.mechanics.innerHTML = (l.mechanics || ["Slide"]).map(m => `<span>${m}</span>`).join("");
   }
+  if (els.gestureTip) {
+    els.gestureTip.classList.toggle("learned", localStorage.getItem("bf-drag-tip-seen") === "1");
+  }
   renderBoard();
 }
 
@@ -286,69 +292,273 @@ function renderGate(g) {
   els.board.appendChild(d);
 }
 
+function boardMetrics() {
+  const rect = els.board.getBoundingClientRect();
+  return { rect, cw: rect.width / cols(), ch: rect.height / rows() };
+}
+function blockElement(id) {
+  return els.board.querySelector(`.block[data-id="${id}"]`);
+}
+function applyDragVisual(clientX,clientY) {
+  if (!dragSession) return;
+  const el = blockElement(dragSession.id);
+  if (!el) return;
+  const {cw,ch}=boardMetrics();
+  let dx=clientX-dragSession.lastX, dy=clientY-dragSession.lastY;
+  if (Math.abs(dx)>Math.abs(dy)) dy*=.18; else dx*=.18;
+  dx=Math.max(-cw*.38,Math.min(cw*.38,dx));
+  dy=Math.max(-ch*.38,Math.min(ch*.38,dy));
+  el.classList.add("dragging");
+  el.style.transform=`translate3d(${dx}px,${dy}px,0) scale(1.045)`;
+}
+function clearDragVisual() {
+  document.querySelectorAll(".block.dragging").forEach(el => {
+    el.classList.remove("dragging");
+    el.style.transform="";
+  });
+  els.board.classList.remove("drag-active");
+}
+function flashBlocked(id,dir) {
+  const el=blockElement(id);
+  if (!el || REDUCE_MOTION || !el.animate) return;
+  const delta={left:[-9,0],right:[9,0],up:[0,-9],down:[0,9]}[dir] || [0,0];
+  el.animate([
+    {transform:"translate3d(0,0,0)"},
+    {transform:`translate3d(${delta[0]}px,${delta[1]}px,0) scale(.97)`},
+    {transform:"translate3d(0,0,0)"}
+  ],{duration:150,easing:"cubic-bezier(.2,.8,.2,1)"});
+}
+function spawnCellPulse(x,y,type="portal") {
+  if (REDUCE_MOTION) return;
+  const {rect,cw,ch}=boardMetrics();
+  const pulse=document.createElement("div");
+  pulse.className=`cell-pulse ${type}`;
+  const size=Math.min(cw,ch)*.7;
+  pulse.style.left=`${rect.left+x*cw+cw/2-size/2}px`;
+  pulse.style.top=`${rect.top+y*ch+ch/2-size/2}px`;
+  pulse.style.width=`${size}px`;
+  pulse.style.height=`${size}px`;
+  document.body.appendChild(pulse);
+  pulse.animate([
+    {opacity:.95,transform:"scale(.35)"},
+    {opacity:.45,transform:"scale(1.35)"},
+    {opacity:0,transform:"scale(1.75)"}
+  ],{duration:360,easing:"ease-out"}).finished.finally(()=>pulse.remove());
+}
+function spawnExitGhost(block,dir) {
+  if (REDUCE_MOTION) return;
+  const {rect,cw,ch}=boardMetrics();
+  const gap=4;
+  const ghost=document.createElement("div");
+  ghost.className=`block motion-ghost ${state.colorblind ? PATTERNS[block.color] : ""} ${(block.w||1)>1 || (block.h||1)>1 ? "long-block" : ""}`;
+  ghost.style.background=COLORS[block.color];
+  ghost.style.left=`${rect.left+block.x*cw+gap}px`;
+  ghost.style.top=`${rect.top+block.y*ch+gap}px`;
+  ghost.style.width=`${(block.w||1)*cw-gap*2}px`;
+  ghost.style.height=`${(block.h||1)*ch-gap*2}px`;
+  document.body.appendChild(ghost);
+  const distance=(dir==="left"||dir==="right"?cw:ch)*1.35;
+  const dx=dir==="left"?-distance:dir==="right"?distance:0;
+  const dy=dir==="up"?-distance:dir==="down"?distance:0;
+  ghost.animate([
+    {opacity:1,transform:"translate3d(0,0,0) scale(1)"},
+    {opacity:.92,transform:`translate3d(${dx*.45}px,${dy*.45}px,0) scale(1.04)`},
+    {opacity:0,transform:`translate3d(${dx}px,${dy}px,0) scale(.72)`}
+  ],{duration:240,easing:"cubic-bezier(.18,.75,.25,1)"}).finished.finally(()=>ghost.remove());
+}
+function animateRenderedMove(id,from,effects=[]) {
+  const block=state.blocks.find(b=>b.id===id);
+  const el=blockElement(id);
+  if (!block || !el || REDUCE_MOTION || !el.animate) return;
+  const portals=effects.filter(e=>e.type==="portal");
+  if (portals.length) {
+    for (const p of portals) {
+      spawnCellPulse(p.from.x,p.from.y,"portal");
+      spawnCellPulse(p.to.x,p.to.y,"portal");
+    }
+    el.animate([
+      {opacity:.18,transform:"scale(.48) rotate(-5deg)"},
+      {opacity:1,transform:"scale(1.08) rotate(2deg)"},
+      {opacity:1,transform:"scale(1) rotate(0)"}
+    ],{duration:250,easing:"cubic-bezier(.2,.8,.2,1)"});
+    return;
+  }
+  const {cw,ch}=boardMetrics();
+  const dx=(from.x-block.x)*cw, dy=(from.y-block.y)*ch;
+  const distance=Math.max(Math.abs(from.x-block.x),Math.abs(from.y-block.y));
+  el.animate([
+    {transform:`translate3d(${dx}px,${dy}px,0) scale(.98)`},
+    {transform:"translate3d(0,0,0) scale(1)"}
+  ],{duration:Math.min(280,120+distance*34),easing:effects.some(e=>e.type==="ice")?"cubic-bezier(.12,.82,.18,1)":"cubic-bezier(.2,.8,.2,1)"});
+}
+function celebrateWin() {
+  if (REDUCE_MOTION) return;
+  const rect=els.board.getBoundingClientRect();
+  const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+  const colors=Object.values(COLORS);
+  for(let i=0;i<18;i++){
+    const dot=document.createElement("div");
+    dot.className="flow-particle";
+    dot.style.left=`${cx-4}px`; dot.style.top=`${cy-4}px`; dot.style.background=colors[i%colors.length];
+    document.body.appendChild(dot);
+    const angle=(Math.PI*2*i)/18, dist=70+(i%5)*24;
+    dot.animate([
+      {opacity:1,transform:"translate3d(0,0,0) scale(1)"},
+      {opacity:0,transform:`translate3d(${Math.cos(angle)*dist}px,${Math.sin(angle)*dist}px,0) scale(.2) rotate(${i*35}deg)`}
+    ],{duration:520+(i%4)*70,easing:"cubic-bezier(.15,.75,.2,1)"}).finished.finally(()=>dot.remove());
+  }
+  els.board.animate([
+    {filter:"brightness(1)"},
+    {filter:"brightness(1.35)"},
+    {filter:"brightness(1)"}
+  ],{duration:320,easing:"ease-out"});
+}
 function attachSwipe(el,id) {
-  let startX=0,startY=0;
-  el.addEventListener("pointerdown", e => { if (!state.running) return; startX=e.clientX; startY=e.clientY; el.setPointerCapture?.(e.pointerId); });
-  el.addEventListener("pointerup", e => {
+  el.addEventListener("pointerdown", e => {
     if (!state.running) return;
-    const dx=e.clientX-startX, dy=e.clientY-startY;
-    if (Math.max(Math.abs(dx),Math.abs(dy)) < 14) return;
-    const dir = Math.abs(dx)>Math.abs(dy) ? (dx>0?"right":"left") : (dy>0?"down":"up");
-    attemptMove(id,dir);
+    e.preventDefault();
+    clearDragVisual();
+    dragSession={
+      id,
+      pointerId:e.pointerId,
+      startX:e.clientX,
+      startY:e.clientY,
+      lastX:e.clientX,
+      lastY:e.clientY,
+      moved:false,
+      steps:0
+    };
+    els.board.classList.add("drag-active");
+    el.classList.add("dragging");
+    el.style.transform="scale(1.045)";
   });
 }
+function handleDragMove(e) {
+  if (!dragSession || e.pointerId!==dragSession.pointerId || !state.running) return;
+  e.preventDefault();
+  let guard=0;
+  while (guard++<5 && dragSession && state.blocks.some(b=>b.id===dragSession.id)) {
+    const {cw,ch}=boardMetrics();
+    const dx=e.clientX-dragSession.lastX, dy=e.clientY-dragSession.lastY;
+    const horizontal=Math.abs(dx/cw)>Math.abs(dy/ch);
+    const threshold=(horizontal?cw:ch)*.46;
+    const amount=horizontal?Math.abs(dx):Math.abs(dy);
+    if (amount<threshold) break;
+    const dir=horizontal?(dx>0?"right":"left"):(dy>0?"down":"up");
+    const moved=attemptMove(dragSession.id,dir,{fromDrag:true});
+    if (!moved) {
+      dragSession.lastX=e.clientX;
+      dragSession.lastY=e.clientY;
+      break;
+    }
+    dragSession.moved=true;
+    dragSession.steps++;
+    if (horizontal) dragSession.lastX += (dx>0?1:-1)*cw*.72;
+    else dragSession.lastY += (dy>0?1:-1)*ch*.72;
+    if (dragSession.steps>=2 && localStorage.getItem("bf-drag-tip-seen")!=="1") {
+      localStorage.setItem("bf-drag-tip-seen","1");
+      els.gestureTip?.classList.add("learned");
+    }
+  }
+  applyDragVisual(e.clientX,e.clientY);
+}
+function handleDragEnd(e) {
+  if (!dragSession || e.pointerId!==dragSession.pointerId) return;
+  const session=dragSession;
+  clearDragVisual();
+  dragSession=null;
+  if (!state.running || session.moved) return;
+  const dx=e.clientX-session.startX, dy=e.clientY-session.startY;
+  if (Math.max(Math.abs(dx),Math.abs(dy))<16) return;
+  const dir=Math.abs(dx)>Math.abs(dy)?(dx>0?"right":"left"):(dy>0?"down":"up");
+  attemptMove(session.id,dir);
+}
+window.addEventListener("pointermove",handleDragMove,{passive:false});
+window.addEventListener("pointerup",handleDragEnd,{passive:false});
+window.addEventListener("pointercancel",e=>{
+  if (!dragSession || e.pointerId!==dragSession.pointerId) return;
+  clearDragVisual();
+  dragSession=null;
+});
 
 function snapshot() {
   state.history.push({blocks:cloneBlocks(state.blocks),moves:state.moves,activeSwitches:[...state.activeSwitches],exitStep:state.exitStep});
   if (state.history.length > 80) state.history.shift();
 }
-function activateSwitches(block) {
+function activateSwitches(block,effects=[]) {
   let changed=false;
   list("switches").forEach(s => {
     if (!state.activeSwitches.includes(s.id) && cellsFor(block).some(c => c.x===s.x && c.y===s.y)) {
-      state.activeSwitches.push(s.id); changed=true;
+      state.activeSwitches.push(s.id);
+      effects.push({type:"switch",x:s.x,y:s.y,id:s.id});
+      changed=true;
     }
   });
   if (changed) { playTone(620); buzz([8,25,8]); }
 }
-function maybeTeleport(block) {
+function maybeTeleport(block,effects=[]) {
   if ((block.w||1)!==1 || (block.h||1)!==1) return false;
   const hit = portalAt(block.x,block.y);
   if (!hit || !canOccupy(block,hit.dest.x,hit.dest.y)) return false;
-  block.x=hit.dest.x; block.y=hit.dest.y; playTone(700); buzz(10); return true;
+  const from={x:block.x,y:block.y};
+  block.x=hit.dest.x; block.y=hit.dest.y;
+  effects.push({type:"portal",from,to:{x:block.x,y:block.y}});
+  playTone(700); buzz([7,18,7]); return true;
 }
-function exitBlock(block) {
+function exitBlock(block,dir,effects=[]) {
+  spawnExitGhost(block,dir);
+  effects.push({type:"exit",x:block.x,y:block.y,dir,color:block.color});
   state.blocks = state.blocks.filter(b => b.id !== block.id);
   if (list("exitOrder").length) state.exitStep++;
-  playTone(820); buzz(12);
+  playTone(820); buzz([10,18,10]);
 }
-function resolveMotion(block,dir) {
-  maybeTeleport(block);
-  activateSwitches(block);
+function resolveMotion(block,dir,effects=[]) {
+  maybeTeleport(block,effects);
+  activateSwitches(block,effects);
   let guard=0;
   while (state.blocks.includes(block) && iceUnder(block) && guard++ < 12) {
-    if (canExit(block,dir)) { exitBlock(block); return; }
+    if (canExit(block,dir)) { exitBlock(block,dir,effects); return; }
     const [dx,dy]=DIRS[dir];
     if (!canOccupy(block,block.x+dx,block.y+dy)) break;
+    const from={x:block.x,y:block.y};
     block.x += dx; block.y += dy;
-    maybeTeleport(block);
-    activateSwitches(block);
+    effects.push({type:"ice",from,to:{x:block.x,y:block.y}});
+    maybeTeleport(block,effects);
+    activateSwitches(block,effects);
   }
 }
-function attemptMove(id,dir) {
+function playMoveEffects(id,from,effects) {
+  effects.filter(e=>e.type==="switch").forEach(e=>spawnCellPulse(e.x,e.y,"switch"));
+  animateRenderedMove(id,from,effects);
+}
+function attemptMove(id,dir,options={}) {
   const block = state.blocks.find(b => b.id===id);
-  if (!block || !oneWayAllows(block,dir)) { buzz(18); return; }
+  if (!block || !oneWayAllows(block,dir)) {
+    flashBlocked(id,dir);
+    buzz(options.fromDrag?8:18);
+    return false;
+  }
+  const from={x:block.x,y:block.y};
+  const effects=[];
   if (canExit(block,dir)) {
-    snapshot(); state.moves++; exitBlock(block); renderAll(); checkWin(); return;
+    snapshot(); state.moves++;
+    exitBlock(block,dir,effects);
+    renderAll(); playMoveEffects(id,from,effects); checkWin();
+    return true;
   }
   const [dx,dy] = DIRS[dir];
   const nx=block.x+dx, ny=block.y+dy;
-  if (!canOccupy(block,nx,ny)) { buzz(16); return; }
+  if (!canOccupy(block,nx,ny)) {
+    flashBlocked(id,dir);
+    buzz(options.fromDrag?8:16);
+    return false;
+  }
   snapshot();
   block.x=nx; block.y=ny; state.moves++;
-  playTone(420); buzz(8);
-  resolveMotion(block,dir);
-  renderAll(); checkWin();
+  playTone(420); buzz(options.fromDrag?5:8);
+  resolveMotion(block,dir,effects);
+  renderAll(); playMoveEffects(id,from,effects); checkWin();
+  return true;
 }
 
 function undo() {
@@ -371,6 +581,7 @@ function checkWin() {
   if (state.moves<oldBest) localStorage.setItem(bestKey,String(state.moves));
   localStorage.setItem(`bf-complete-${ACTIVE_DIFFICULTY}-${state.levelIndex}`, "1");
   unlockLevel(state.levelIndex + 1);
+  celebrateWin();
   playTone(980); setTimeout(()=>playTone(1180),90); setTimeout(()=>playTone(1380),180); buzz([18,40,18]);
 }
 function nextLevel() {
