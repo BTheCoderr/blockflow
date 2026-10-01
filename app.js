@@ -30,7 +30,23 @@ const els = {
   levelModal: document.getElementById("levelModal"),
   levelGrid: document.getElementById("levelGrid"),
   levelPickerTitle: document.getElementById("levelPickerTitle"),
-  gestureTip: document.getElementById("gestureTip")
+  gestureTip: document.getElementById("gestureTip"),
+  boardFrame: document.getElementById("boardFrame"),
+  homeScreen: document.getElementById("homeScreen"),
+  pause: document.getElementById("pauseModal"),
+  homeProgressText: document.getElementById("homeProgressText"),
+  homeProgressFill: document.getElementById("homeProgressFill"),
+  homeCleared: document.getElementById("homeCleared"),
+  homePerfect: document.getElementById("homePerfect"),
+  homeStars: document.getElementById("homeStars"),
+  homeCurrent: document.getElementById("homeCurrent"),
+  progressBreakdown: document.getElementById("progressBreakdown"),
+  continueBtn: document.getElementById("continueBtn"),
+  coach: document.getElementById("coachModal"),
+  mechanicToast: document.getElementById("mechanicToast"),
+  mechanicToastIcon: document.getElementById("mechanicToastIcon"),
+  mechanicToastTitle: document.getElementById("mechanicToastTitle"),
+  mechanicToastText: document.getElementById("mechanicToastText")
 };
 
 let state = {
@@ -44,12 +60,16 @@ let state = {
   timeLeft: Infinity,
   timerId: null,
   running: false,
+  paused: false,
   activeSwitches: [],
   exitStep: 0
 };
 state.levelIndex = Math.max(0, Math.min(state.levelIndex, LEVELS.length - 1));
 let dragSession = null;
+let levelPickerOrigin = "game";
+let mechanicToastTimer = null;
 const REDUCE_MOTION = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+const SESSION_KEY = `bf-session-v2-${ACTIVE_DIFFICULTY}`;
 
 function cloneBlocks(blocks) { return blocks.map(b => ({w:1,h:1,...b})); }
 function level() { return LEVELS[state.levelIndex]; }
@@ -97,16 +117,187 @@ function renderLevelSelect() {
       state.levelIndex = index;
       localStorage.setItem("bf-level", String(index));
       els.levelModal.classList.add("hidden");
-      initLevel();
+      clearSession();
+      transitionToLevel(() => {
+        initLevel();
+        resumeGame({ onboarding:false });
+      });
     });
     els.levelGrid.appendChild(button);
   });
 }
-function openLevelSelect() {
+function openLevelSelect(origin="game") {
+  levelPickerOrigin = origin;
+  state.paused = true;
+  saveSession();
+  els.homeScreen.classList.add("hidden");
+  els.pause.classList.add("hidden");
   renderLevelSelect();
   els.levelModal.classList.remove("hidden");
 }
-function closeLevelSelect() { els.levelModal.classList.add("hidden"); }
+function closeLevelSelect() {
+  els.levelModal.classList.add("hidden");
+  if (levelPickerOrigin === "home") openHomeScreen();
+  else if (levelPickerOrigin === "pause") openPauseMenu();
+  else resumeGame({ onboarding:false });
+}
+
+function sessionPayload() {
+  return {
+    version:2,
+    levelId:level().id,
+    levelIndex:state.levelIndex,
+    mode:state.mode,
+    blocks:cloneBlocks(state.blocks),
+    moves:state.moves,
+    history:state.history.slice(-40),
+    activeSwitches:[...state.activeSwitches],
+    exitStep:state.exitStep,
+    timeLeft:Number.isFinite(state.timeLeft)?state.timeLeft:null
+  };
+}
+function saveSession() {
+  if (!state.running || !level()) return;
+  try { localStorage.setItem(SESSION_KEY,JSON.stringify(sessionPayload())); } catch (_) {}
+}
+function restoreSession() {
+  try {
+    const raw=localStorage.getItem(SESSION_KEY);
+    if (!raw) return false;
+    const saved=JSON.parse(raw);
+    const index=LEVELS.findIndex(item=>item.id===saved.levelId);
+    if (index<0 || !Array.isArray(saved.blocks)) return false;
+    state.levelIndex=index;
+    localStorage.setItem("bf-level",String(index));
+    if (["chill","classic","rush"].includes(saved.mode)) {
+      state.mode=saved.mode;
+      localStorage.setItem("bf-mode",saved.mode);
+    }
+    state.blocks=cloneBlocks(saved.blocks);
+    state.moves=Number(saved.moves)||0;
+    state.history=Array.isArray(saved.history)?saved.history.slice(-40):[];
+    state.activeSwitches=Array.isArray(saved.activeSwitches)?[...saved.activeSwitches]:[];
+    state.exitStep=Number(saved.exitStep)||0;
+    state.timeLeft=saved.timeLeft==null?Infinity:Math.max(0,Number(saved.timeLeft)||0);
+    return true;
+  } catch (_) { return false; }
+}
+function clearSession() { localStorage.removeItem(SESSION_KEY); }
+
+function totalStats() {
+  let cleared=0,perfect=0,stars=0;
+  const byDifficulty={};
+  for (const d of DIFFICULTIES) byDifficulty[d]={cleared:0,total:0};
+  for (const item of ALL_LEVELS) {
+    byDifficulty[item.difficulty].total++;
+    const raw=localStorage.getItem(`bf-best-${item.id}`);
+    if (raw==null) continue;
+    const best=Number(raw);
+    if (!Number.isFinite(best)) continue;
+    cleared++;
+    byDifficulty[item.difficulty].cleared++;
+    const count=best<=item.par?3:best<=item.par+3?2:1;
+    stars+=count;
+    if (best<=item.par) perfect++;
+  }
+  return {cleared,perfect,stars,total:ALL_LEVELS.length,byDifficulty};
+}
+function renderHomeStats() {
+  const stats=totalStats();
+  els.homeProgressText.textContent=`${stats.cleared} / ${stats.total}`;
+  els.homeProgressFill.style.width=`${stats.total?stats.cleared/stats.total*100:0}%`;
+  els.homeCleared.textContent=stats.cleared;
+  els.homePerfect.textContent=stats.perfect;
+  els.homeStars.textContent=stats.stars;
+  els.homeCurrent.textContent=`${DIFFICULTY_LABELS[ACTIVE_DIFFICULTY]} · Level ${state.levelIndex+1} · ${level().name}`;
+  els.continueBtn.textContent=state.moves>0?`Continue · ${state.moves} moves`:"Play";
+  els.progressBreakdown.innerHTML=DIFFICULTIES.map(d=>{
+    const row=stats.byDifficulty[d];
+    return `<div><span>${DIFFICULTY_LABELS[d].replace(" ☠️","")}</span><strong>${row.cleared}/${row.total}</strong></div>`;
+  }).join("");
+}
+function openHomeScreen() {
+  state.paused=true;
+  saveSession();
+  els.pause.classList.add("hidden");
+  els.levelModal.classList.add("hidden");
+  renderHomeStats();
+  els.homeScreen.classList.remove("hidden");
+}
+function showCoach() {
+  state.paused=true;
+  els.coach.classList.remove("hidden");
+}
+function hideCoach() {
+  localStorage.setItem("bf-onboarded","1");
+  els.coach.classList.add("hidden");
+  state.paused=false;
+  showMechanicIntro();
+}
+const MECHANIC_GUIDES=[
+  {key:"ice",match:/Ice/,icon:"❄",title:"Ice",text:"Enter ice and the block keeps sliding until something stops it."},
+  {key:"portal",match:/Portal/,icon:"◎",title:"Portals",text:"Step onto one portal to jump to its partner. Keep the landing cell open."},
+  {key:"switch",match:/Switch|Barrier/,icon:"◆",title:"Switches",text:"Touch a switch once to open its matching barrier for the rest of the puzzle."},
+  {key:"oneway",match:/One-way/,icon:"→",title:"One-way tiles",text:"A block sitting on an arrow can only leave in the arrow's direction."},
+  {key:"order",match:/Exit order|Order/,icon:"①",title:"Exit order",text:"The exits only accept blocks in the required sequence shown under the board."},
+  {key:"long",match:/Long block/,icon:"▰",title:"Long blocks",text:"Long blocks need the entire lane to be clear, so they can become moving walls."},
+  {key:"shape",match:/Irregular/,icon:"◇",title:"Shaped boards",text:"Holes create new edges — and sometimes new internal exits."}
+];
+function showMechanicIntro() {
+  if (!state.running || state.paused) return;
+  const mechanics=level().mechanics||[];
+  const guide=MECHANIC_GUIDES.find(g=>mechanics.some(m=>g.match.test(m)) && localStorage.getItem(`bf-seen-mechanic-${g.key}`)!=="1");
+  if (!guide) return;
+  localStorage.setItem(`bf-seen-mechanic-${guide.key}`,"1");
+  els.mechanicToastIcon.textContent=guide.icon;
+  els.mechanicToastTitle.textContent=guide.title;
+  els.mechanicToastText.textContent=guide.text;
+  els.mechanicToast.classList.remove("hidden");
+  clearTimeout(mechanicToastTimer);
+  mechanicToastTimer=setTimeout(()=>els.mechanicToast.classList.add("hidden"),4200);
+}
+function resumeGame({onboarding=true}={}) {
+  els.homeScreen.classList.add("hidden");
+  els.pause.classList.add("hidden");
+  state.paused=false;
+  saveSession();
+  if (onboarding && localStorage.getItem("bf-onboarded")!=="1") showCoach();
+  else showMechanicIntro();
+}
+function openPauseMenu() {
+  if (!state.running) return;
+  clearDragVisual();
+  state.paused=true;
+  saveSession();
+  els.pause.classList.remove("hidden");
+}
+function closePauseMenu() {
+  els.pause.classList.add("hidden");
+  state.paused=false;
+  saveSession();
+}
+function restartLevel() {
+  clearSession();
+  initLevel();
+  state.paused=false;
+  els.pause.classList.add("hidden");
+  showMechanicIntro();
+}
+function transitionToLevel(action) {
+  if (REDUCE_MOTION || !els.boardFrame?.animate) { action(); return; }
+  state.paused=true;
+  const out=els.boardFrame.animate([
+    {opacity:1,transform:"scale(1) translateY(0)"},
+    {opacity:0,transform:"scale(.965) translateY(8px)"}
+  ],{duration:135,easing:"ease-in"});
+  out.finished.then(()=>{
+    action();
+    els.boardFrame.animate([
+      {opacity:0,transform:"scale(.97) translateY(-8px)"},
+      {opacity:1,transform:"scale(1) translateY(0)"}
+    ],{duration:210,easing:"cubic-bezier(.2,.8,.2,1)"});
+  }).catch(()=>action());
+}
 
 function key(x,y) { return `${x},${y}`; }
 function hasCell(items,x,y) { return items.some(item => item.x === x && item.y === y); }
@@ -163,29 +354,35 @@ function portalAt(x,y) {
   return null;
 }
 
-function initLevel() {
+function initLevel(options={}) {
   clearInterval(state.timerId);
-  state.blocks = cloneBlocks(level().blocks);
-  state.moves = 0;
-  state.history = [];
-  state.activeSwitches = [];
-  state.exitStep = 0;
+  const restored=Boolean(options.restore && restoreSession());
+  if (!restored) {
+    state.blocks = cloneBlocks(level().blocks);
+    state.moves = 0;
+    state.history = [];
+    state.activeSwitches = [];
+    state.exitStep = 0;
+    if (state.mode === "chill") state.timeLeft = Infinity;
+    if (state.mode === "classic") state.timeLeft = level().time;
+    if (state.mode === "rush") state.timeLeft = Math.max(14, Math.floor(level().time * .62));
+  }
   state.running = true;
-  if (state.mode === "chill") state.timeLeft = Infinity;
-  if (state.mode === "classic") state.timeLeft = level().time;
-  if (state.mode === "rush") state.timeLeft = Math.max(14, Math.floor(level().time * .62));
+  state.paused = Boolean(options.paused);
   els.win.classList.add("hidden");
   els.fail.classList.add("hidden");
   renderAll();
+  if (!restored) saveSession();
   startTimer();
 }
 
 function startTimer() {
   if (!Number.isFinite(state.timeLeft)) return;
   state.timerId = setInterval(() => {
-    if (!state.running) return;
+    if (!state.running || state.paused) return;
     state.timeLeft--;
     els.timer.textContent = `${state.timeLeft}s`;
+    if (state.timeLeft % 5 === 0) saveSession();
     if (state.timeLeft <= 0) {
       state.running = false;
       clearInterval(state.timerId);
@@ -415,7 +612,7 @@ function celebrateWin() {
 }
 function attachSwipe(el,id) {
   el.addEventListener("pointerdown", e => {
-    if (!state.running) return;
+    if (!state.running || state.paused) return;
     e.preventDefault();
     clearDragVisual();
     dragSession={
@@ -434,7 +631,7 @@ function attachSwipe(el,id) {
   });
 }
 function handleDragMove(e) {
-  if (!dragSession || e.pointerId!==dragSession.pointerId || !state.running) return;
+  if (!dragSession || e.pointerId!==dragSession.pointerId || !state.running || state.paused) return;
   e.preventDefault();
   let guard=0;
   while (guard++<5 && dragSession && state.blocks.some(b=>b.id===dragSession.id)) {
@@ -467,7 +664,7 @@ function handleDragEnd(e) {
   const session=dragSession;
   clearDragVisual();
   dragSession=null;
-  if (!state.running || session.moved) return;
+  if (!state.running || state.paused || session.moved) return;
   const dx=e.clientX-session.startX, dy=e.clientY-session.startY;
   if (Math.max(Math.abs(dx),Math.abs(dy))<16) return;
   const dir=Math.abs(dx)>Math.abs(dy)?(dx>0?"right":"left"):(dy>0?"down":"up");
@@ -543,7 +740,7 @@ function attemptMove(id,dir,options={}) {
   if (canExit(block,dir)) {
     snapshot(); state.moves++;
     exitBlock(block,dir,effects);
-    renderAll(); playMoveEffects(id,from,effects); checkWin();
+    renderAll(); playMoveEffects(id,from,effects); saveSession(); checkWin();
     return true;
   }
   const [dx,dy] = DIRS[dir];
@@ -557,15 +754,16 @@ function attemptMove(id,dir,options={}) {
   block.x=nx; block.y=ny; state.moves++;
   playTone(420); buzz(options.fromDrag?5:8);
   resolveMotion(block,dir,effects);
-  renderAll(); playMoveEffects(id,from,effects); checkWin();
+  renderAll(); playMoveEffects(id,from,effects); saveSession(); checkWin();
   return true;
 }
 
 function undo() {
-  if (!state.running || !state.history.length) return;
+  if (!state.running || state.paused || !state.history.length) return;
   const prev=state.history.pop();
   state.blocks=prev.blocks; state.moves=prev.moves; state.activeSwitches=prev.activeSwitches; state.exitStep=prev.exitStep;
   renderAll();
+  saveSession();
 }
 function checkWin() {
   if (state.blocks.length || !state.running) return;
@@ -581,16 +779,28 @@ function checkWin() {
   if (state.moves<oldBest) localStorage.setItem(bestKey,String(state.moves));
   localStorage.setItem(`bf-complete-${ACTIVE_DIFFICULTY}-${state.levelIndex}`, "1");
   unlockLevel(state.levelIndex + 1);
+  clearSession();
+  renderHomeStats();
   celebrateWin();
   playTone(980); setTimeout(()=>playTone(1180),90); setTimeout(()=>playTone(1380),180); buzz([18,40,18]);
 }
 function nextLevel() {
   els.win.classList.add("hidden");
-  state.levelIndex = state.levelIndex < LEVELS.length-1 ? state.levelIndex+1 : 0;
-  localStorage.setItem("bf-level",String(state.levelIndex)); initLevel();
+  clearSession();
+  transitionToLevel(()=>{
+    state.levelIndex = state.levelIndex < LEVELS.length-1 ? state.levelIndex+1 : 0;
+    localStorage.setItem("bf-level",String(state.levelIndex));
+    initLevel();
+    state.paused=false;
+    showMechanicIntro();
+  });
 }
 function setMode(mode) {
-  state.mode=mode; localStorage.setItem("bf-mode",mode); initLevel();
+  state.mode=mode;
+  localStorage.setItem("bf-mode",mode);
+  clearSession();
+  initLevel();
+  showMechanicIntro();
 }
 function buzz(pattern) { if (navigator.vibrate) navigator.vibrate(pattern); }
 function playTone(freq) {
@@ -602,20 +812,31 @@ function playTone(freq) {
   } catch (_) {}
 }
 
-document.getElementById("levelsBtn").addEventListener("click",openLevelSelect);
+document.getElementById("pauseBtn").addEventListener("click",openPauseMenu);
 document.getElementById("closeLevelsBtn").addEventListener("click",closeLevelSelect);
 els.levelModal.addEventListener("click",event=>{ if(event.target===els.levelModal) closeLevelSelect(); });
+document.getElementById("continueBtn").addEventListener("click",()=>resumeGame());
+document.getElementById("homeLevelsBtn").addEventListener("click",()=>openLevelSelect("home"));
+document.getElementById("resumeBtn").addEventListener("click",closePauseMenu);
+document.getElementById("pauseLevelsBtn").addEventListener("click",()=>openLevelSelect("pause"));
+document.getElementById("pauseRestartBtn").addEventListener("click",restartLevel);
+document.getElementById("pauseHomeBtn").addEventListener("click",openHomeScreen);
+document.getElementById("coachDoneBtn").addEventListener("click",hideCoach);
+document.getElementById("mechanicToastClose").addEventListener("click",()=>els.mechanicToast.classList.add("hidden"));
 document.getElementById("undoBtn").addEventListener("click",undo);
-document.getElementById("resetBtn").addEventListener("click",initLevel);
+document.getElementById("resetBtn").addEventListener("click",restartLevel);
 document.getElementById("nextBtn").addEventListener("click",nextLevel);
-document.getElementById("replayBtn").addEventListener("click",()=>{els.win.classList.add("hidden");initLevel();});
-document.getElementById("retryBtn").addEventListener("click",()=>{els.fail.classList.add("hidden");initLevel();});
+document.getElementById("replayBtn").addEventListener("click",()=>{els.win.classList.add("hidden");restartLevel();});
+document.getElementById("retryBtn").addEventListener("click",()=>{els.fail.classList.add("hidden");restartLevel();});
 document.getElementById("switchChillBtn").addEventListener("click",()=>setMode("chill"));
 document.querySelectorAll(".mode-chip").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
-els.accessibility.addEventListener("click",()=>{state.colorblind=!state.colorblind;localStorage.setItem("bf-colorblind",state.colorblind?"1":"0");renderAll();});
-els.sound.addEventListener("click",()=>{state.sound=!state.sound;localStorage.setItem("bf-sound",state.sound?"1":"0");renderAll();});
+els.accessibility.addEventListener("click",()=>{state.colorblind=!state.colorblind;localStorage.setItem("bf-colorblind",state.colorblind?"1":"0");renderAll();saveSession();});
+els.sound.addEventListener("click",()=>{state.sound=!state.sound;localStorage.setItem("bf-sound",state.sound?"1":"0");renderAll();saveSession();});
+document.addEventListener("visibilitychange",()=>{if(document.hidden)saveSession();});
+window.addEventListener("pagehide",saveSession);
 
-initLevel();
+initLevel({restore:true,paused:true});
+openHomeScreen();
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", async () => {
     try {
