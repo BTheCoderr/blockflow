@@ -191,7 +191,7 @@ function sessionPayload() {
   };
 }
 function saveSession() {
-  if (!state.running || !level()) return;
+  if ((!state.running && !state.run?.active) || !level()) return;
   try { localStorage.setItem(SESSION_KEY,JSON.stringify(sessionPayload())); } catch (_) {}
 }
 function restoreSession() {
@@ -202,7 +202,7 @@ function restoreSession() {
     const index=LEVELS.findIndex(item=>item.id===saved.levelId);
     if (index<0 || !Array.isArray(saved.blocks)) return false;
     state.levelIndex=index;
-    localStorage.setItem("bf-level",String(index));
+    if (!saved.run?.active) localStorage.setItem("bf-level",String(index));
     if (["chill","classic","rush"].includes(saved.mode)) {
       state.mode=saved.mode;
       localStorage.setItem("bf-mode",saved.mode);
@@ -264,6 +264,48 @@ const FLOW_REWARDS=[
 function rankFor(cleared) {
   return FLOW_RANKS.filter(r=>cleared>=r.at).at(-1)?.name || "Starter";
 }
+function worldRunQueue() {
+  const last=LEVELS.length-1;
+  return [...new Set([0,Math.round(last*.25),Math.round(last*.5),Math.round(last*.75),last])];
+}
+function worldRunBestTime() {
+  const raw=localStorage.getItem(`bf-run-best-time-${ACTIVE_DIFFICULTY}`);
+  return raw==null?null:Number(raw);
+}
+function worldRunBestMoves() {
+  const raw=localStorage.getItem(`bf-run-best-moves-${ACTIVE_DIFFICULTY}`);
+  return raw==null?null:Number(raw);
+}
+function startWorldRun() {
+  const queue=worldRunQueue();
+  state.run={active:true,queue,position:0,totalSeconds:0,totalMoves:0,returnIndex:state.levelIndex,complete:false};
+  state.levelIndex=queue[0];
+  clearSession();
+  initLevel();
+  resumeGame({onboarding:false});
+  saveSession();
+}
+function finishWorldRun() {
+  const bestTime=worldRunBestTime();
+  const bestMoves=worldRunBestMoves();
+  if (bestTime==null || state.run.totalSeconds<bestTime) localStorage.setItem(`bf-run-best-time-${ACTIVE_DIFFICULTY}`,String(state.run.totalSeconds));
+  if (bestMoves==null || state.run.totalMoves<bestMoves) localStorage.setItem(`bf-run-best-moves-${ACTIVE_DIFFICULTY}`,String(state.run.totalMoves));
+  const returnIndex=Math.min(state.run.returnIndex,LEVELS.length-1);
+  state.run={active:false,queue:[],position:0,totalSeconds:0,totalMoves:0,returnIndex:0,complete:false};
+  state.levelIndex=returnIndex;
+  localStorage.setItem("bf-level",String(returnIndex));
+  clearSession();
+  initLevel({paused:true});
+  openHomeScreen();
+}
+function renderRunBanner() {
+  const active=Boolean(state.run?.active);
+  els.runBanner.classList.toggle("hidden",!active);
+  if (!active) return;
+  const totalTime=state.run.totalSeconds+state.elapsedSeconds;
+  const totalMoves=state.run.totalMoves+state.moves;
+  els.runBannerText.textContent=`${state.run.position+1} / ${state.run.queue.length} · ${formatTime(totalTime)} · ${totalMoves} moves`;
+}
 function renderHomeStats() {
   const stats=totalStats();
   els.homeProgressText.textContent=`${stats.cleared} / ${stats.total}`;
@@ -276,8 +318,14 @@ function renderHomeStats() {
     const unlocked=stats.cleared>=reward.at;
     return `<div class="reward-badge ${unlocked?"unlocked":"locked"}"><span>${unlocked?reward.icon:"⌁"}</span><strong>${reward.name}</strong><small>${unlocked?"Unlocked":`${reward.at} clears`}</small></div>`;
   }).join("");
-  els.homeCurrent.textContent=`${DIFFICULTY_LABELS[ACTIVE_DIFFICULTY]} · Level ${state.levelIndex+1} · ${level().name}`;
-  els.continueBtn.textContent=state.moves>0?`Continue · ${state.moves} moves · ${formatTime(state.elapsedSeconds)}`:"Play";
+  const runTime=worldRunBestTime(), runMoves=worldRunBestMoves();
+  els.worldRunMeta.textContent=runTime==null?"Best —":`Best ${formatTime(runTime)} · ${runMoves??"—"} moves`;
+  els.homeCurrent.textContent=state.run.active
+    ? `World Run · Stage ${state.run.position+1}/${state.run.queue.length} · ${level().name}`
+    : `${DIFFICULTY_LABELS[ACTIVE_DIFFICULTY]} · Level ${state.levelIndex+1} · ${level().name}`;
+  els.continueBtn.textContent=state.run.active
+    ? `Continue World Run · ${state.run.position+1}/${state.run.queue.length}`
+    : state.moves>0?`Continue · ${state.moves} moves · ${formatTime(state.elapsedSeconds)}`:"Play";
   els.progressBreakdown.innerHTML=DIFFICULTIES.map(d=>{
     const row=stats.byDifficulty[d];
     return `<div><span>${DIFFICULTY_LABELS[d].replace(" ☠️","")}</span><strong>${row.cleared}/${row.total}</strong></div>`;
@@ -449,6 +497,7 @@ function startTimer() {
     state.elapsedSeconds++;
     if (state.mode === "rush") state.timeLeft=Math.max(0,state.timeLeft-1);
     els.timer.textContent = state.mode==="rush" ? formatTime(state.timeLeft) : formatTime(state.elapsedSeconds);
+    renderRunBanner();
     if (state.elapsedSeconds % 5 === 0) saveSession();
     if (state.mode==="rush" && state.timeLeft <= 0) {
       state.running = false;
@@ -475,6 +524,7 @@ function renderAll() {
       : `Countdown pressure · ${formatTime(Math.max(14,Math.floor(timeTargetFor(l)*.62)))} on a fresh run.`;
   els.bossBadge.classList.toggle("hidden",!l.boss);
   document.body.classList.toggle("boss-level",Boolean(l.boss));
+  renderRunBanner();
   els.progressText.textContent = `${state.levelIndex + 1} / ${LEVELS.length}`;
   els.progressFill.style.width = `${((state.levelIndex + 1) / LEVELS.length) * 100}%`;
   els.accessibility.classList.toggle("on", state.colorblind);
@@ -854,37 +904,70 @@ function checkWin() {
   const oldTime=oldTimeRaw==null?Infinity:Number(oldTimeRaw);
   const newMoveBest=state.moves<oldBest;
   const newTimeBest=solvedTime<oldTime;
-  if (newMoveBest) localStorage.setItem(bestKey,String(state.moves));
-  if (newTimeBest) localStorage.setItem(timeKey,String(solvedTime));
+  if (!state.run.active && newMoveBest) localStorage.setItem(bestKey,String(state.moves));
+  if (!state.run.active && newTimeBest) localStorage.setItem(timeKey,String(solvedTime));
 
+  if (state.run.active) {
+    state.run.totalSeconds+=solvedTime;
+    state.run.totalMoves+=state.moves;
+    state.run.complete=state.run.position>=state.run.queue.length-1;
+  }
   els.stars.textContent="★".repeat(starCount)+"☆".repeat(3-starCount);
-  els.winSummary.textContent=level().boss
-    ? `Boss cleared · ${state.moves} moves · ${formatTime(solvedTime)}.`
-    : delta<=0
-      ? `Perfect flow · ${formatTime(solvedTime)}.`
-      : `Cleared in ${state.moves} moves · ${formatTime(solvedTime)}.`;
+  els.winTitle.textContent=state.run.active
+    ? (state.run.complete?"World Run complete.":`Stage ${state.run.position+1} cleared.`)
+    : "Nice work.";
+  els.nextBtn.textContent=state.run.active
+    ? (state.run.complete?"Finish Run":"Next Stage")
+    : "Next Level";
+  els.winSummary.textContent=state.run.active
+    ? `${state.run.totalMoves} total moves · ${formatTime(state.run.totalSeconds)} total.`
+    : level().boss
+      ? `Boss cleared · ${state.moves} moves · ${formatTime(solvedTime)}.`
+      : delta<=0
+        ? `Perfect flow · ${formatTime(solvedTime)}.`
+        : `Cleared in ${state.moves} moves · ${formatTime(solvedTime)}.`;
   els.yourMoves.textContent=state.moves;
   els.perfectMoves.textContent=target;
   els.yourTime.textContent=formatTime(solvedTime);
   els.bestTime.textContent=formatTime(Math.min(oldTime,solvedTime));
   const callouts=[];
-  if (newTimeBest) callouts.push("NEW BEST TIME");
-  if (newMoveBest) callouts.push("NEW BEST MOVES");
+  if (!state.run.active && newTimeBest) callouts.push("NEW BEST TIME");
+  if (!state.run.active && newMoveBest) callouts.push("NEW BEST MOVES");
   if (solvedTime<=targetTime) callouts.push("CLASSIC TARGET BEAT");
   if (level().boss) callouts.push("BOSS DOWN");
+  if (state.run.active) callouts.push(state.run.complete?"5-STAGE RUN COMPLETE":`RUN STAGE ${state.run.position+1}/${state.run.queue.length}`);
   els.resultCallout.textContent=callouts.join(" · ");
   els.resultCallout.classList.toggle("hidden",!callouts.length);
   els.win.classList.remove("hidden");
 
-  localStorage.setItem(`bf-complete-${ACTIVE_DIFFICULTY}-${state.levelIndex}`, "1");
-  unlockLevel(state.levelIndex + 1);
-  clearSession();
+  if (!state.run.active) {
+    localStorage.setItem(`bf-complete-${ACTIVE_DIFFICULTY}-${state.levelIndex}`, "1");
+    unlockLevel(state.levelIndex + 1);
+    clearSession();
+  } else {
+    saveSession();
+  }
   renderHomeStats();
   celebrateWin();
   playTone(980); setTimeout(()=>playTone(1180),90); setTimeout(()=>playTone(1380),180); buzz([18,40,18]);
 }
 function nextLevel() {
   els.win.classList.add("hidden");
+  if (state.run.active) {
+    if (state.run.complete) {
+      finishWorldRun();
+      return;
+    }
+    transitionToLevel(()=>{
+      state.run.position++;
+      state.levelIndex=state.run.queue[state.run.position];
+      initLevel();
+      state.paused=false;
+      showMechanicIntro();
+      saveSession();
+    });
+    return;
+  }
   clearSession();
   transitionToLevel(()=>{
     state.levelIndex = state.levelIndex < LEVELS.length-1 ? state.levelIndex+1 : 0;
@@ -895,6 +978,12 @@ function nextLevel() {
   });
 }
 function setMode(mode) {
+  if (state.run.active) {
+    const returnIndex=state.run.returnIndex;
+    state.run={active:false,queue:[],position:0,totalSeconds:0,totalMoves:0,returnIndex:0,complete:false};
+    state.levelIndex=Math.min(returnIndex,LEVELS.length-1);
+    localStorage.setItem("bf-level",String(state.levelIndex));
+  }
   state.mode=mode;
   localStorage.setItem("bf-mode",mode);
   clearSession();
@@ -916,6 +1005,7 @@ document.getElementById("closeLevelsBtn").addEventListener("click",closeLevelSel
 els.levelModal.addEventListener("click",event=>{ if(event.target===els.levelModal) closeLevelSelect(); });
 document.getElementById("continueBtn").addEventListener("click",()=>resumeGame());
 document.getElementById("homeLevelsBtn").addEventListener("click",()=>openLevelSelect("home"));
+els.worldRunBtn.addEventListener("click",startWorldRun);
 document.getElementById("resumeBtn").addEventListener("click",closePauseMenu);
 document.getElementById("pauseLevelsBtn").addEventListener("click",()=>openLevelSelect("pause"));
 document.getElementById("pauseRestartBtn").addEventListener("click",restartLevel);
