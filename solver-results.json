@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-10-01T20:55:30.941Z",
+  "generatedAt": "2026-10-01T20:57:28.979Z",
   "engine": "BlockFlow solver v2 A*",
-  "stateLimit": 750000,
+  "stateLimit": 500000,
   "total": 24,
   "solved": 24,
   "unresolved": 0,
-  "targetMismatches": 22,
+  "targetMismatches": 0,
   "results": [
     {
       "difficulty": "easy",
@@ -30,7 +30,7 @@
     {
       "difficulty": "easy",
       "name": "Corner Cut",
-      "target": 8,
+      "target": 6,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 6,
@@ -50,7 +50,7 @@
     {
       "difficulty": "easy",
       "name": "The Lane",
-      "target": 10,
+      "target": 9,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 9,
@@ -95,7 +95,7 @@
     {
       "difficulty": "easy",
       "name": "Ice Break",
-      "target": 7,
+      "target": 5,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 5,
@@ -114,7 +114,7 @@
     {
       "difficulty": "easy",
       "name": "Warp 101",
-      "target": 8,
+      "target": 6,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 6,
@@ -134,7 +134,7 @@
     {
       "difficulty": "intermediate",
       "name": "Open the Door",
-      "target": 10,
+      "target": 9,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 9,
@@ -156,7 +156,7 @@
     {
       "difficulty": "intermediate",
       "name": "Arrow Room",
-      "target": 11,
+      "target": 8,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 8,
@@ -178,7 +178,7 @@
     {
       "difficulty": "intermediate",
       "name": "Blue First",
-      "target": 9,
+      "target": 6,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 6,
@@ -198,7 +198,7 @@
     {
       "difficulty": "intermediate",
       "name": "Broken Square",
-      "target": 13,
+      "target": 6,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 6,
@@ -218,7 +218,7 @@
     {
       "difficulty": "intermediate",
       "name": "Blocked Warp",
-      "target": 14,
+      "target": 8,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 8,
@@ -240,7 +240,7 @@
     {
       "difficulty": "intermediate",
       "name": "Ice Traffic",
-      "target": 13,
+      "target": 6,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 6,
@@ -260,7 +260,7 @@
     {
       "difficulty": "hard",
       "name": "Double Lock",
-      "target": 18,
+      "target": 16,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 16,
@@ -289,7 +289,7 @@
     {
       "difficulty": "hard",
       "name": "Crosswind",
-      "target": 18,
+      "target": 20,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 20,
@@ -323,7 +323,7 @@
     {
       "difficulty": "hard",
       "name": "Portal Traffic",
-      "target": 20,
+      "target": 10,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 10,
@@ -347,7 +347,7 @@
     {
       "difficulty": "hard",
       "name": "Cold Storage",
-      "target": 19,
+      "target": 8,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 8,
@@ -369,7 +369,7 @@
     {
       "difficulty": "hard",
       "name": "Big Pieces",
-      "target": 17,
+      "target": 10,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 10,
@@ -393,7 +393,7 @@
     {
       "difficulty": "hard",
       "name": "Sequence Breaker",
-      "target": 22,
+      "target": 10,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 10,
@@ -417,7 +417,7 @@
     {
       "difficulty": "extreme",
       "name": "False Start",
-      "target": 24,
+      "target": 9,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 9,
@@ -439,7 +439,7 @@
     {
       "difficulty": "extreme",
       "name": "Thin Ice",
-      "target": 26,
+      "target": 11,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 11,
@@ -464,7 +464,7 @@
     {
       "difficulty": "extreme",
       "name": "Two Keys",
-      "target": 28,
+      "target": 23,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 23,
@@ -501,7 +501,7 @@
     {
       "difficulty": "extreme",
       "name": "Split Chamber",
-      "target": 28,
+      "target": 8,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 8,
@@ -523,7 +523,7 @@
     {
       "difficulty": "extreme",
       "name": "Moving Walls",
-      "target": 30,
+      "target": 17,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 17,
@@ -554,7 +554,7 @@
     {
       "difficulty": "extreme",
       "name": "The Gauntlet",
-      "target": 34,
+      "target": 21,
       "status": "solved",
       "solvable": true,
       "optimalMoves": 21,
