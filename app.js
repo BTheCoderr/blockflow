@@ -26,7 +26,10 @@ const els = {
   yourMoves: document.getElementById("yourMoves"),
   perfectMoves: document.getElementById("perfectMoves"),
   accessibility: document.getElementById("accessibilityBtn"),
-  sound: document.getElementById("soundBtn")
+  sound: document.getElementById("soundBtn"),
+  levelModal: document.getElementById("levelModal"),
+  levelGrid: document.getElementById("levelGrid"),
+  levelPickerTitle: document.getElementById("levelPickerTitle")
 };
 
 let state = {
@@ -50,6 +53,58 @@ function level() { return LEVELS[state.levelIndex]; }
 function cols() { return level().cols || 6; }
 function rows() { return level().rows || 6; }
 function list(name) { return level()[name] || []; }
+
+function bestFor(index) {
+  const raw = localStorage.getItem(`bf-best-${ACTIVE_DIFFICULTY}-${index}`);
+  if (raw == null) return null;
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : null;
+}
+function unlockedThrough() {
+  const stored = Number(localStorage.getItem(`bf-unlocked-${ACTIVE_DIFFICULTY}`) || 0);
+  return Math.max(0, Math.min(LEVELS.length - 1, Math.max(stored, state.levelIndex)));
+}
+function unlockLevel(index) {
+  const keyName = `bf-unlocked-${ACTIVE_DIFFICULTY}`;
+  const current = Number(localStorage.getItem(keyName) || 0);
+  const next = Math.min(index, LEVELS.length - 1);
+  if (next > current) localStorage.setItem(keyName, String(next));
+}
+function starsFor(index) {
+  const best = bestFor(index);
+  if (best == null) return "☆☆☆";
+  const target = LEVELS[index].par;
+  const count = best <= target ? 3 : best <= target + 3 ? 2 : 1;
+  return "★".repeat(count) + "☆".repeat(3 - count);
+}
+function renderLevelSelect() {
+  if (!els.levelGrid) return;
+  els.levelPickerTitle.textContent = `${DIFFICULTY_LABELS[ACTIVE_DIFFICULTY].replace(" ☠️","")} Journey`;
+  els.levelGrid.innerHTML = "";
+  const unlocked = unlockedThrough();
+  LEVELS.forEach((item,index) => {
+    const available = index <= unlocked;
+    const best = bestFor(index);
+    const button = document.createElement("button");
+    button.className = `level-card ${index===state.levelIndex ? "current" : ""} ${available ? "" : "locked"}`;
+    button.disabled = !available;
+    button.setAttribute("aria-label", available ? `Level ${index+1}: ${item.name}` : `Level ${index+1} locked`);
+    button.innerHTML = `<span class="level-number">${available ? index+1 : "🔒"}</span><strong>${item.name}</strong><span class="level-stars">${available ? starsFor(index) : "•••"}</span><small>${best == null ? (available ? "Not cleared" : "Locked") : `Best ${best} · Target ${item.par}`}</small>`;
+    if (available) button.addEventListener("click", () => {
+      state.levelIndex = index;
+      localStorage.setItem("bf-level", String(index));
+      els.levelModal.classList.add("hidden");
+      initLevel();
+    });
+    els.levelGrid.appendChild(button);
+  });
+}
+function openLevelSelect() {
+  renderLevelSelect();
+  els.levelModal.classList.remove("hidden");
+}
+function closeLevelSelect() { els.levelModal.classList.add("hidden"); }
+
 function key(x,y) { return `${x},${y}`; }
 function hasCell(items,x,y) { return items.some(item => item.x === x && item.y === y); }
 function isPlayable(x,y) {
@@ -314,6 +369,8 @@ function checkWin() {
   const bestKey=`bf-best-${ACTIVE_DIFFICULTY}-${state.levelIndex}`;
   const oldBest=Number(localStorage.getItem(bestKey)||9999);
   if (state.moves<oldBest) localStorage.setItem(bestKey,String(state.moves));
+  localStorage.setItem(`bf-complete-${ACTIVE_DIFFICULTY}-${state.levelIndex}`, "1");
+  unlockLevel(state.levelIndex + 1);
   playTone(980); setTimeout(()=>playTone(1180),90); setTimeout(()=>playTone(1380),180); buzz([18,40,18]);
 }
 function nextLevel() {
@@ -334,6 +391,9 @@ function playTone(freq) {
   } catch (_) {}
 }
 
+document.getElementById("levelsBtn").addEventListener("click",openLevelSelect);
+document.getElementById("closeLevelsBtn").addEventListener("click",closeLevelSelect);
+els.levelModal.addEventListener("click",event=>{ if(event.target===els.levelModal) closeLevelSelect(); });
 document.getElementById("undoBtn").addEventListener("click",undo);
 document.getElementById("resetBtn").addEventListener("click",initLevel);
 document.getElementById("nextBtn").addEventListener("click",nextLevel);
