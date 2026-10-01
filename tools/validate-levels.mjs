@@ -42,7 +42,7 @@ for (const [index, level] of levels.entries()) {
   }
 }
 
-const expectedCounts = { easy:13, intermediate:13, hard:12, extreme:12 };
+const expectedCounts = { easy:19, intermediate:19, hard:19, extreme:18 };
 for (const d of difficulties) {
   const count = levels.filter(l => l.difficulty === d).length;
   if (count !== expectedCounts[d]) errors.push(`${d}: expected ${expectedCounts[d]} levels, found ${count}`);
