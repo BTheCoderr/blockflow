@@ -89,3 +89,26 @@
   .progress-breakdown{gap:6px}
 }
 @media(prefers-reduced-motion:reduce){.coach-block,.coach-hand{animation:none}.mechanic-toast{animation:none}}
+
+/* 75-level progression + world identity v8 */
+:root{--world-accent:#38bdf8}
+body[data-world="easy"]{--world-glow:rgba(56,189,248,.20)}
+body[data-world="intermediate"]{--world-glow:rgba(74,222,128,.18)}
+body[data-world="hard"]{--world-glow:rgba(245,158,11,.19)}
+body[data-world="extreme"]{--world-glow:rgba(167,139,250,.24)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(circle at 50% 18%,var(--world-glow,rgba(56,189,248,.15)),transparent 42%)}
+.difficulty-badge{border-color:color-mix(in srgb,var(--world-accent) 45%,transparent)!important;box-shadow:0 0 20px color-mix(in srgb,var(--world-accent) 12%,transparent)}
+.progress-fill{background:linear-gradient(90deg,var(--world-accent),#a78bfa)}
+.home-rank{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--line);font-size:11px;color:var(--muted)}
+.home-rank strong{font-size:13px;color:var(--world-accent)}
+.reward-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:9px}
+.reward-badge{min-width:0;padding:10px 5px;border-radius:14px;text-align:center;background:rgba(255,255,255,.035);border:1px solid var(--line)}
+.reward-badge span{display:grid;place-items:center;width:30px;height:30px;margin:0 auto 5px;border-radius:10px;background:rgba(255,255,255,.05);font-size:16px}
+.reward-badge strong{display:block;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reward-badge small{display:block;margin-top:3px;font-size:8px;color:var(--muted)}
+.reward-badge.unlocked{border-color:color-mix(in srgb,var(--world-accent) 38%,transparent);background:color-mix(in srgb,var(--world-accent) 8%,rgba(255,255,255,.02))}
+.reward-badge.unlocked span{background:color-mix(in srgb,var(--world-accent) 16%,transparent);color:var(--world-accent);box-shadow:0 0 18px color-mix(in srgb,var(--world-accent) 18%,transparent)}
+.reward-badge.locked{opacity:.44}
+.level-card.perfect{border-color:rgba(253,224,71,.25)}
+.level-card.perfect small{color:#fde68a;font-weight:800;letter-spacing:.03em}
+@media(max-width:390px){.reward-strip{grid-template-columns:repeat(2,1fr)}}
