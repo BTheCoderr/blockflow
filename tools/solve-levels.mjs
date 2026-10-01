@@ -324,4 +324,4 @@ const jsonArgIndex=process.argv.indexOf("--json");
 if (jsonArgIndex>=0 && process.argv[jsonArgIndex+1]) {
   fs.writeFileSync(process.argv[jsonArgIndex+1], JSON.stringify(summary,null,2)+"\n");
 }
-if (process.argv.includes("--strict") && summary.unresolved) process.exitCode=1;
+if (process.argv.includes("--strict") && (summary.unresolved || summary.targetMismatches)) process.exitCode=1;
