@@ -411,9 +411,8 @@ function initLevel(options={}) {
     state.history = [];
     state.activeSwitches = [];
     state.exitStep = 0;
-    if (state.mode === "chill") state.timeLeft = Infinity;
-    if (state.mode === "classic") state.timeLeft = level().time;
-    if (state.mode === "rush") state.timeLeft = Math.max(14, Math.floor(level().time * .62));
+    state.elapsedSeconds = 0;
+    state.timeLeft = state.mode === "rush" ? Math.max(14, Math.floor(timeTargetFor(level()) * .62)) : Infinity;
   }
   state.running = true;
   state.paused = Boolean(options.paused);
@@ -425,13 +424,14 @@ function initLevel(options={}) {
 }
 
 function startTimer() {
-  if (!Number.isFinite(state.timeLeft)) return;
+  clearInterval(state.timerId);
   state.timerId = setInterval(() => {
     if (!state.running || state.paused) return;
-    state.timeLeft--;
-    els.timer.textContent = `${state.timeLeft}s`;
-    if (state.timeLeft % 5 === 0) saveSession();
-    if (state.timeLeft <= 0) {
+    state.elapsedSeconds++;
+    if (state.mode === "rush") state.timeLeft=Math.max(0,state.timeLeft-1);
+    els.timer.textContent = state.mode==="rush" ? formatTime(state.timeLeft) : formatTime(state.elapsedSeconds);
+    if (state.elapsedSeconds % 5 === 0) saveSession();
+    if (state.mode==="rush" && state.timeLeft <= 0) {
       state.running = false;
       clearInterval(state.timerId);
       els.fail.classList.remove("hidden");
@@ -447,7 +447,14 @@ function renderAll() {
   els.hint.textContent = req ? `${l.hint}  Next out: ${req.toUpperCase()}.` : l.hint;
   els.moves.textContent = state.moves;
   els.par.textContent = l.par;
-  els.timer.textContent = Number.isFinite(state.timeLeft) ? `${state.timeLeft}s` : "∞";
+  els.timeLabel.textContent = state.mode==="rush" ? "Left" : "Time";
+  els.timer.textContent = state.mode==="rush" ? formatTime(state.timeLeft) : formatTime(state.elapsedSeconds);
+  els.modeExplainer.textContent = state.mode==="chill"
+    ? "No pressure · solve time still recorded."
+    : state.mode==="classic"
+      ? `Beat the clock without a fail state · target ${formatTime(timeTargetFor(l))}.`
+      : `Countdown pressure · ${formatTime(Math.max(14,Math.floor(timeTargetFor(l)*.62)))} on a fresh run.`;
+  els.bossBadge.classList.toggle("hidden",!l.boss);
   els.progressText.textContent = `${state.levelIndex + 1} / ${LEVELS.length}`;
   els.progressFill.style.width = `${((state.levelIndex + 1) / LEVELS.length) * 100}%`;
   els.accessibility.classList.toggle("on", state.colorblind);
