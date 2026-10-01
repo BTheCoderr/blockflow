@@ -452,9 +452,10 @@ function renderAll() {
   els.modeExplainer.textContent = state.mode==="chill"
     ? "No pressure · solve time still recorded."
     : state.mode==="classic"
-      ? `Beat the clock without a fail state · target ${formatTime(timeTargetFor(l))}.`
+      ? `Beat the target without a fail state · ${formatTime(timeTargetFor(l))}.`
       : `Countdown pressure · ${formatTime(Math.max(14,Math.floor(timeTargetFor(l)*.62)))} on a fresh run.`;
   els.bossBadge.classList.toggle("hidden",!l.boss);
+  document.body.classList.toggle("boss-level",Boolean(l.boss));
   els.progressText.textContent = `${state.levelIndex + 1} / ${LEVELS.length}`;
   els.progressFill.style.width = `${((state.levelIndex + 1) / LEVELS.length) * 100}%`;
   els.accessibility.classList.toggle("on", state.colorblind);
@@ -825,13 +826,37 @@ function checkWin() {
   state.running=false; clearInterval(state.timerId);
   const target=level().par, delta=state.moves-target;
   const starCount=delta<=0?3:delta<=3?2:1;
-  els.stars.textContent="★".repeat(starCount)+"☆".repeat(3-starCount);
-  els.winSummary.textContent=delta<=0?"Perfect flow. No wasted moves.":`Cleared in ${state.moves} moves.`;
-  els.yourMoves.textContent=state.moves; els.perfectMoves.textContent=target;
-  els.win.classList.remove("hidden");
+  const solvedTime=Math.max(1,state.elapsedSeconds);
+  const targetTime=timeTargetFor(level());
   const bestKey=`bf-best-${level().id}`;
+  const timeKey=`bf-best-time-${level().id}`;
   const oldBest=Number(localStorage.getItem(bestKey)||9999);
-  if (state.moves<oldBest) localStorage.setItem(bestKey,String(state.moves));
+  const oldTimeRaw=localStorage.getItem(timeKey);
+  const oldTime=oldTimeRaw==null?Infinity:Number(oldTimeRaw);
+  const newMoveBest=state.moves<oldBest;
+  const newTimeBest=solvedTime<oldTime;
+  if (newMoveBest) localStorage.setItem(bestKey,String(state.moves));
+  if (newTimeBest) localStorage.setItem(timeKey,String(solvedTime));
+
+  els.stars.textContent="★".repeat(starCount)+"☆".repeat(3-starCount);
+  els.winSummary.textContent=level().boss
+    ? `Boss cleared · ${state.moves} moves · ${formatTime(solvedTime)}.`
+    : delta<=0
+      ? `Perfect flow · ${formatTime(solvedTime)}.`
+      : `Cleared in ${state.moves} moves · ${formatTime(solvedTime)}.`;
+  els.yourMoves.textContent=state.moves;
+  els.perfectMoves.textContent=target;
+  els.yourTime.textContent=formatTime(solvedTime);
+  els.bestTime.textContent=formatTime(Math.min(oldTime,solvedTime));
+  const callouts=[];
+  if (newTimeBest) callouts.push("NEW BEST TIME");
+  if (newMoveBest) callouts.push("NEW BEST MOVES");
+  if (solvedTime<=targetTime) callouts.push("CLASSIC TARGET BEAT");
+  if (level().boss) callouts.push("BOSS DOWN");
+  els.resultCallout.textContent=callouts.join(" · ");
+  els.resultCallout.classList.toggle("hidden",!callouts.length);
+  els.win.classList.remove("hidden");
+
   localStorage.setItem(`bf-complete-${ACTIVE_DIFFICULTY}-${state.levelIndex}`, "1");
   unlockLevel(state.levelIndex + 1);
   clearSession();
