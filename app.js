@@ -41,6 +41,8 @@ const els = {
   homeStars: document.getElementById("homeStars"),
   homeCurrent: document.getElementById("homeCurrent"),
   progressBreakdown: document.getElementById("progressBreakdown"),
+  homeRank: document.getElementById("homeRank"),
+  rewardStrip: document.getElementById("rewardStrip"),
   continueBtn: document.getElementById("continueBtn"),
   coach: document.getElementById("coachModal"),
   mechanicToast: document.getElementById("mechanicToast"),
@@ -109,10 +111,11 @@ function renderLevelSelect() {
     const available = index <= unlocked;
     const best = bestFor(index);
     const button = document.createElement("button");
-    button.className = `level-card ${index===state.levelIndex ? "current" : ""} ${available ? "" : "locked"}`;
+    const perfect=best!=null && best<=item.par;
+    button.className = `level-card ${index===state.levelIndex ? "current" : ""} ${available ? "" : "locked"} ${perfect ? "perfect" : ""}`;
     button.disabled = !available;
     button.setAttribute("aria-label", available ? `Level ${index+1}: ${item.name}` : `Level ${index+1} locked`);
-    button.innerHTML = `<span class="level-number">${available ? index+1 : "🔒"}</span><strong>${item.name}</strong><span class="level-stars">${available ? starsFor(index) : "•••"}</span><small>${best == null ? (available ? "Not cleared" : "Locked") : `Best ${best} · Perfect ${item.par}`}</small>`;
+    button.innerHTML = `<span class="level-number">${available ? index+1 : "🔒"}</span><strong>${item.name}</strong><span class="level-stars">${available ? starsFor(index) : "•••"}</span><small>${best == null ? (available ? "Not cleared" : "Locked") : perfect ? `PERFECT · ${best} moves` : `Best ${best} · Perfect ${item.par}`}</small>`;
     if (available) button.addEventListener("click", () => {
       state.levelIndex = index;
       localStorage.setItem("bf-level", String(index));
@@ -202,6 +205,22 @@ function totalStats() {
   }
   return {cleared,perfect,stars,total:ALL_LEVELS.length,byDifficulty};
 }
+const FLOW_RANKS=[
+  {at:0,name:"Starter"},
+  {at:10,name:"Navigator"},
+  {at:25,name:"Pathfinder"},
+  {at:50,name:"Flow Master"},
+  {at:75,name:"Architect"}
+];
+const FLOW_REWARDS=[
+  {at:10,icon:"✦",name:"First Current"},
+  {at:25,icon:"◆",name:"Route Reader"},
+  {at:50,icon:"◎",name:"Flow Master"},
+  {at:75,icon:"♛",name:"Deep Flow"}
+];
+function rankFor(cleared) {
+  return FLOW_RANKS.filter(r=>cleared>=r.at).at(-1)?.name || "Starter";
+}
 function renderHomeStats() {
   const stats=totalStats();
   els.homeProgressText.textContent=`${stats.cleared} / ${stats.total}`;
@@ -209,6 +228,11 @@ function renderHomeStats() {
   els.homeCleared.textContent=stats.cleared;
   els.homePerfect.textContent=stats.perfect;
   els.homeStars.textContent=stats.stars;
+  els.homeRank.textContent=rankFor(stats.cleared);
+  els.rewardStrip.innerHTML=FLOW_REWARDS.map(reward=>{
+    const unlocked=stats.cleared>=reward.at;
+    return `<div class="reward-badge ${unlocked?"unlocked":"locked"}"><span>${unlocked?reward.icon:"⌁"}</span><strong>${reward.name}</strong><small>${unlocked?"Unlocked":`${reward.at} clears`}</small></div>`;
+  }).join("");
   els.homeCurrent.textContent=`${DIFFICULTY_LABELS[ACTIVE_DIFFICULTY]} · Level ${state.levelIndex+1} · ${level().name}`;
   els.continueBtn.textContent=state.moves>0?`Continue · ${state.moves} moves`:"Play";
   els.progressBreakdown.innerHTML=DIFFICULTIES.map(d=>{
