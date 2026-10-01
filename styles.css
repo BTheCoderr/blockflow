@@ -112,3 +112,19 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .level-card.perfect{border-color:rgba(253,224,71,.25)}
 .level-card.perfect small{color:#fde68a;font-weight:800;letter-spacing:.03em}
 @media(max-width:390px){.reward-strip{grid-template-columns:repeat(2,1fr)}}
+
+/* Timed play + boss pass v9 */
+.level-meta-line{display:flex;align-items:center;gap:7px;margin-top:6px}
+.boss-badge{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;background:linear-gradient(135deg,#7c2d12,#dc2626);border:1px solid rgba(254,202,202,.26);color:#fff7ed;font-size:9px;font-weight:950;letter-spacing:.16em;box-shadow:0 0 22px rgba(248,113,113,.24)}
+.boss-badge.hidden{display:none}
+.mode-explainer{min-height:16px;margin:-5px 3px 11px;text-align:center;color:var(--muted);font-size:10px;line-height:1.35}
+.result-grid{grid-template-columns:repeat(2,1fr)}
+.result-callout{margin:-7px 0 16px;padding:9px 11px;border-radius:13px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);color:#86efac;font-size:10px;font-weight:900;letter-spacing:.07em}
+.result-callout.hidden{display:none}
+body.boss-level .board-frame{border-color:rgba(248,113,113,.38);box-shadow:0 24px 80px rgba(0,0,0,.38),0 0 34px rgba(248,113,113,.11)}
+body.boss-level .board-frame::before{content:"";display:block;position:absolute;pointer-events:none}
+body.boss-level .progress-fill{background:linear-gradient(90deg,#fb7185,var(--world-accent))}
+.level-card.perfect .level-number{box-shadow:0 0 16px rgba(253,224,71,.15)}
+.level-card strong{display:flex;align-items:center;gap:5px}
+.stat #timerDisplay{font-variant-numeric:tabular-nums}
+@media(max-width:390px){.mode-explainer{font-size:9px}.result-grid{gap:7px}}
