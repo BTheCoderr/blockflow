@@ -1,0 +1,39 @@
+name: Level Solver
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "levels.js"
+      - "tools/solve-levels.mjs"
+      - "tools/validate-levels.mjs"
+      - ".github/workflows/level-solver.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  solve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate level structure
+        run: node tools/validate-levels.mjs
+      - name: Solve every level
+        run: node tools/solve-levels.mjs --json solver-results.json
+      - name: Save solver results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add solver-results.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update solver results [skip ci]"
+            git push
+          fi
+      - name: Fail on unresolved puzzles
+        run: node tools/solve-levels.mjs --strict
