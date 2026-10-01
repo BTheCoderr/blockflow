@@ -153,35 +153,124 @@ function reconstruct(goalKey,parents) {
   }
   return actions.reverse();
 }
+function staticCanOccupy(level,block,x,y) {
+  return cellsFor(block,x,y).every(c =>
+    isPlayable(level,c.x,c.y) && !hasCell(list(level,"walls"),c.x,c.y)
+  );
+}
+function canExitIgnoringOrder(level,block,dir) {
+  const [dx,dy]=DIRS[dir];
+  return frontierCells(block,dir).every(c =>
+    !isPlayable(level,c.x+dx,c.y+dy) && gateAt(level,c.x,c.y,dir,block.color)
+  );
+}
+function staticPortal(level,block) {
+  if ((block.w||1)!==1 || (block.h||1)!==1) return;
+  const hit=portalAt(level,block.x,block.y);
+  if (hit && staticCanOccupy(level,block,hit.dest.x,hit.dest.y)) {
+    block.x=hit.dest.x; block.y=hit.dest.y;
+  }
+}
+function staticTransition(level,source,dir) {
+  const block={...source};
+  if (canExitIgnoringOrder(level,block,dir)) return "EXIT";
+  const [dx,dy]=DIRS[dir];
+  if (!staticCanOccupy(level,block,block.x+dx,block.y+dy)) return null;
+  block.x+=dx; block.y+=dy;
+  staticPortal(level,block);
+  let guard=0;
+  while (iceUnder(level,block) && guard++<16) {
+    if (canExitIgnoringOrder(level,block,dir)) return "EXIT";
+    if (!staticCanOccupy(level,block,block.x+dx,block.y+dy)) break;
+    block.x+=dx; block.y+=dy;
+    staticPortal(level,block);
+  }
+  return block;
+}
+function independentDistance(level,start,memo) {
+  const cacheKey=`${start.id}@${start.x},${start.y}`;
+  if (memo.has(cacheKey)) return memo.get(cacheKey);
+  const queue=[{...start}], depths=[0], seen=new Set([`${start.x},${start.y}`]);
+  let head=0;
+  while (head<queue.length) {
+    const block=queue[head], depth=depths[head++];
+    for (const dir of DIR_NAMES) {
+      const next=staticTransition(level,block,dir);
+      if (next==="EXIT") { memo.set(cacheKey,depth+1); return depth+1; }
+      if (!next) continue;
+      const k=`${next.x},${next.y}`;
+      if (seen.has(k)) continue;
+      seen.add(k); queue.push(next); depths.push(depth+1);
+    }
+  }
+  memo.set(cacheKey,Infinity);
+  return Infinity;
+}
+function makeHeuristic(level) {
+  const memo=new Map();
+  return state => {
+    let total=0;
+    for (const block of state.blocks) {
+      const d=independentDistance(level,block,memo);
+      if (!Number.isFinite(d)) return Number.MAX_SAFE_INTEGER/4;
+      total+=d;
+    }
+    return total;
+  };
+}
+class MinHeap {
+  constructor(){this.items=[];}
+  push(item){
+    const a=this.items; a.push(item); let i=a.length-1;
+    while(i>0){const p=(i-1)>>1;if(a[p].f<=item.f)break;a[i]=a[p];i=p;} a[i]=item;
+  }
+  pop(){
+    const a=this.items;if(!a.length)return null;
+    const root=a[0],last=a.pop();if(!a.length)return root;
+    let i=0;
+    while(true){
+      let l=i*2+1,r=l+1;if(l>=a.length)break;
+      let child=r<a.length&&a[r].f<a[l].f?r:l;
+      if(a[child].f>=last.f)break;
+      a[i]=a[child];i=child;
+    }
+    a[i]=last;return root;
+  }
+  get length(){return this.items.length;}
+}
 function solveLevel(level) {
   const start=initialState(level);
   const startKey=stateKey(start);
-  const queue=[start];
-  const keys=[startKey];
+  const heuristic=makeHeuristic(level);
+  const heap=new MinHeap();
+  heap.push({state:start,key:startKey,g:0,f:heuristic(start)});
+  const bestG=new Map([[startKey,0]]);
   const parents=new Map([[startKey,{parent:null,action:null,depth:0}]]);
-  let head=0;
+  let expanded=0;
 
-  while (head<queue.length) {
-    if (parents.size>LIMIT) return {status:"limit",solvable:false,optimalMoves:null,visited:parents.size,solution:[]};
-    const state=queue[head];
-    const currentKey=keys[head++];
-    const depth=parents.get(currentKey).depth;
-    if (state.blocks.length===0) {
-      const solution=reconstruct(currentKey,parents);
-      return {status:"solved",solvable:true,optimalMoves:depth,visited:parents.size,solution};
+  while (heap.length) {
+    if (bestG.size>LIMIT) return {status:"limit",solvable:false,optimalMoves:null,visited:bestG.size,expanded,solution:[]};
+    const node=heap.pop();
+    if (node.g!==bestG.get(node.key)) continue;
+    expanded++;
+    if (node.state.blocks.length===0) {
+      const solution=reconstruct(node.key,parents);
+      return {status:"solved",solvable:true,optimalMoves:node.g,visited:bestG.size,expanded,solution};
     }
-    for (const block of state.blocks) {
+    for (const block of node.state.blocks) {
       for (const dir of DIR_NAMES) {
-        const next=move(level,state,block.id,dir);
+        const next=move(level,node.state,block.id,dir);
         if (!next) continue;
-        const k=stateKey(next);
-        if (parents.has(k)) continue;
-        parents.set(k,{parent:currentKey,action:`${block.id}:${dir}`,depth:depth+1});
-        queue.push(next); keys.push(k);
+        const k=stateKey(next), g=node.g+1;
+        if (g>= (bestG.get(k) ?? Infinity)) continue;
+        bestG.set(k,g);
+        parents.set(k,{parent:node.key,action:`${block.id}:${dir}`,depth:g});
+        const h=heuristic(next);
+        heap.push({state:next,key:k,g,f:g+h});
       }
     }
   }
-  return {status:"unsolved",solvable:false,optimalMoves:null,visited:parents.size,solution:[]};
+  return {status:"unsolved",solvable:false,optimalMoves:null,visited:bestG.size,expanded,solution:[]};
 }
 function similarity(a,b) {
   if (!a.length || !b.length) return 0;
@@ -222,7 +311,7 @@ for (const difficulty of ["easy","intermediate","hard","extreme"]) {
 
 const summary={
   generatedAt:new Date().toISOString(),
-  engine:"BlockFlow solver v1",
+  engine:"BlockFlow solver v2 A*",
   stateLimit:LIMIT,
   total:results.length,
   solved:results.filter(r=>r.solvable).length,
