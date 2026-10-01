@@ -23,6 +23,8 @@ const els = {
   fail: document.getElementById("failModal"),
   stars: document.getElementById("stars"),
   winSummary: document.getElementById("winSummary"),
+  winTitle: document.getElementById("winTitle"),
+  nextBtn: document.getElementById("nextBtn"),
   yourMoves: document.getElementById("yourMoves"),
   perfectMoves: document.getElementById("perfectMoves"),
   yourTime: document.getElementById("yourTime"),
@@ -50,6 +52,10 @@ const els = {
   homeRank: document.getElementById("homeRank"),
   rewardStrip: document.getElementById("rewardStrip"),
   continueBtn: document.getElementById("continueBtn"),
+  worldRunBtn: document.getElementById("worldRunBtn"),
+  worldRunMeta: document.getElementById("worldRunMeta"),
+  runBanner: document.getElementById("runBanner"),
+  runBannerText: document.getElementById("runBannerText"),
   coach: document.getElementById("coachModal"),
   mechanicToast: document.getElementById("mechanicToast"),
   mechanicToastIcon: document.getElementById("mechanicToastIcon"),
@@ -71,7 +77,8 @@ let state = {
   running: false,
   paused: false,
   activeSwitches: [],
-  exitStep: 0
+  exitStep: 0,
+  run: {active:false,queue:[],position:0,totalSeconds:0,totalMoves:0,returnIndex:0,complete:false}
 };
 state.levelIndex = Math.max(0, Math.min(state.levelIndex, LEVELS.length - 1));
 let dragSession = null;
@@ -179,7 +186,8 @@ function sessionPayload() {
     activeSwitches:[...state.activeSwitches],
     exitStep:state.exitStep,
     elapsedSeconds:state.elapsedSeconds,
-    timeLeft:Number.isFinite(state.timeLeft)?state.timeLeft:null
+    timeLeft:Number.isFinite(state.timeLeft)?state.timeLeft:null,
+    run:{...state.run,queue:[...(state.run?.queue||[])]}
   };
 }
 function saveSession() {
@@ -206,6 +214,17 @@ function restoreSession() {
     state.exitStep=Number(saved.exitStep)||0;
     state.elapsedSeconds=Math.max(0,Number(saved.elapsedSeconds)||0);
     state.timeLeft=saved.timeLeft==null?Infinity:Math.max(0,Number(saved.timeLeft)||0);
+    if (saved.run?.active && Array.isArray(saved.run.queue)) {
+      state.run={
+        active:true,
+        queue:saved.run.queue.map(Number).filter(Number.isFinite),
+        position:Math.max(0,Number(saved.run.position)||0),
+        totalSeconds:Math.max(0,Number(saved.run.totalSeconds)||0),
+        totalMoves:Math.max(0,Number(saved.run.totalMoves)||0),
+        returnIndex:Math.max(0,Number(saved.run.returnIndex)||0),
+        complete:Boolean(saved.run.complete)
+      };
+    }
     return true;
   } catch (_) { return false; }
 }
