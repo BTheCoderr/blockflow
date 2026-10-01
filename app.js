@@ -25,6 +25,12 @@ const els = {
   winSummary: document.getElementById("winSummary"),
   yourMoves: document.getElementById("yourMoves"),
   perfectMoves: document.getElementById("perfectMoves"),
+  yourTime: document.getElementById("yourTime"),
+  bestTime: document.getElementById("bestTime"),
+  resultCallout: document.getElementById("resultCallout"),
+  timeLabel: document.getElementById("timeLabel"),
+  modeExplainer: document.getElementById("modeExplainer"),
+  bossBadge: document.getElementById("bossBadge"),
   accessibility: document.getElementById("accessibilityBtn"),
   sound: document.getElementById("soundBtn"),
   levelModal: document.getElementById("levelModal"),
@@ -59,6 +65,7 @@ let state = {
   blocks: [],
   moves: 0,
   history: [],
+  elapsedSeconds: 0,
   timeLeft: Infinity,
   timerId: null,
   running: false,
@@ -71,7 +78,7 @@ let dragSession = null;
 let levelPickerOrigin = "game";
 let mechanicToastTimer = null;
 const REDUCE_MOTION = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
-const SESSION_KEY = `bf-session-v2-${ACTIVE_DIFFICULTY}`;
+const SESSION_KEY = `bf-session-v3-${ACTIVE_DIFFICULTY}`;
 
 function cloneBlocks(blocks) { return blocks.map(b => ({w:1,h:1,...b})); }
 function level() { return LEVELS[state.levelIndex]; }
@@ -84,6 +91,20 @@ function bestFor(index) {
   if (raw == null) return null;
   const value = Number(raw);
   return Number.isFinite(value) ? value : null;
+}
+function bestTimeFor(index) {
+  const raw=localStorage.getItem(`bf-best-time-${LEVELS[index].id}`);
+  if (raw==null) return null;
+  const value=Number(raw);
+  return Number.isFinite(value) && value>=0 ? value : null;
+}
+function formatTime(seconds) {
+  const safe=Math.max(0,Math.floor(Number(seconds)||0));
+  const minutes=Math.floor(safe/60);
+  return `${minutes}:${String(safe%60).padStart(2,"0")}`;
+}
+function timeTargetFor(item=level()) {
+  return Math.max(20,Number(item.time)||60);
 }
 function unlockedThrough() {
   const stored = Number(localStorage.getItem(`bf-unlocked-${ACTIVE_DIFFICULTY}`) || 0);
@@ -110,12 +131,13 @@ function renderLevelSelect() {
   LEVELS.forEach((item,index) => {
     const available = index <= unlocked;
     const best = bestFor(index);
+    const bestTime=bestTimeFor(index);
     const button = document.createElement("button");
     const perfect=best!=null && best<=item.par;
     button.className = `level-card ${index===state.levelIndex ? "current" : ""} ${available ? "" : "locked"} ${perfect ? "perfect" : ""}`;
     button.disabled = !available;
     button.setAttribute("aria-label", available ? `Level ${index+1}: ${item.name}` : `Level ${index+1} locked`);
-    button.innerHTML = `<span class="level-number">${available ? index+1 : "🔒"}</span><strong>${item.name}</strong><span class="level-stars">${available ? starsFor(index) : "•••"}</span><small>${best == null ? (available ? "Not cleared" : "Locked") : perfect ? `PERFECT · ${best} moves` : `Best ${best} · Perfect ${item.par}`}</small>`;
+    button.innerHTML = `<span class="level-number">${available ? index+1 : "🔒"}</span><strong>${item.boss?"BOSS · ":""}${item.name}</strong><span class="level-stars">${available ? starsFor(index) : "•••"}</span><small>${best == null ? (available ? `Target ${formatTime(timeTargetFor(item))}` : "Locked") : `${perfect?"PERFECT · ":""}Best ${best} moves${bestTime!=null?` · ${formatTime(bestTime)}`:""}`}</small>`;
     if (available) button.addEventListener("click", () => {
       state.levelIndex = index;
       localStorage.setItem("bf-level", String(index));
@@ -147,7 +169,7 @@ function closeLevelSelect() {
 
 function sessionPayload() {
   return {
-    version:2,
+    version:3,
     levelId:level().id,
     levelIndex:state.levelIndex,
     mode:state.mode,
@@ -156,6 +178,7 @@ function sessionPayload() {
     history:state.history.slice(-40),
     activeSwitches:[...state.activeSwitches],
     exitStep:state.exitStep,
+    elapsedSeconds:state.elapsedSeconds,
     timeLeft:Number.isFinite(state.timeLeft)?state.timeLeft:null
   };
 }
@@ -181,6 +204,7 @@ function restoreSession() {
     state.history=Array.isArray(saved.history)?saved.history.slice(-40):[];
     state.activeSwitches=Array.isArray(saved.activeSwitches)?[...saved.activeSwitches]:[];
     state.exitStep=Number(saved.exitStep)||0;
+    state.elapsedSeconds=Math.max(0,Number(saved.elapsedSeconds)||0);
     state.timeLeft=saved.timeLeft==null?Infinity:Math.max(0,Number(saved.timeLeft)||0);
     return true;
   } catch (_) { return false; }
@@ -234,7 +258,7 @@ function renderHomeStats() {
     return `<div class="reward-badge ${unlocked?"unlocked":"locked"}"><span>${unlocked?reward.icon:"⌁"}</span><strong>${reward.name}</strong><small>${unlocked?"Unlocked":`${reward.at} clears`}</small></div>`;
   }).join("");
   els.homeCurrent.textContent=`${DIFFICULTY_LABELS[ACTIVE_DIFFICULTY]} · Level ${state.levelIndex+1} · ${level().name}`;
-  els.continueBtn.textContent=state.moves>0?`Continue · ${state.moves} moves`:"Play";
+  els.continueBtn.textContent=state.moves>0?`Continue · ${state.moves} moves · ${formatTime(state.elapsedSeconds)}`:"Play";
   els.progressBreakdown.innerHTML=DIFFICULTIES.map(d=>{
     const row=stats.byDifficulty[d];
     return `<div><span>${DIFFICULTY_LABELS[d].replace(" ☠️","")}</span><strong>${row.cleared}/${row.total}</strong></div>`;
