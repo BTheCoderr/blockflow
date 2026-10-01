@@ -1,6 +1,73 @@
 const ALL_LEVELS = [
   {
     "difficulty": "easy",
+    "name": "Glass Lane",
+    "cols": 6,
+    "rows": 5,
+    "par": 5,
+    "time": 44,
+    "mechanics": [
+      "Ice ❄"
+    ],
+    "hint": "Ice does the travel for you. Line it up once, then let it slide.",
+    "ice": [
+      {
+        "x": 2,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 4,
+        "y": 2
+      }
+    ],
+    "blocks": [
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 4
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 4,
+        "y": 0
+      }
+    ],
+    "gates": [
+      {
+        "color": "blue",
+        "x": 5,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "red",
+        "x": 0,
+        "y": 4,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 4,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "glass-lane"
+  },
+  {
+    "difficulty": "easy",
     "name": "Ice Break",
     "cols": 6,
     "rows": 5,
@@ -65,6 +132,60 @@ const ALL_LEVELS = [
       }
     ],
     "id": "ice-break"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Clean Sweep",
+    "cols": 5,
+    "rows": 5,
+    "par": 6,
+    "time": 42,
+    "mechanics": [
+      "Slide",
+      "Match"
+    ],
+    "hint": "Three short routes. Clear the middle lane before it becomes traffic.",
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 1
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 3,
+        "y": 2
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 3
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 0,
+        "y": 1,
+        "dir": "left"
+      },
+      {
+        "color": "blue",
+        "x": 4,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 4,
+        "dir": "down"
+      }
+    ],
+    "id": "clean-sweep"
   },
   {
     "difficulty": "easy",
@@ -138,6 +259,129 @@ const ALL_LEVELS = [
       }
     ],
     "id": "corner-cut"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Long Turn",
+    "cols": 6,
+    "rows": 6,
+    "par": 6,
+    "time": 48,
+    "mechanics": [
+      "Long blocks"
+    ],
+    "hint": "Long pieces need a clean lane. Move the small block out of the way first.",
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2,
+        "w": 2,
+        "h": 1
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 4,
+        "y": 3,
+        "w": 1,
+        "h": 2
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 4
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 0,
+        "y": 2,
+        "dir": "left"
+      },
+      {
+        "color": "blue",
+        "x": 4,
+        "y": 5,
+        "dir": "down"
+      },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 5,
+        "dir": "down"
+      }
+    ],
+    "id": "long-turn"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Pocket Portal",
+    "cols": 6,
+    "rows": 6,
+    "par": 6,
+    "time": 46,
+    "mechanics": [
+      "Portal ◎"
+    ],
+    "hint": "The portal skips the center. Keep its landing spot open.",
+    "portals": [
+      {
+        "id": "A",
+        "a": {
+          "x": 2,
+          "y": 4
+        },
+        "b": {
+          "x": 4,
+          "y": 1
+        }
+      }
+    ],
+    "blocks": [
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 1,
+        "y": 4
+      },
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 1
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 3,
+        "y": 5
+      }
+    ],
+    "gates": [
+      {
+        "color": "green",
+        "x": 5,
+        "y": 1,
+        "dir": "right"
+      },
+      {
+        "color": "red",
+        "x": 0,
+        "y": 1,
+        "dir": "left"
+      },
+      {
+        "color": "yellow",
+        "x": 3,
+        "y": 5,
+        "dir": "down"
+      }
+    ],
+    "id": "pocket-portal"
   },
   {
     "difficulty": "easy",
@@ -404,6 +648,77 @@ const ALL_LEVELS = [
       }
     ],
     "id": "warp-101"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Color Queue",
+    "cols": 6,
+    "rows": 6,
+    "par": 7,
+    "time": 54,
+    "mechanics": [
+      "Exit order"
+    ],
+    "hint": "Every exit is close. The trick is sending colors in the right order.",
+    "exitOrder": [
+      "green",
+      "blue",
+      "red",
+      "yellow"
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 4,
+        "y": 1
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 3,
+        "y": 4
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 5,
+        "y": 3
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 0,
+        "y": 2,
+        "dir": "left"
+      },
+      {
+        "color": "blue",
+        "x": 4,
+        "y": 0,
+        "dir": "up"
+      },
+      {
+        "color": "green",
+        "x": 3,
+        "y": 5,
+        "dir": "down"
+      },
+      {
+        "color": "yellow",
+        "x": 5,
+        "y": 3,
+        "dir": "right"
+      }
+    ],
+    "id": "color-queue"
   },
   {
     "difficulty": "easy",
@@ -837,6 +1152,74 @@ const ALL_LEVELS = [
     "id": "the-lane"
   },
   {
+    "difficulty": "easy",
+    "name": "Two Doors",
+    "cols": 6,
+    "rows": 6,
+    "par": 9,
+    "time": 48,
+    "mechanics": [
+      "Switch ◆",
+      "Barrier ▥"
+    ],
+    "hint": "Hit the switch first. The opened lane stays open.",
+    "switches": [
+      {
+        "id": "A",
+        "x": 1,
+        "y": 4
+      }
+    ],
+    "barriers": [
+      {
+        "id": "A",
+        "x": 3,
+        "y": 2
+      }
+    ],
+    "blocks": [
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 1,
+        "y": 3
+      },
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 2,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 4,
+        "y": 4
+      }
+    ],
+    "gates": [
+      {
+        "color": "green",
+        "x": 1,
+        "y": 5,
+        "dir": "down"
+      },
+      {
+        "color": "red",
+        "x": 5,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 5,
+        "y": 4,
+        "dir": "right"
+      }
+    ],
+    "id": "two-doors"
+  },
+  {
     "difficulty": "intermediate",
     "name": "Blue First",
     "cols": 6,
@@ -1203,6 +1586,200 @@ const ALL_LEVELS = [
       }
     ],
     "id": "blocked-warp"
+  },
+  {
+    "difficulty": "intermediate",
+    "name": "Broken Bridge",
+    "cols": 8,
+    "rows": 7,
+    "par": 8,
+    "time": 72,
+    "mechanics": [
+      "Irregular board",
+      "Internal exits"
+    ],
+    "hint": "The missing strip is an edge. Some exits are inside the board, not around it.",
+    "voids": [
+      {
+        "x": 3,
+        "y": 0
+      },
+      {
+        "x": 4,
+        "y": 0
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 4,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 5
+      },
+      {
+        "x": 4,
+        "y": 5
+      },
+      {
+        "x": 3,
+        "y": 6
+      },
+      {
+        "x": 4,
+        "y": 6
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 1
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 6,
+        "y": 5
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 1,
+        "y": 5
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 6,
+        "y": 1
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 2,
+        "y": 1,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 5,
+        "y": 5,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 0,
+        "y": 5,
+        "dir": "left"
+      },
+      {
+        "color": "yellow",
+        "x": 7,
+        "y": 1,
+        "dir": "right"
+      }
+    ],
+    "id": "broken-bridge"
+  },
+  {
+    "difficulty": "intermediate",
+    "name": "Cold Queue",
+    "cols": 7,
+    "rows": 7,
+    "par": 8,
+    "time": 68,
+    "mechanics": [
+      "Ice ❄",
+      "Exit order"
+    ],
+    "hint": "The order is fixed. Use the ice lane without sending the wrong color too far.",
+    "exitOrder": [
+      "blue",
+      "green",
+      "red",
+      "yellow"
+    ],
+    "ice": [
+      {
+        "x": 1,
+        "y": 3
+      },
+      {
+        "x": 2,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 3
+      }
+    ],
+    "blocks": [
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 0,
+        "y": 3
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 5
+      },
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 1
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 5,
+        "y": 5
+      }
+    ],
+    "gates": [
+      {
+        "color": "blue",
+        "x": 6,
+        "y": 3,
+        "dir": "right"
+      },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 6,
+        "dir": "down"
+      },
+      {
+        "color": "red",
+        "x": 0,
+        "y": 1,
+        "dir": "left"
+      },
+      {
+        "color": "yellow",
+        "x": 5,
+        "y": 6,
+        "dir": "down"
+      }
+    ],
+    "id": "cold-queue"
   },
   {
     "difficulty": "intermediate",
@@ -1980,6 +2557,349 @@ const ALL_LEVELS = [
     "id": "thin-ice"
   },
   {
+    "difficulty": "intermediate",
+    "name": "Arrow Bend",
+    "cols": 7,
+    "rows": 7,
+    "par": 12,
+    "time": 70,
+    "mechanics": [
+      "One-way →",
+      "Traffic"
+    ],
+    "hint": "Once a block sits on an arrow, your next move is committed.",
+    "oneWays": [
+      {
+        "x": 2,
+        "y": 4,
+        "dir": "up"
+      },
+      {
+        "x": 4,
+        "y": 2,
+        "dir": "right"
+      }
+    ],
+    "walls": [
+      {
+        "x": 3,
+        "y": 3
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 2,
+        "y": 4
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 4,
+        "y": 2
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 1,
+        "y": 5
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 5,
+        "y": 1
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 2,
+        "y": 0,
+        "dir": "up"
+      },
+      {
+        "color": "blue",
+        "x": 6,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "green",
+        "x": 0,
+        "y": 5,
+        "dir": "left"
+      },
+      {
+        "color": "yellow",
+        "x": 5,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "arrow-bend"
+  },
+  {
+    "difficulty": "intermediate",
+    "name": "Cross Current",
+    "cols": 7,
+    "rows": 7,
+    "par": 16,
+    "time": 62,
+    "mechanics": [
+      "Traffic",
+      "Corridors"
+    ],
+    "hint": "The center belongs to everyone. Move one color aside before sending another through.",
+    "walls": [
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 5
+      },
+      {
+        "x": 1,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 3
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 5,
+        "y": 4
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 5
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 4,
+        "y": 1
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 6,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 4,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 6,
+        "dir": "down"
+      },
+      {
+        "color": "yellow",
+        "x": 4,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "cross-current"
+  },
+  {
+    "difficulty": "intermediate",
+    "name": "Double Warp",
+    "cols": 7,
+    "rows": 7,
+    "par": 16,
+    "time": 66,
+    "mechanics": [
+      "2 portals",
+      "Traffic"
+    ],
+    "hint": "Two portals create shortcuts — and two places you can accidentally block.",
+    "portals": [
+      {
+        "id": "A",
+        "a": {
+          "x": 1,
+          "y": 5
+        },
+        "b": {
+          "x": 5,
+          "y": 1
+        }
+      },
+      {
+        "id": "B",
+        "a": {
+          "x": 1,
+          "y": 1
+        },
+        "b": {
+          "x": 5,
+          "y": 5
+        }
+      }
+    ],
+    "walls": [
+      {
+        "x": 3,
+        "y": 3
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 4
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 5,
+        "y": 2
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 5,
+        "y": 4
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 6,
+        "y": 1,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 5,
+        "y": 0,
+        "dir": "up"
+      },
+      {
+        "color": "green",
+        "x": 6,
+        "y": 5,
+        "dir": "right"
+      },
+      {
+        "color": "yellow",
+        "x": 5,
+        "y": 6,
+        "dir": "down"
+      }
+    ],
+    "id": "double-warp"
+  },
+  {
+    "difficulty": "intermediate",
+    "name": "Gate Relay",
+    "cols": 7,
+    "rows": 7,
+    "par": 16,
+    "time": 64,
+    "mechanics": [
+      "Switch ◆",
+      "Barrier ▥",
+      "Traffic"
+    ],
+    "hint": "One block has to detour through the switch before the direct lane becomes useful.",
+    "switches": [
+      {
+        "id": "A",
+        "x": 1,
+        "y": 5
+      }
+    ],
+    "barriers": [
+      {
+        "id": "A",
+        "x": 4,
+        "y": 2
+      }
+    ],
+    "walls": [
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 4
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 2,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 5,
+        "y": 4
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 1,
+        "y": 4
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 6,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 4,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 1,
+        "y": 6,
+        "dir": "down"
+      }
+    ],
+    "id": "gate-relay"
+  },
+  {
     "difficulty": "hard",
     "name": "Backtrack Bay",
     "cols": 8,
@@ -2500,6 +3420,118 @@ const ALL_LEVELS = [
       }
     ],
     "id": "double-lock"
+  },
+  {
+    "difficulty": "hard",
+    "name": "Frozen Lock",
+    "cols": 9,
+    "rows": 9,
+    "par": 16,
+    "time": 114,
+    "mechanics": [
+      "Ice ❄",
+      "Switch ◆",
+      "Barrier ▥",
+      "Exit order"
+    ],
+    "hint": "The ice can open the lock, but the required exit order means timing matters.",
+    "exitOrder": [
+      "green",
+      "blue",
+      "red",
+      "yellow"
+    ],
+    "ice": [
+      {
+        "x": 1,
+        "y": 4
+      },
+      {
+        "x": 2,
+        "y": 4
+      },
+      {
+        "x": 3,
+        "y": 4
+      }
+    ],
+    "switches": [
+      {
+        "id": "A",
+        "x": 3,
+        "y": 4
+      }
+    ],
+    "barriers": [
+      {
+        "id": "A",
+        "x": 6,
+        "y": 2
+      }
+    ],
+    "walls": [
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 5
+      }
+    ],
+    "blocks": [
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 0,
+        "y": 4
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 6,
+        "y": 6
+      },
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 5,
+        "y": 2
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 2,
+        "y": 6
+      }
+    ],
+    "gates": [
+      {
+        "color": "green",
+        "x": 8,
+        "y": 4,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 6,
+        "y": 8,
+        "dir": "down"
+      },
+      {
+        "color": "red",
+        "x": 8,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "yellow",
+        "x": 2,
+        "y": 8,
+        "dir": "down"
+      }
+    ],
+    "id": "frozen-lock"
   },
   {
     "difficulty": "hard",
@@ -3157,6 +4189,104 @@ const ALL_LEVELS = [
   },
   {
     "difficulty": "hard",
+    "name": "Portal Freight",
+    "cols": 9,
+    "rows": 9,
+    "par": 22,
+    "time": 112,
+    "mechanics": [
+      "Portal ◎",
+      "Long blocks",
+      "Traffic"
+    ],
+    "hint": "The portal moves only the small pieces. Use them to clear lanes for the freight blocks.",
+    "portals": [
+      {
+        "id": "A",
+        "a": {
+          "x": 2,
+          "y": 7
+        },
+        "b": {
+          "x": 7,
+          "y": 2
+        }
+      }
+    ],
+    "walls": [
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 4
+      },
+      {
+        "x": 4,
+        "y": 5
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2,
+        "w": 2,
+        "h": 1
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 6,
+        "y": 6,
+        "w": 2,
+        "h": 1
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 6
+      },
+      {
+        "id": "p1",
+        "color": "purple",
+        "x": 6,
+        "y": 2
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 8,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 6,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 8,
+        "dir": "down"
+      },
+      {
+        "color": "purple",
+        "x": 6,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "portal-freight"
+  },
+  {
+    "difficulty": "hard",
     "name": "Switchback",
     "cols": 8,
     "rows": 8,
@@ -3257,6 +4387,547 @@ const ALL_LEVELS = [
       }
     ],
     "id": "switchback"
+  },
+  {
+    "difficulty": "hard",
+    "name": "Switch Maze",
+    "cols": 9,
+    "rows": 9,
+    "par": 24,
+    "time": 110,
+    "mechanics": [
+      "2 switches",
+      "2 barriers",
+      "Traffic"
+    ],
+    "hint": "Each door opens from the other side. Plan where every color parks before crossing.",
+    "switches": [
+      {
+        "id": "A",
+        "x": 1,
+        "y": 7
+      },
+      {
+        "id": "B",
+        "x": 7,
+        "y": 1
+      }
+    ],
+    "barriers": [
+      {
+        "id": "A",
+        "x": 5,
+        "y": 2
+      },
+      {
+        "id": "B",
+        "x": 3,
+        "y": 6
+      }
+    ],
+    "walls": [
+      {
+        "x": 4,
+        "y": 1
+      },
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 4
+      },
+      {
+        "x": 4,
+        "y": 5
+      },
+      {
+        "x": 4,
+        "y": 7
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 2,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 6,
+        "y": 6
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 6
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 6,
+        "y": 2
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 8,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 6,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 8,
+        "dir": "down"
+      },
+      {
+        "color": "yellow",
+        "x": 6,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "switch-maze"
+  },
+  {
+    "difficulty": "hard",
+    "name": "Three Keys",
+    "cols": 10,
+    "rows": 9,
+    "par": 26,
+    "time": 120,
+    "mechanics": [
+      "3 switches",
+      "3 barriers"
+    ],
+    "hint": "Three keys control three lanes. Opening them in the wrong order creates its own blockade.",
+    "switches": [
+      {
+        "id": "A",
+        "x": 1,
+        "y": 7
+      },
+      {
+        "id": "B",
+        "x": 8,
+        "y": 1
+      },
+      {
+        "id": "C",
+        "x": 2,
+        "y": 1
+      }
+    ],
+    "barriers": [
+      {
+        "id": "A",
+        "x": 6,
+        "y": 2
+      },
+      {
+        "id": "B",
+        "x": 3,
+        "y": 6
+      },
+      {
+        "id": "C",
+        "x": 5,
+        "y": 4
+      }
+    ],
+    "walls": [
+      {
+        "x": 4,
+        "y": 2
+      },
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 5
+      },
+      {
+        "x": 4,
+        "y": 6
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 2,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 7,
+        "y": 6
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 6
+      },
+      {
+        "id": "p1",
+        "color": "purple",
+        "x": 7,
+        "y": 2
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 9,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 6,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 8,
+        "dir": "down"
+      },
+      {
+        "color": "purple",
+        "x": 7,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "three-keys"
+  },
+  {
+    "difficulty": "hard",
+    "name": "One-Way Relay",
+    "cols": 9,
+    "rows": 9,
+    "par": 28,
+    "time": 120,
+    "mechanics": [
+      "One-way →",
+      "Exit order",
+      "Traffic"
+    ],
+    "hint": "The arrows lock your next move. Stage the board before touching them.",
+    "exitOrder": [
+      "blue",
+      "green",
+      "yellow",
+      "red"
+    ],
+    "oneWays": [
+      {
+        "x": 2,
+        "y": 6,
+        "dir": "up"
+      },
+      {
+        "x": 6,
+        "y": 2,
+        "dir": "left"
+      },
+      {
+        "x": 6,
+        "y": 6,
+        "dir": "down"
+      }
+    ],
+    "walls": [
+      {
+        "x": 4,
+        "y": 2
+      },
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 5
+      },
+      {
+        "x": 4,
+        "y": 6
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 2,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 6,
+        "y": 2
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 6
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 6,
+        "y": 6
+      }
+    ],
+    "gates": [
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 2,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 0,
+        "dir": "up"
+      },
+      {
+        "color": "yellow",
+        "x": 6,
+        "y": 8,
+        "dir": "down"
+      },
+      {
+        "color": "red",
+        "x": 8,
+        "y": 2,
+        "dir": "right"
+      }
+    ],
+    "id": "one-way-relay"
+  },
+  {
+    "difficulty": "hard",
+    "name": "Long Detour",
+    "cols": 10,
+    "rows": 9,
+    "par": 34,
+    "time": 122,
+    "mechanics": [
+      "Long blocks",
+      "Corridors",
+      "Exit order"
+    ],
+    "hint": "Freight pieces must take the long way around the center walls. Keep the turning bays open.",
+    "exitOrder": [
+      "purple",
+      "green",
+      "blue",
+      "red"
+    ],
+    "walls": [
+      {
+        "x": 4,
+        "y": 2
+      },
+      {
+        "x": 5,
+        "y": 2
+      },
+      {
+        "x": 4,
+        "y": 6
+      },
+      {
+        "x": 5,
+        "y": 6
+      },
+      {
+        "x": 4,
+        "y": 4
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2,
+        "w": 2,
+        "h": 1
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 7,
+        "y": 6,
+        "w": 2,
+        "h": 1
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 6,
+        "w": 1,
+        "h": 2
+      },
+      {
+        "id": "p1",
+        "color": "purple",
+        "x": 7,
+        "y": 1,
+        "w": 1,
+        "h": 2
+      }
+    ],
+    "gates": [
+      {
+        "color": "purple",
+        "x": 7,
+        "y": 8,
+        "dir": "down"
+      },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 0,
+        "dir": "up"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 6,
+        "dir": "left"
+      },
+      {
+        "color": "red",
+        "x": 9,
+        "y": 2,
+        "dir": "right"
+      }
+    ],
+    "id": "long-detour"
+  },
+  {
+    "difficulty": "hard",
+    "name": "Crossed Orders",
+    "cols": 9,
+    "rows": 9,
+    "par": 40,
+    "time": 116,
+    "mechanics": [
+      "Exit order",
+      "Traffic",
+      "Corridors"
+    ],
+    "hint": "The exit order sends colors across one another. Save the center for the piece that needs it next.",
+    "exitOrder": [
+      "yellow",
+      "blue",
+      "green",
+      "red"
+    ],
+    "walls": [
+      {
+        "x": 4,
+        "y": 1
+      },
+      {
+        "x": 4,
+        "y": 2
+      },
+      {
+        "x": 4,
+        "y": 6
+      },
+      {
+        "x": 4,
+        "y": 7
+      },
+      {
+        "x": 2,
+        "y": 4
+      },
+      {
+        "x": 6,
+        "y": 4
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 7,
+        "y": 2
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 1,
+        "y": 6
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 7,
+        "y": 6
+      }
+    ],
+    "gates": [
+      {
+        "color": "yellow",
+        "x": 0,
+        "y": 6,
+        "dir": "left"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 2,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 8,
+        "y": 6,
+        "dir": "right"
+      },
+      {
+        "color": "red",
+        "x": 8,
+        "y": 2,
+        "dir": "right"
+      }
+    ],
+    "id": "crossed-orders"
   },
   {
     "difficulty": "extreme",
@@ -4120,6 +5791,130 @@ const ALL_LEVELS = [
   },
   {
     "difficulty": "extreme",
+    "name": "Vault Circuit",
+    "cols": 10,
+    "rows": 10,
+    "par": 30,
+    "time": 166,
+    "mechanics": [
+      "2 switches",
+      "2 barriers",
+      "Exit order",
+      "Traffic"
+    ],
+    "hint": "Both vault doors open from opposite sides. The exit order forces you to reuse the center twice.",
+    "exitOrder": [
+      "green",
+      "purple",
+      "blue",
+      "red"
+    ],
+    "switches": [
+      {
+        "id": "A",
+        "x": 1,
+        "y": 8
+      },
+      {
+        "id": "B",
+        "x": 8,
+        "y": 1
+      }
+    ],
+    "barriers": [
+      {
+        "id": "A",
+        "x": 6,
+        "y": 2
+      },
+      {
+        "id": "B",
+        "x": 3,
+        "y": 7
+      }
+    ],
+    "walls": [
+      {
+        "x": 5,
+        "y": 1
+      },
+      {
+        "x": 5,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 4
+      },
+      {
+        "x": 5,
+        "y": 5
+      },
+      {
+        "x": 5,
+        "y": 6
+      },
+      {
+        "x": 5,
+        "y": 8
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 2,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 7,
+        "y": 7
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 7
+      },
+      {
+        "id": "p1",
+        "color": "purple",
+        "x": 7,
+        "y": 2
+      }
+    ],
+    "gates": [
+      {
+        "color": "green",
+        "x": 9,
+        "y": 7,
+        "dir": "right"
+      },
+      {
+        "color": "purple",
+        "x": 0,
+        "y": 2,
+        "dir": "left"
+      },
+      {
+        "color": "blue",
+        "x": 9,
+        "y": 7,
+        "dir": "right"
+      },
+      {
+        "color": "red",
+        "x": 0,
+        "y": 2,
+        "dir": "left"
+      }
+    ],
+    "id": "vault-circuit"
+  },
+  {
+    "difficulty": "extreme",
     "name": "Frozen Maze",
     "cols": 10,
     "rows": 9,
@@ -4563,6 +6358,404 @@ const ALL_LEVELS = [
   },
   {
     "difficulty": "extreme",
+    "name": "Portal Prison",
+    "cols": 10,
+    "rows": 10,
+    "par": 40,
+    "time": 170,
+    "mechanics": [
+      "2 portals",
+      "Corridors",
+      "Exit order"
+    ],
+    "hint": "The walls split the board into prison lanes. Portals are the only fast transfer between them.",
+    "exitOrder": [
+      "yellow",
+      "green",
+      "blue",
+      "red"
+    ],
+    "portals": [
+      {
+        "id": "A",
+        "a": {
+          "x": 2,
+          "y": 8
+        },
+        "b": {
+          "x": 8,
+          "y": 1
+        }
+      },
+      {
+        "id": "B",
+        "a": {
+          "x": 1,
+          "y": 1
+        },
+        "b": {
+          "x": 7,
+          "y": 8
+        }
+      }
+    ],
+    "walls": [
+      {
+        "x": 4,
+        "y": 1
+      },
+      {
+        "x": 4,
+        "y": 2
+      },
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 4
+      },
+      {
+        "x": 4,
+        "y": 6
+      },
+      {
+        "x": 4,
+        "y": 7
+      },
+      {
+        "x": 4,
+        "y": 8
+      },
+      {
+        "x": 6,
+        "y": 2
+      },
+      {
+        "x": 6,
+        "y": 3
+      },
+      {
+        "x": 6,
+        "y": 6
+      },
+      {
+        "x": 6,
+        "y": 7
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 8,
+        "y": 2
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 1,
+        "y": 7
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 8,
+        "y": 7
+      }
+    ],
+    "gates": [
+      {
+        "color": "yellow",
+        "x": 0,
+        "y": 7,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 9,
+        "y": 7,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 2,
+        "dir": "left"
+      },
+      {
+        "color": "red",
+        "x": 9,
+        "y": 2,
+        "dir": "right"
+      }
+    ],
+    "id": "portal-prison"
+  },
+  {
+    "difficulty": "extreme",
+    "name": "Frozen Exchange",
+    "cols": 10,
+    "rows": 10,
+    "par": 41,
+    "time": 174,
+    "mechanics": [
+      "Ice ❄",
+      "Exit order",
+      "Traffic"
+    ],
+    "hint": "Two ice lanes cross the traffic pattern. Commit to a slide only when its landing zone is ready.",
+    "exitOrder": [
+      "blue",
+      "green",
+      "yellow",
+      "red"
+    ],
+    "ice": [
+      {
+        "x": 1,
+        "y": 4
+      },
+      {
+        "x": 2,
+        "y": 4
+      },
+      {
+        "x": 3,
+        "y": 4
+      },
+      {
+        "x": 6,
+        "y": 5
+      },
+      {
+        "x": 7,
+        "y": 5
+      },
+      {
+        "x": 8,
+        "y": 5
+      }
+    ],
+    "walls": [
+      {
+        "x": 4,
+        "y": 2
+      },
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 6
+      },
+      {
+        "x": 5,
+        "y": 7
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 8,
+        "y": 2
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 1,
+        "y": 7
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 8,
+        "y": 7
+      }
+    ],
+    "gates": [
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 2,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 9,
+        "y": 7,
+        "dir": "right"
+      },
+      {
+        "color": "yellow",
+        "x": 0,
+        "y": 7,
+        "dir": "left"
+      },
+      {
+        "color": "red",
+        "x": 9,
+        "y": 2,
+        "dir": "right"
+      }
+    ],
+    "id": "frozen-exchange"
+  },
+  {
+    "difficulty": "extreme",
+    "name": "Final Relay",
+    "cols": 11,
+    "rows": 10,
+    "par": 44,
+    "time": 196,
+    "mechanics": [
+      "Portal ◎",
+      "2 switches",
+      "2 barriers",
+      "Exit order",
+      "Long blocks"
+    ],
+    "hint": "Everything you learned is here. Open both lanes, preserve the portal, then clear the freight in sequence.",
+    "exitOrder": [
+      "green",
+      "purple",
+      "blue",
+      "red"
+    ],
+    "portals": [
+      {
+        "id": "A",
+        "a": {
+          "x": 3,
+          "y": 8
+        },
+        "b": {
+          "x": 8,
+          "y": 1
+        }
+      }
+    ],
+    "switches": [
+      {
+        "id": "A",
+        "x": 2,
+        "y": 8
+      },
+      {
+        "id": "B",
+        "x": 9,
+        "y": 1
+      }
+    ],
+    "barriers": [
+      {
+        "id": "A",
+        "x": 7,
+        "y": 2
+      },
+      {
+        "id": "B",
+        "x": 4,
+        "y": 7
+      }
+    ],
+    "walls": [
+      {
+        "x": 5,
+        "y": 2
+      },
+      {
+        "x": 5,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 4
+      },
+      {
+        "x": 5,
+        "y": 6
+      },
+      {
+        "x": 5,
+        "y": 7
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2,
+        "w": 2,
+        "h": 1
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 8,
+        "y": 7,
+        "w": 2,
+        "h": 1
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 7
+      },
+      {
+        "id": "p1",
+        "color": "purple",
+        "x": 8,
+        "y": 2
+      }
+    ],
+    "gates": [
+      {
+        "color": "green",
+        "x": 10,
+        "y": 7,
+        "dir": "right"
+      },
+      {
+        "color": "purple",
+        "x": 0,
+        "y": 2,
+        "dir": "left"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 7,
+        "dir": "left"
+      },
+      {
+        "color": "red",
+        "x": 10,
+        "y": 2,
+        "dir": "right"
+      }
+    ],
+    "id": "final-relay"
+  },
+  {
+    "difficulty": "extreme",
     "name": "Maze Exchange",
     "cols": 10,
     "rows": 10,
@@ -4687,6 +6880,304 @@ const ALL_LEVELS = [
       }
     ],
     "id": "maze-exchange"
+  },
+  {
+    "difficulty": "extreme",
+    "name": "Five Locks",
+    "cols": 10,
+    "rows": 10,
+    "par": 49,
+    "time": 186,
+    "mechanics": [
+      "3 switches",
+      "3 barriers",
+      "5 blocks",
+      "Exit order"
+    ],
+    "hint": "Three locks and five colors share the same crossing. Every parking move matters.",
+    "exitOrder": [
+      "purple",
+      "green",
+      "yellow",
+      "blue",
+      "red"
+    ],
+    "switches": [
+      {
+        "id": "A",
+        "x": 1,
+        "y": 8
+      },
+      {
+        "id": "B",
+        "x": 8,
+        "y": 1
+      },
+      {
+        "id": "C",
+        "x": 2,
+        "y": 1
+      }
+    ],
+    "barriers": [
+      {
+        "id": "A",
+        "x": 6,
+        "y": 2
+      },
+      {
+        "id": "B",
+        "x": 3,
+        "y": 7
+      },
+      {
+        "id": "C",
+        "x": 5,
+        "y": 5
+      }
+    ],
+    "walls": [
+      {
+        "x": 4,
+        "y": 2
+      },
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 6
+      },
+      {
+        "x": 4,
+        "y": 7
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 2,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 7,
+        "y": 7
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 7
+      },
+      {
+        "id": "p1",
+        "color": "purple",
+        "x": 7,
+        "y": 2
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 6,
+        "y": 6
+      }
+    ],
+    "gates": [
+      {
+        "color": "purple",
+        "x": 0,
+        "y": 2,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 9,
+        "y": 7,
+        "dir": "right"
+      },
+      {
+        "color": "yellow",
+        "x": 0,
+        "y": 6,
+        "dir": "left"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 7,
+        "dir": "left"
+      },
+      {
+        "color": "red",
+        "x": 9,
+        "y": 2,
+        "dir": "right"
+      }
+    ],
+    "id": "five-locks"
+  },
+  {
+    "difficulty": "extreme",
+    "name": "Spiral Order",
+    "cols": 10,
+    "rows": 10,
+    "par": 52,
+    "time": 184,
+    "mechanics": [
+      "Corridors",
+      "Exit order",
+      "Traffic"
+    ],
+    "hint": "Trace the spiral before moving. The required order sends multiple colors through the same turning bays.",
+    "exitOrder": [
+      "yellow",
+      "green",
+      "blue",
+      "red"
+    ],
+    "walls": [
+      {
+        "x": 2,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 4,
+        "y": 1
+      },
+      {
+        "x": 5,
+        "y": 1
+      },
+      {
+        "x": 6,
+        "y": 1
+      },
+      {
+        "x": 7,
+        "y": 1
+      },
+      {
+        "x": 7,
+        "y": 2
+      },
+      {
+        "x": 7,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 4
+      },
+      {
+        "x": 2,
+        "y": 4
+      },
+      {
+        "x": 3,
+        "y": 4
+      },
+      {
+        "x": 4,
+        "y": 4
+      },
+      {
+        "x": 5,
+        "y": 4
+      },
+      {
+        "x": 2,
+        "y": 5
+      },
+      {
+        "x": 2,
+        "y": 6
+      },
+      {
+        "x": 2,
+        "y": 7
+      },
+      {
+        "x": 3,
+        "y": 8
+      },
+      {
+        "x": 4,
+        "y": 8
+      },
+      {
+        "x": 5,
+        "y": 8
+      },
+      {
+        "x": 6,
+        "y": 8
+      },
+      {
+        "x": 7,
+        "y": 8
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 8,
+        "y": 7
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 1,
+        "y": 7
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 8,
+        "y": 2
+      }
+    ],
+    "gates": [
+      {
+        "color": "yellow",
+        "x": 0,
+        "y": 2,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 9,
+        "y": 7,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 7,
+        "dir": "left"
+      },
+      {
+        "color": "red",
+        "x": 9,
+        "y": 2,
+        "dir": "right"
+      }
+    ],
+    "id": "spiral-order"
   }
 ];
 
