@@ -4,12 +4,12 @@
 
 Block Flow is a mobile-first color-routing puzzle game built to stay approachable without becoming repetitive. Puzzle difficulty is separate from pressure: players can tackle Easy, Intermediate, Hard, or Extreme puzzles in Chill, Classic, or Rush mode.
 
-## Current build — 50-level milestone
+## Current build — 75-level milestone
 
-- 50 solver-verified levels: 13 Easy, 13 Intermediate, 12 Hard, 12 Extreme
+- 75 solver-verified levels: 19 Easy, 19 Intermediate, 19 Hard, 18 Extreme
 - A* level solver verifies solvability and exact Perfect move counts
 - Difficulty curve follows real solution depth instead of visual complexity alone
-- Native-style home screen with overall progress, stars, Perfect clears, and Continue
+- Native-style home screen with overall progress, Flow Rank, milestone rewards, stars, Perfect clears, and Continue
 - Pause menu with Resume, Restart, Level Select, and Home
 - Exact puzzle-state resume after refresh/backgrounding, including Undo history
 - First-run drag onboarding plus one-time mechanic introductions
@@ -24,7 +24,7 @@ Block Flow is a mobile-first color-routing puzzle game built to stay approachabl
 - Persistent switches and barriers
 - One-way tiles
 - Required exit-order puzzles
-- Multi-mechanic Hard and Extreme boards
+- Multi-mechanic Hard and Extreme boards, including 40–52 move solver-optimal challenges
 - Chill / Classic / Rush pressure modes
 - Undo and instant restart
 - Colorblind patterns, haptics, and lightweight sound feedback
