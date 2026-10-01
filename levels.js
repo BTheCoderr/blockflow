@@ -647,7 +647,8 @@ const ALL_LEVELS = [
         "dir": "down"
       }
     ],
-    "id": "warp-101"
+    "id": "warp-101",
+    "boss": true
   },
   {
     "difficulty": "easy",
@@ -1217,7 +1218,8 @@ const ALL_LEVELS = [
         "dir": "right"
       }
     ],
-    "id": "two-doors"
+    "id": "two-doors",
+    "boss": true
   },
   {
     "difficulty": "intermediate",
@@ -2105,7 +2107,8 @@ const ALL_LEVELS = [
         "dir": "left"
       }
     ],
-    "id": "false-start"
+    "id": "false-start",
+    "boss": true
   },
   {
     "difficulty": "intermediate",
@@ -2897,7 +2900,8 @@ const ALL_LEVELS = [
         "dir": "down"
       }
     ],
-    "id": "gate-relay"
+    "id": "gate-relay",
+    "boss": true
   },
   {
     "difficulty": "hard",
@@ -3964,7 +3968,8 @@ const ALL_LEVELS = [
         "dir": "right"
       }
     ],
-    "id": "arrow-circuit"
+    "id": "arrow-circuit",
+    "boss": true
   },
   {
     "difficulty": "hard",
@@ -4927,7 +4932,8 @@ const ALL_LEVELS = [
         "dir": "right"
       }
     ],
-    "id": "crossed-orders"
+    "id": "crossed-orders",
+    "boss": true
   },
   {
     "difficulty": "extreme",
@@ -6132,7 +6138,8 @@ const ALL_LEVELS = [
         "dir": "left"
       }
     ],
-    "id": "four-corners"
+    "id": "four-corners",
+    "boss": true
   },
   {
     "difficulty": "extreme",
@@ -7177,7 +7184,8 @@ const ALL_LEVELS = [
         "dir": "right"
       }
     ],
-    "id": "spiral-order"
+    "id": "spiral-order",
+    "boss": true
   }
 ];
 
