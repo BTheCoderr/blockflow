@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-10-01T20:57:28.979Z",
+  "generatedAt": "2026-10-01T20:58:06.337Z",
   "engine": "BlockFlow solver v2 A*",
-  "stateLimit": 500000,
+  "stateLimit": 750000,
   "total": 24,
   "solved": 24,
   "unresolved": 0,
