@@ -55,7 +55,7 @@ function rows() { return level().rows || 6; }
 function list(name) { return level()[name] || []; }
 
 function bestFor(index) {
-  const raw = localStorage.getItem(`bf-best-${ACTIVE_DIFFICULTY}-${index}`);
+  const raw = localStorage.getItem(`bf-best-${LEVELS[index].id}`);
   if (raw == null) return null;
   const value = Number(raw);
   return Number.isFinite(value) ? value : null;
@@ -366,7 +366,7 @@ function checkWin() {
   els.winSummary.textContent=delta<=0?"Perfect flow. No wasted moves.":`Cleared in ${state.moves} moves.`;
   els.yourMoves.textContent=state.moves; els.perfectMoves.textContent=target;
   els.win.classList.remove("hidden");
-  const bestKey=`bf-best-${ACTIVE_DIFFICULTY}-${state.levelIndex}`;
+  const bestKey=`bf-best-${level().id}`;
   const oldBest=Number(localStorage.getItem(bestKey)||9999);
   if (state.moves<oldBest) localStorage.setItem(bestKey,String(state.moves));
   localStorage.setItem(`bf-complete-${ACTIVE_DIFFICULTY}-${state.levelIndex}`, "1");
