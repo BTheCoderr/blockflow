@@ -900,8 +900,14 @@ function renderAll() {
   els.progressText.textContent = `${state.levelIndex + 1} / ${LEVELS.length}`;
   els.progressFill.style.width = `${((state.levelIndex + 1) / LEVELS.length) * 100}%`;
   els.accessibility.classList.toggle("on", state.colorblind);
+  els.accessibility.setAttribute("aria-pressed",state.colorblind?"true":"false");
   els.sound.classList.toggle("on", state.sound);
-  document.querySelectorAll(".mode-chip").forEach(b => b.classList.toggle("active", b.dataset.mode === state.mode));
+  els.sound.setAttribute("aria-pressed",state.sound?"true":"false");
+  document.querySelectorAll(".mode-chip").forEach(b => {
+    const active=b.dataset.mode===state.mode;
+    b.classList.toggle("active",active);
+    b.setAttribute("aria-pressed",active?"true":"false");
+  });
   if (els.mechanics) {
     els.mechanics.innerHTML = (l.mechanics || ["Slide"]).map(m => `<span>${m}</span>`).join("");
   }
