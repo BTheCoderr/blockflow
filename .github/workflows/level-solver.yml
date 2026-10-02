@@ -1,30 +1,36 @@
-name: Level Solver
+name: BlockFlow CI
 
 on:
   push:
     branches: [main]
-    paths:
-      - "levels.js"
-      - "tools/solve-levels.mjs"
-      - "tools/validate-levels.mjs"
-      - ".github/workflows/level-solver.yml"
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  solve:
+  verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
+      - name: Check JavaScript syntax
+        run: |
+          node --check app.js
+          node --check difficulty.js
+          node --check state-core.js
+      - name: Validate app shell
+        run: node tools/validate-app.mjs
+      - name: Run state regression tests
+        run: node tools/test-app-state.mjs
       - name: Validate level structure
         run: node tools/validate-levels.mjs
-      - name: Solve every level
+      - name: Solve every level and boss phase
         run: node tools/solve-levels.mjs --json solver-results-ci.json --strict
       - name: Upload solver report
         uses: actions/upload-artifact@v4
