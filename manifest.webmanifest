@@ -1,10 +1,31 @@
 {
+  "id": "./",
   "name": "Block Flow",
   "short_name": "Block Flow",
-  "description": "Move. Match. Escape. A clean color-routing puzzle with no lives and no paywall puzzles.",
-  "start_url": ".",
+  "description": "Move. Match. Escape. A mobile-first color-routing puzzle with timed modes, boss phases, and offline play.",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#07111f",
   "theme_color": "#0f172a",
-  "orientation": "portrait-primary"
+  "orientation": "portrait-primary",
+  "lang": "en-US",
+  "categories": [
+    "games",
+    "puzzle"
+  ],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
