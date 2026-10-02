@@ -4,6 +4,7 @@ import fs from "node:fs";
 const read=path=>fs.readFileSync(new URL(`../${path}`,import.meta.url),"utf8");
 const app=read("app.js");
 const core=read("state-core.js");
+const runtime=read("runtime-core.js");
 const difficulty=read("difficulty.js");
 const index=read("index.html");
 const sw=read("service-worker.js");
@@ -14,6 +15,7 @@ const privacy=read("privacy.html");
 
 new Function(app);
 new Function(core);
+new Function(runtime);
 new Function(difficulty);
 
 const ids=[...app.matchAll(/getElementById\("([^"]+)"\)/g)].map(match=>match[1]);
@@ -22,9 +24,11 @@ assert.deepEqual(missing,[],"Every JavaScript element reference must exist in in
 
 const appVersion=Number(index.match(/app\.js\?v=(\d+)/)?.[1]);
 const coreVersion=Number(index.match(/state-core\.js\?v=(\d+)/)?.[1]);
+const runtimeVersion=Number(index.match(/runtime-core\.js\?v=(\d+)/)?.[1]);
 const cacheVersion=Number(sw.match(/block-flow-v(\d+)/)?.[1]);
-assert.ok(appVersion && appVersion===coreVersion && appVersion===cacheVersion,"HTML and service-worker asset versions must match");
+assert.ok(appVersion && appVersion===coreVersion && appVersion===runtimeVersion && appVersion===cacheVersion,"HTML and service-worker asset versions must match");
 assert.ok(sw.includes(`state-core.js?v=${appVersion}`),"state-core must be cached offline");
+assert.ok(sw.includes(`runtime-core.js?v=${appVersion}`),"runtime-core must be cached offline");
 assert.ok(sw.includes("./support.html") && sw.includes("./privacy.html"),"Support and privacy pages must work offline");
 
 const patternMatch=app.match(/const PATTERNS = \{([^}]+)\}/);
