@@ -1203,60 +1203,93 @@ function undo() {
   renderAll();
   saveSession();
 }
+function showStoredResult() {
+  const result=state.lastResult;
+  if (!result) return;
+  els.stars.textContent=result.stars;
+  els.winTitle.textContent=result.title;
+  els.nextBtn.textContent=result.nextText;
+  els.winSummary.textContent=result.summary;
+  els.yourMoves.textContent=result.moves;
+  els.perfectMoves.textContent=result.target;
+  els.yourTime.textContent=result.yourTime;
+  els.bestTime.textContent=result.bestTime;
+  els.resultCallout.textContent=result.callout||"";
+  els.resultCallout.classList.toggle("hidden",!result.callout);
+  els.replayBtn.hidden=!result.replayAllowed;
+  els.win.classList.remove("hidden");
+  focusDialog(els.win);
+}
+
 function checkWin() {
   if (state.blocks.length || !state.running) return;
   if (advanceBossPhase()) return;
-  state.running=false; clearInterval(state.timerId);
+
+  stopClockAnchor();
+  state.running=false;
+  clearInterval(state.timerId);
   const target=totalPerfectFor(baseLevel()), delta=state.moves-target;
   const starCount=delta<=0?3:delta<=3?2:1;
   const solvedTime=Math.max(1,state.elapsedSeconds);
   const targetTime=timeTargetFor(baseLevel());
-  const bestKey=`bf-best-${level().id}`;
-  const timeKey=`bf-best-time-${level().id}`;
-  const oldBest=Number(localStorage.getItem(bestKey)||9999);
+  const bestKey=`bf-best-${baseLevel().id}`;
+  const timeKey=`bf-best-time-${baseLevel().id}`;
+  const oldBestRaw=localStorage.getItem(bestKey);
   const oldTimeRaw=localStorage.getItem(timeKey);
+  const oldBest=oldBestRaw==null?Infinity:Number(oldBestRaw);
   const oldTime=oldTimeRaw==null?Infinity:Number(oldTimeRaw);
   const newMoveBest=state.moves<oldBest;
   const newTimeBest=solvedTime<oldTime;
-  if (!state.run.active && newMoveBest) localStorage.setItem(bestKey,String(state.moves));
-  if (!state.run.active && newTimeBest) localStorage.setItem(timeKey,String(solvedTime));
+  const inRun=state.run.active;
 
-  if (state.run.active) {
+  if (!inRun && newMoveBest) localStorage.setItem(bestKey,String(state.moves));
+  if (!inRun && newTimeBest) localStorage.setItem(timeKey,String(solvedTime));
+
+  if (inRun) {
     state.run.totalSeconds+=solvedTime;
     state.run.totalMoves+=state.moves;
     state.run.complete=state.run.position>=state.run.queue.length-1;
   }
-  els.stars.textContent="★".repeat(starCount)+"☆".repeat(3-starCount);
-  els.winTitle.textContent=state.run.active
-    ? (state.run.complete?"World Run complete.":`Stage ${state.run.position+1} cleared.`)
-    : baseLevel().boss ? "Boss defeated." : "Nice work.";
-  els.nextBtn.textContent=state.run.active
-    ? (state.run.complete?"Finish Run":"Next Stage")
-    : "Next Level";
-  els.winSummary.textContent=state.run.active
-    ? `${state.run.totalMoves} total moves · ${formatTime(state.run.totalSeconds)} total.`
-    : level().boss
-      ? `Boss cleared · ${state.moves} moves · ${formatTime(solvedTime)}.`
-      : delta<=0
-        ? `Perfect flow · ${formatTime(solvedTime)}.`
-        : `Cleared in ${state.moves} moves · ${formatTime(solvedTime)}.`;
-  els.yourMoves.textContent=state.moves;
-  els.perfectMoves.textContent=target;
-  els.yourTime.textContent=formatTime(solvedTime);
-  els.bestTime.textContent=formatTime(Math.min(oldTime,solvedTime));
-  const callouts=[];
-  if (!state.run.active && newTimeBest) callouts.push("NEW BEST TIME");
-  if (!state.run.active && newMoveBest) callouts.push("NEW BEST MOVES");
-  if (solvedTime<=targetTime) callouts.push("CLASSIC TARGET BEAT");
-  if (baseLevel().boss) callouts.push("BOSS DOWN");
-  if (state.run.active) callouts.push(state.run.complete?"5-STAGE RUN COMPLETE":`RUN STAGE ${state.run.position+1}/${state.run.queue.length}`);
-  els.resultCallout.textContent=callouts.join(" · ");
-  els.resultCallout.classList.toggle("hidden",!callouts.length);
-  els.win.classList.remove("hidden");
 
-  if (!state.run.active) {
-    localStorage.setItem(`bf-complete-${ACTIVE_DIFFICULTY}-${state.levelIndex}`, "1");
-    unlockLevel(state.levelIndex + 1);
+  const callouts=[];
+  if (!inRun && newTimeBest) callouts.push("NEW BEST TIME");
+  if (!inRun && newMoveBest) callouts.push("NEW BEST MOVES");
+  if (state.mode==="classic" && solvedTime<=targetTime) callouts.push("CLASSIC TARGET BEAT");
+  if (state.mode==="rush") callouts.push("RUSH CLEARED");
+  if (baseLevel().boss) callouts.push("BOSS DOWN");
+  if (inRun) callouts.push(state.run.complete?"5-STAGE RUN COMPLETE":`RUN STAGE ${state.run.position+1}/${state.run.queue.length}`);
+
+  const bestTimeText=inRun
+    ? (oldTimeRaw==null?"—":formatTime(oldTime))
+    : formatTime(Math.min(oldTime,solvedTime));
+
+  state.lastResult={
+    stars:"★".repeat(starCount)+"☆".repeat(3-starCount),
+    title:inRun
+      ? (state.run.complete?"World Run complete.":`Stage ${state.run.position+1} cleared.`)
+      : baseLevel().boss ? "Boss defeated." : "Nice work.",
+    nextText:inRun ? (state.run.complete?"Finish Run":"Next Stage") : "Next Level",
+    summary:inRun
+      ? `${state.run.totalMoves} total moves · ${formatTime(state.run.totalSeconds)} total.`
+      : baseLevel().boss
+        ? `Boss cleared · ${state.moves} moves · ${formatTime(solvedTime)}.`
+        : delta<=0
+          ? `Perfect flow · ${formatTime(solvedTime)}.`
+          : `Cleared in ${state.moves} moves · ${formatTime(solvedTime)}.`,
+    moves:state.moves,
+    target,
+    yourTime:formatTime(solvedTime),
+    bestTime:bestTimeText,
+    callout:callouts.join(" · "),
+    replayAllowed:!inRun,
+    solvedTime
+  };
+  state.lifecycle=inRun?"run-stage-complete":"level-complete";
+  showStoredResult();
+
+  if (!inRun) {
+    localStorage.setItem(`bf-complete-${ACTIVE_DIFFICULTY}-${state.levelIndex}`,"1");
+    unlockLevel(state.levelIndex+1);
     clearSession();
   } else {
     saveSession();
