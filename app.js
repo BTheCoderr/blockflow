@@ -5,7 +5,7 @@ const COLORS = {
   yellow: "#facc15",
   purple: "#a78bfa"
 };
-const PATTERNS = { red:"pattern-circle", blue:"pattern-diamond", green:"pattern-stripe", yellow:"pattern-cross", purple:"pattern-diamond" };
+const PATTERNS = { red:"pattern-circle", blue:"pattern-diamond", green:"pattern-stripe", yellow:"pattern-cross", purple:"pattern-dots" };
 const DIRS = { up:[0,-1], down:[0,1], left:[-1,0], right:[1,0] };
 const ARROWS = { up:"↑", down:"↓", left:"←", right:"→" };
 
@@ -52,6 +52,9 @@ const els = {
   homeRank: document.getElementById("homeRank"),
   rewardStrip: document.getElementById("rewardStrip"),
   continueBtn: document.getElementById("continueBtn"),
+  homeLevelsBtn: document.getElementById("homeLevelsBtn"),
+  pauseLevelsBtn: document.getElementById("pauseLevelsBtn"),
+  pauseHomeBtn: document.getElementById("pauseHomeBtn"),
   worldRunBtn: document.getElementById("worldRunBtn"),
   worldRunMeta: document.getElementById("worldRunMeta"),
   runBanner: document.getElementById("runBanner"),
@@ -84,14 +87,20 @@ let state = {
   exitStep: 0,
   bossPhase: 0,
   phaseTransitioning: false,
-  run: {active:false,queue:[],position:0,totalSeconds:0,totalMoves:0,returnIndex:0,complete:false}
+  lifecycle: "playing",
+  lastResult: null,
+  clockAnchorMs: null,
+  run: {active:false,queue:[],position:0,totalSeconds:0,totalMoves:0,returnIndex:0,returnState:null,complete:false}
 };
 state.levelIndex = Math.max(0, Math.min(state.levelIndex, LEVELS.length - 1));
 let dragSession = null;
 let levelPickerOrigin = "game";
 let mechanicToastTimer = null;
 const REDUCE_MOTION = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
-const SESSION_KEY = `bf-session-v3-${ACTIVE_DIFFICULTY}`;
+const SESSION_KEY = `bf-session-v4-${ACTIVE_DIFFICULTY}`;
+const LEGACY_SESSION_KEYS = [`bf-session-v3-${ACTIVE_DIFFICULTY}`,`bf-session-v2-${ACTIVE_DIFFICULTY}`];
+const StateCore = globalThis.BlockFlowState;
+if (!StateCore) throw new Error("Block Flow state core failed to load");
 
 function cloneBlocks(blocks) { return blocks.map(b => ({w:1,h:1,...b})); }
 function baseLevel() { return LEVELS[state.levelIndex]; }
@@ -100,10 +109,26 @@ function level() {
   const phase=base?.phases?.[state.bossPhase];
   return phase ? {...base,...phase,phases:base.phases,boss:true} : base;
 }
-function totalPerfectFor(item=baseLevel()) { return item?.bossPar ?? item?.par ?? 0; }
+function totalPerfectFor(item=baseLevel()) { return StateCore.totalPerfectFor(item); }
+function emptyRun() { return {active:false,queue:[],position:0,totalSeconds:0,totalMoves:0,returnIndex:0,returnState:null,complete:false}; }
 function cols() { return level().cols || 6; }
 function rows() { return level().rows || 6; }
 function list(name) { return level()[name] || []; }
+
+function migrateStorageV4() {
+  const marker="bf-storage-v4-migrated";
+  if (localStorage.getItem(marker)==="1") return;
+  for (const key of LEGACY_SESSION_KEYS) localStorage.removeItem(key);
+  for (const item of ALL_LEVELS.filter(level=>level.boss)) {
+    localStorage.removeItem(`bf-best-${item.id}`);
+    localStorage.removeItem(`bf-best-time-${item.id}`);
+  }
+  for (const difficulty of DIFFICULTIES) {
+    localStorage.removeItem(`bf-run-best-time-${difficulty}`);
+    localStorage.removeItem(`bf-run-best-moves-${difficulty}`);
+  }
+  localStorage.setItem(marker,"1");
+}
 
 function bestFor(index) {
   const raw = localStorage.getItem(`bf-best-${LEVELS[index].id}`);
@@ -128,7 +153,7 @@ function timeTargetFor(item=baseLevel()) {
 }
 function unlockedThrough() {
   const stored = Number(localStorage.getItem(`bf-unlocked-${ACTIVE_DIFFICULTY}`) || 0);
-  return Math.max(0, Math.min(LEVELS.length - 1, Math.max(stored, state.levelIndex)));
+  return StateCore.unlockedThrough(stored,state,LEVELS.length);
 }
 function unlockLevel(index) {
   const keyName = `bf-unlocked-${ACTIVE_DIFFICULTY}`;
