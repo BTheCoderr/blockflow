@@ -96,6 +96,7 @@ state.levelIndex = Math.max(0, Math.min(state.levelIndex, LEVELS.length - 1));
 let dragSession = null;
 let levelPickerOrigin = "game";
 let mechanicToastTimer = null;
+let lastAutosaveSecond = -1;
 const REDUCE_MOTION = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 const SESSION_KEY = `bf-session-v4-${ACTIVE_DIFFICULTY}`;
 const LEGACY_SESSION_KEYS = [`bf-session-v3-${ACTIVE_DIFFICULTY}`,`bf-session-v2-${ACTIVE_DIFFICULTY}`];
@@ -150,6 +151,29 @@ function formatTime(seconds) {
 function timeTargetFor(item=baseLevel()) {
   if (item?.boss && item?.bossTime) return Math.max(20,Number(item.bossTime)||60);
   return Math.max(20,Number(item?.time)||60);
+}
+function clockCanRun() {
+  return state.running && !state.paused && !document.hidden;
+}
+function syncClock(now=Date.now()) {
+  if (!state.clockAnchorMs || !clockCanRun()) return 0;
+  const delta=Math.floor((now-state.clockAnchorMs)/1000);
+  if (delta<1) return 0;
+  state.clockAnchorMs+=delta*1000;
+  state.elapsedSeconds+=delta;
+  if (state.mode==="rush") state.timeLeft=Math.max(0,state.timeLeft-delta);
+  return delta;
+}
+function startClockAnchor() {
+  if (clockCanRun()) state.clockAnchorMs=Date.now();
+}
+function stopClockAnchor() {
+  syncClock();
+  state.clockAnchorMs=null;
+}
+function renderClock() {
+  els.timer.textContent=state.mode==="rush" ? formatTime(state.timeLeft) : formatTime(state.elapsedSeconds);
+  renderRunBanner();
 }
 function unlockedThrough() {
   const stored = Number(localStorage.getItem(`bf-unlocked-${ACTIVE_DIFFICULTY}`) || 0);
@@ -240,6 +264,7 @@ function sessionPayload() {
 }
 function saveSession() {
   if ((!state.running && !state.run?.active) || !level()) return;
+  if (state.running && !state.paused) syncClock();
   try { localStorage.setItem(SESSION_KEY,JSON.stringify(sessionPayload())); } catch (_) {}
 }
 function restoreSession() {
