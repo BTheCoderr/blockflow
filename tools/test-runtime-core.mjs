@@ -20,4 +20,17 @@ assert.equal(Runtime.shouldAutosave(4,5,5),true);
 assert.equal(Runtime.shouldAutosave(5,9,5),false);
 assert.equal(Runtime.shouldAutosave(9,10,5),true);
 
+const below=Runtime.dragIntent({dx:18,dy:1,cw:30,ch:30,nowMs:100});
+assert.equal(below.ready,false,"Drag under 62% of a cell must not move");
+const step=Runtime.dragIntent({dx:20,dy:1,cw:30,ch:30,nowMs:100});
+assert.equal(step.ready,true);
+assert.equal(step.dir,"right");
+const cooldown=Runtime.dragIntent({dx:22,dy:0,cw:30,ch:30,axis:"x",lastDir:"right",lastStepAt:100,nowMs:150});
+assert.equal(cooldown.ready,false,"Rapid repeat steps must respect the drag cadence");
+const repeat=Runtime.dragIntent({dx:22,dy:0,cw:30,ch:30,axis:"x",lastDir:"right",lastStepAt:100,nowMs:180});
+assert.equal(repeat.ready,true);
+const turn=Runtime.dragIntent({dx:0,dy:22,cw:30,ch:30,axis:"x",lastDir:"right",lastStepAt:0,nowMs:200});
+assert.equal(turn.ready,false);
+assert.equal(turn.reanchor,true,"Changing direction must re-anchor before another move");
+
 console.log("Block Flow runtime regression tests passed.");
