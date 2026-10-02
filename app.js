@@ -153,7 +153,7 @@ function renderLevelSelect() {
     const best = bestFor(index);
     const bestTime=bestTimeFor(index);
     const button = document.createElement("button");
-    const perfect=best!=null && best<=item.par;
+    const perfect=best!=null && best<=totalPerfectFor(item);
     button.className = `level-card ${index===state.levelIndex ? "current" : ""} ${available ? "" : "locked"} ${perfect ? "perfect" : ""}`;
     button.disabled = !available;
     button.setAttribute("aria-label", available ? `Level ${index+1}: ${item.name}` : `Level ${index+1} locked`);
@@ -427,6 +427,51 @@ function transitionToLevel(action) {
       {opacity:1,transform:"scale(1) translateY(0)"}
     ],{duration:210,easing:"cubic-bezier(.2,.8,.2,1)"});
   }).catch(()=>action());
+}
+function showPhaseOverlay() {
+  const base=baseLevel();
+  const active=level();
+  if (!base?.phases?.length) return;
+  els.phaseOverlayKicker.textContent="BOSS PHASE";
+  els.phaseOverlayTitle.textContent=`Phase ${state.bossPhase+1} / ${base.phases.length} · ${active.label || ""}`;
+  els.phaseOverlayText.textContent=active.intro || "New blocks entering the board.";
+  els.phaseOverlay.classList.remove("hidden");
+  clearTimeout(showPhaseOverlay.timer);
+  showPhaseOverlay.timer=setTimeout(()=>els.phaseOverlay.classList.add("hidden"),1150);
+}
+function advanceBossPhase() {
+  const base=baseLevel();
+  if (!base?.phases?.length || state.bossPhase>=base.phases.length-1) return false;
+  state.phaseTransitioning=true;
+  clearDragVisual();
+  const next=()=>{
+    state.bossPhase++;
+    state.blocks=cloneBlocks(level().blocks);
+    state.activeSwitches=[];
+    state.exitStep=0;
+    state.history=[];
+    renderAll();
+    saveSession();
+    showPhaseOverlay();
+    playTone(900+state.bossPhase*120);
+    buzz([14,24,14]);
+    setTimeout(()=>{state.phaseTransitioning=false;saveSession();},420);
+  };
+  if (REDUCE_MOTION || !els.boardFrame?.animate) {
+    next();
+    return true;
+  }
+  els.boardFrame.animate([
+    {opacity:1,transform:"scale(1)"},
+    {opacity:.12,transform:"scale(.94)"}
+  ],{duration:170,easing:"ease-in"}).finished.then(()=>{
+    next();
+    els.boardFrame.animate([
+      {opacity:.12,transform:"scale(1.055)"},
+      {opacity:1,transform:"scale(1)"}
+    ],{duration:300,easing:"cubic-bezier(.2,.85,.2,1)"});
+  }).catch(next);
+  return true;
 }
 
 function key(x,y) { return `${x},${y}`; }
@@ -760,7 +805,7 @@ function celebrateWin() {
 }
 function attachSwipe(el,id) {
   el.addEventListener("pointerdown", e => {
-    if (!state.running || state.paused) return;
+    if (!state.running || state.paused || state.phaseTransitioning) return;
     e.preventDefault();
     clearDragVisual();
     dragSession={
@@ -779,7 +824,7 @@ function attachSwipe(el,id) {
   });
 }
 function handleDragMove(e) {
-  if (!dragSession || e.pointerId!==dragSession.pointerId || !state.running || state.paused) return;
+  if (!dragSession || e.pointerId!==dragSession.pointerId || !state.running || state.paused || state.phaseTransitioning) return;
   e.preventDefault();
   let guard=0;
   while (guard++<5 && dragSession && state.blocks.some(b=>b.id===dragSession.id)) {
@@ -877,6 +922,7 @@ function playMoveEffects(id,from,effects) {
   animateRenderedMove(id,from,effects);
 }
 function attemptMove(id,dir,options={}) {
+  if (state.phaseTransitioning) return false;
   const block = state.blocks.find(b => b.id===id);
   if (!block || !oneWayAllows(block,dir)) {
     flashBlocked(id,dir);
@@ -907,7 +953,7 @@ function attemptMove(id,dir,options={}) {
 }
 
 function undo() {
-  if (!state.running || state.paused || !state.history.length) return;
+  if (!state.running || state.paused || state.phaseTransitioning || !state.history.length) return;
   const prev=state.history.pop();
   state.blocks=prev.blocks; state.moves=prev.moves; state.activeSwitches=prev.activeSwitches; state.exitStep=prev.exitStep;
   renderAll();
@@ -915,11 +961,12 @@ function undo() {
 }
 function checkWin() {
   if (state.blocks.length || !state.running) return;
+  if (advanceBossPhase()) return;
   state.running=false; clearInterval(state.timerId);
-  const target=level().par, delta=state.moves-target;
+  const target=totalPerfectFor(baseLevel()), delta=state.moves-target;
   const starCount=delta<=0?3:delta<=3?2:1;
   const solvedTime=Math.max(1,state.elapsedSeconds);
-  const targetTime=timeTargetFor(level());
+  const targetTime=timeTargetFor(baseLevel());
   const bestKey=`bf-best-${level().id}`;
   const timeKey=`bf-best-time-${level().id}`;
   const oldBest=Number(localStorage.getItem(bestKey)||9999);
@@ -938,7 +985,7 @@ function checkWin() {
   els.stars.textContent="★".repeat(starCount)+"☆".repeat(3-starCount);
   els.winTitle.textContent=state.run.active
     ? (state.run.complete?"World Run complete.":`Stage ${state.run.position+1} cleared.`)
-    : "Nice work.";
+    : baseLevel().boss ? "Boss defeated." : "Nice work.";
   els.nextBtn.textContent=state.run.active
     ? (state.run.complete?"Finish Run":"Next Stage")
     : "Next Level";
@@ -957,7 +1004,7 @@ function checkWin() {
   if (!state.run.active && newTimeBest) callouts.push("NEW BEST TIME");
   if (!state.run.active && newMoveBest) callouts.push("NEW BEST MOVES");
   if (solvedTime<=targetTime) callouts.push("CLASSIC TARGET BEAT");
-  if (level().boss) callouts.push("BOSS DOWN");
+  if (baseLevel().boss) callouts.push("BOSS DOWN");
   if (state.run.active) callouts.push(state.run.complete?"5-STAGE RUN COMPLETE":`RUN STAGE ${state.run.position+1}/${state.run.queue.length}`);
   els.resultCallout.textContent=callouts.join(" · ");
   els.resultCallout.classList.toggle("hidden",!callouts.length);
