@@ -33,7 +33,7 @@ jobs:
       - name: Solve every level and boss phase
         run: node tools/solve-levels.mjs --json solver-results-ci.json --strict
       - name: Upload solver report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: blockflow-solver-results
           path: solver-results-ci.json
