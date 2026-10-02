@@ -312,8 +312,62 @@ function rankFor(cleared) {
   return FLOW_RANKS.filter(r=>cleared>=r.at).at(-1)?.name || "Starter";
 }
 function worldRunQueue() {
-  const last=LEVELS.length-1;
-  return [...new Set([0,Math.round(last*.25),Math.round(last*.5),Math.round(last*.75),last])];
+  return StateCore.makeWorldRunQueue(unlockedThrough());
+}
+function campaignSnapshot() {
+  return {
+    levelId:baseLevel().id,
+    levelIndex:state.levelIndex,
+    mode:state.mode,
+    blocks:cloneBlocks(state.blocks),
+    moves:state.moves,
+    history:state.history.slice(-40),
+    activeSwitches:[...state.activeSwitches],
+    exitStep:state.exitStep,
+    bossPhase:state.bossPhase,
+    elapsedSeconds:state.elapsedSeconds,
+    timeLeft:Number.isFinite(state.timeLeft)?state.timeLeft:null,
+    lifecycle:"playing"
+  };
+}
+function restoreCampaignSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot!=="object") return false;
+  const index=LEVELS.findIndex(item=>item.id===snapshot.levelId);
+  if (index<0 || !Array.isArray(snapshot.blocks)) return false;
+  state.levelIndex=index;
+  state.mode=["chill","classic","rush"].includes(snapshot.mode)?snapshot.mode:state.mode;
+  state.blocks=cloneBlocks(snapshot.blocks);
+  state.moves=Math.max(0,Number(snapshot.moves)||0);
+  state.history=Array.isArray(snapshot.history)?snapshot.history.slice(-40):[];
+  state.activeSwitches=Array.isArray(snapshot.activeSwitches)?[...snapshot.activeSwitches]:[];
+  state.exitStep=Math.max(0,Number(snapshot.exitStep)||0);
+  state.bossPhase=Math.max(0,Number(snapshot.bossPhase)||0);
+  state.elapsedSeconds=Math.max(0,Number(snapshot.elapsedSeconds)||0);
+  state.timeLeft=snapshot.timeLeft==null?Infinity:Math.max(0,Number(snapshot.timeLeft)||0);
+  state.lifecycle="playing";
+  state.lastResult=null;
+  state.clockAnchorMs=null;
+  localStorage.setItem("bf-level",String(index));
+  localStorage.setItem("bf-mode",state.mode);
+  return true;
+}
+function cancelWorldRun({restore=true}={}) {
+  if (!state.run.active) return false;
+  const snapshot=state.run.returnState;
+  const returnIndex=Math.min(state.run.returnIndex,LEVELS.length-1);
+  state.run=emptyRun();
+  clearSession();
+  if (restore && restoreCampaignSnapshot(snapshot)) {
+    state.running=true;
+    state.paused=true;
+    renderAll();
+    startTimer();
+  } else {
+    state.levelIndex=returnIndex;
+    localStorage.setItem("bf-level",String(returnIndex));
+    initLevel({paused:true});
+  }
+  return true;
 }
 function worldRunBestTime() {
   const raw=localStorage.getItem(`bf-run-best-time-${ACTIVE_DIFFICULTY}`);
@@ -325,7 +379,10 @@ function worldRunBestMoves() {
 }
 function startWorldRun() {
   const queue=worldRunQueue();
-  state.run={active:true,queue,position:0,totalSeconds:0,totalMoves:0,returnIndex:state.levelIndex,complete:false};
+  if (queue.length<5) return;
+  syncClock();
+  const returnState=campaignSnapshot();
+  state.run={active:true,queue,position:0,totalSeconds:0,totalMoves:0,returnIndex:state.levelIndex,returnState,complete:false};
   state.levelIndex=queue[0];
   clearSession();
   initLevel();
@@ -337,20 +394,29 @@ function finishWorldRun() {
   const bestMoves=worldRunBestMoves();
   if (bestTime==null || state.run.totalSeconds<bestTime) localStorage.setItem(`bf-run-best-time-${ACTIVE_DIFFICULTY}`,String(state.run.totalSeconds));
   if (bestMoves==null || state.run.totalMoves<bestMoves) localStorage.setItem(`bf-run-best-moves-${ACTIVE_DIFFICULTY}`,String(state.run.totalMoves));
+  const snapshot=state.run.returnState;
   const returnIndex=Math.min(state.run.returnIndex,LEVELS.length-1);
-  state.run={active:false,queue:[],position:0,totalSeconds:0,totalMoves:0,returnIndex:0,complete:false};
-  state.levelIndex=returnIndex;
-  localStorage.setItem("bf-level",String(returnIndex));
+  state.run=emptyRun();
   clearSession();
-  initLevel({paused:true});
+  if (restoreCampaignSnapshot(snapshot)) {
+    state.running=true;
+    state.paused=true;
+    renderAll();
+    startTimer();
+  } else {
+    state.levelIndex=returnIndex;
+    localStorage.setItem("bf-level",String(returnIndex));
+    initLevel({paused:true});
+  }
   openHomeScreen();
 }
 function renderRunBanner() {
   const active=Boolean(state.run?.active);
   els.runBanner.classList.toggle("hidden",!active);
   if (!active) return;
-  const totalTime=state.run.totalSeconds+state.elapsedSeconds;
-  const totalMoves=state.run.totalMoves+state.moves;
+  const includeCurrent=state.lifecycle==="playing";
+  const totalTime=state.run.totalSeconds+(includeCurrent?state.elapsedSeconds:0);
+  const totalMoves=state.run.totalMoves+(includeCurrent?state.moves:0);
   els.runBannerText.textContent=`${state.run.position+1} / ${state.run.queue.length} · ${formatTime(totalTime)} · ${totalMoves} moves`;
 }
 function renderHomeStats() {
