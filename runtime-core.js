@@ -24,5 +24,23 @@
     return Math.floor(current/every)>Math.floor(previous/every);
   }
 
-  globalThis.BlockFlowRuntime={consumeClock,applyElapsed,shouldAutosave};
+  function dragIntent({dx=0,dy=0,cw=1,ch=1,axis=null,lastDir=null,lastStepAt=0,nowMs=0,threshold=.62,cooldownMs=75,dominance=1.15}={}) {
+    const nx=Math.abs(Number(dx)||0)/Math.max(1,Number(cw)||1);
+    const ny=Math.abs(Number(dy)||0)/Math.max(1,Number(ch)||1);
+    let nextAxis=null;
+    if (nx>ny*dominance) nextAxis="x";
+    else if (ny>nx*dominance) nextAxis="y";
+    else nextAxis=axis;
+    if (!nextAxis) return {ready:false,reanchor:false,axis:null,dir:null};
+    const amount=nextAxis==="x"?nx:ny;
+    const dir=nextAxis==="x"?(dx>=0?"right":"left"):(dy>=0?"down":"up");
+    if ((axis && nextAxis!==axis) || (lastDir && dir!==lastDir)) {
+      return {ready:false,reanchor:true,axis:nextAxis,dir};
+    }
+    if (amount<threshold) return {ready:false,reanchor:false,axis:nextAxis,dir};
+    if (lastStepAt && nowMs-lastStepAt<cooldownMs) return {ready:false,reanchor:false,axis:nextAxis,dir};
+    return {ready:true,reanchor:false,axis:nextAxis,dir};
+  }
+
+  globalThis.BlockFlowRuntime={consumeClock,applyElapsed,shouldAutosave,dragIntent};
 })();
