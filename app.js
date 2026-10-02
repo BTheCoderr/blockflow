@@ -150,7 +150,9 @@ function list(name) { return level()[name] || []; }
 function migrateStorageV4() {
   const marker="bf-storage-v4-migrated";
   if (localStorage.getItem(marker)==="1") return;
-  for (const key of LEGACY_SESSION_KEYS) localStorage.removeItem(key);
+  for (const difficulty of DIFFICULTIES) {
+    for (const version of ["v3","v2"]) localStorage.removeItem(`bf-session-${version}-${difficulty}`);
+  }
   for (const item of ALL_LEVELS.filter(level=>level.boss)) {
     localStorage.removeItem(`bf-best-${item.id}`);
     localStorage.removeItem(`bf-best-time-${item.id}`);
@@ -1410,6 +1412,12 @@ document.addEventListener("visibilitychange",()=>{
 window.addEventListener("pagehide",()=>{
   stopClockAnchor();
   saveSession();
+});
+window.addEventListener("pageshow",()=>{
+  if (state.running && !state.paused) {
+    startClockAnchor();
+    renderClock();
+  }
 });
 
 function reportClientError(error) {
