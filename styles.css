@@ -140,3 +140,16 @@ body.boss-level .progress-fill{background:linear-gradient(90deg,#fb7185,var(--wo
 .run-banner strong{font-size:11px;font-variant-numeric:tabular-nums}
 body.boss-level .run-banner{border-color:rgba(248,113,113,.3);background:rgba(248,113,113,.06)}
 @media(max-width:390px){.run-button{padding:11px 12px}.run-banner{margin-top:8px}}
+
+/* Multi-stage boss engine v11 */
+.phase-overlay{position:fixed;inset:0;z-index:90;display:grid;place-items:center;pointer-events:none;background:radial-gradient(circle at center,rgba(7,17,28,.2),rgba(4,10,17,.68));backdrop-filter:blur(2px)}
+.phase-overlay.hidden{display:none}
+.phase-overlay-card{min-width:min(78vw,360px);padding:20px 22px;border-radius:22px;text-align:center;background:linear-gradient(145deg,rgba(31,41,55,.96),rgba(10,20,31,.96));border:1px solid rgba(248,113,113,.28);box-shadow:0 28px 90px rgba(0,0,0,.5),0 0 42px rgba(248,113,113,.12);animation:phaseCardIn .28s cubic-bezier(.2,.82,.2,1)}
+.phase-overlay-card span{display:block;color:#fda4af;font-size:9px;font-weight:950;letter-spacing:.18em}
+.phase-overlay-card strong{display:block;margin-top:6px;color:#fff;font-size:21px;letter-spacing:-.025em}
+.phase-overlay-card small{display:block;margin:8px auto 0;max-width:280px;color:#cbd5e1;font-size:11px;line-height:1.45}
+body.boss-level .boss-badge{animation:bossBadgePulse 1.8s ease-in-out infinite}
+body.boss-level .stats-card{border-color:rgba(248,113,113,.18)}
+@keyframes phaseCardIn{from{opacity:0;transform:scale(.9) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes bossBadgePulse{0%,100%{box-shadow:0 0 16px rgba(248,113,113,.16)}50%{box-shadow:0 0 30px rgba(248,113,113,.34)}}
+@media(prefers-reduced-motion:reduce){.phase-overlay-card,body.boss-level .boss-badge{animation:none}}
