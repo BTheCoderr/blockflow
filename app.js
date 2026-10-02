@@ -645,33 +645,42 @@ function advanceBossPhase() {
   if (!base?.phases?.length || state.bossPhase>=base.phases.length-1) return false;
   state.phaseTransitioning=true;
   clearDragVisual();
-  const next=()=>{
-    state.bossPhase++;
-    state.blocks=cloneBlocks(level().blocks);
-    state.activeSwitches=[];
-    state.exitStep=0;
-    state.history=[];
+
+  // Commit the next phase immediately so a refresh during the animation can never
+  // restore an empty completed phase.
+  state.bossPhase++;
+  state.blocks=cloneBlocks(level().blocks);
+  state.activeSwitches=[];
+  state.exitStep=0;
+  state.history=[];
+  state.lifecycle="playing";
+  state.lastResult=null;
+  saveSession();
+
+  const reveal=()=>{
     renderAll();
-    saveSession();
     showPhaseOverlay();
     playTone(900+state.bossPhase*120);
     buzz([14,24,14]);
-    setTimeout(()=>{state.phaseTransitioning=false;saveSession();},420);
+    setTimeout(()=>{
+      state.phaseTransitioning=false;
+      saveSession();
+    },420);
   };
   if (REDUCE_MOTION || !els.boardFrame?.animate) {
-    next();
+    reveal();
     return true;
   }
   els.boardFrame.animate([
     {opacity:1,transform:"scale(1)"},
     {opacity:.12,transform:"scale(.94)"}
   ],{duration:170,easing:"ease-in"}).finished.then(()=>{
-    next();
+    reveal();
     els.boardFrame.animate([
       {opacity:.12,transform:"scale(1.055)"},
       {opacity:1,transform:"scale(1)"}
     ],{duration:300,easing:"cubic-bezier(.2,.85,.2,1)"});
-  }).catch(next);
+  }).catch(reveal);
   return true;
 }
 
