@@ -46,6 +46,7 @@ const completedRun={
   run:{active:true,queue,position:0,totalSeconds:10,totalMoves:5,returnIndex:0,complete:false}
 };
 assert.equal(Core.sessionCompatible(completedRun,levels),true,"completed World Run stage must restore safely");
+assert.equal(Core.sessionCompatible({...completedRun,lastResult:null},levels),false,"completed run stages need a stored result screen");
 
 const boss=levels.find(level=>level.phases?.length);
 assert.ok(boss);
