@@ -1367,10 +1367,10 @@ document.getElementById("pauseBtn").addEventListener("click",openPauseMenu);
 document.getElementById("closeLevelsBtn").addEventListener("click",closeLevelSelect);
 els.levelModal.addEventListener("click",event=>{ if(event.target===els.levelModal) closeLevelSelect(); });
 document.getElementById("continueBtn").addEventListener("click",()=>resumeGame());
-document.getElementById("homeLevelsBtn").addEventListener("click",()=>openLevelSelect("home"));
+els.homeLevelsBtn.addEventListener("click",()=>openLevelSelect("home"));
 els.worldRunBtn.addEventListener("click",startWorldRun);
 document.getElementById("resumeBtn").addEventListener("click",closePauseMenu);
-document.getElementById("pauseLevelsBtn").addEventListener("click",()=>openLevelSelect("pause"));
+els.pauseLevelsBtn.addEventListener("click",()=>openLevelSelect("pause"));
 document.getElementById("pauseRestartBtn").addEventListener("click",restartLevel);
 document.getElementById("pauseHomeBtn").addEventListener("click",openHomeScreen);
 document.getElementById("coachDoneBtn").addEventListener("click",hideCoach);
@@ -1384,9 +1384,57 @@ document.getElementById("switchChillBtn").addEventListener("click",()=>setMode("
 document.querySelectorAll(".mode-chip").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
 els.accessibility.addEventListener("click",()=>{state.colorblind=!state.colorblind;localStorage.setItem("bf-colorblind",state.colorblind?"1":"0");renderAll();saveSession();});
 els.sound.addEventListener("click",()=>{state.sound=!state.sound;localStorage.setItem("bf-sound",state.sound?"1":"0");renderAll();saveSession();});
-document.addEventListener("visibilitychange",()=>{if(document.hidden)saveSession();});
-window.addEventListener("pagehide",saveSession);
+document.addEventListener("keydown",event=>{
+  trapDialogFocus(event);
+  if (event.key!=="Escape") return;
+  if (!els.levelModal.classList.contains("hidden")) {
+    event.preventDefault();
+    closeLevelSelect();
+  } else if (!els.pause.classList.contains("hidden")) {
+    event.preventDefault();
+    closePauseMenu();
+  } else if (!els.coach.classList.contains("hidden")) {
+    event.preventDefault();
+    hideCoach();
+  }
+});
+document.addEventListener("visibilitychange",()=>{
+  if (document.hidden) {
+    stopClockAnchor();
+    saveSession();
+  } else if (state.running && !state.paused) {
+    startClockAnchor();
+    renderClock();
+  }
+});
+window.addEventListener("pagehide",()=>{
+  stopClockAnchor();
+  saveSession();
+});
 
+function reportClientError(error) {
+  try {
+    const message=String(error?.message || error || "Unknown client error").slice(0,240);
+    localStorage.setItem("bf-last-error",JSON.stringify({
+      message,
+      at:new Date().toISOString(),
+      level:baseLevel()?.id || null,
+      phase:state.bossPhase,
+      mode:state.mode,
+      run:Boolean(state.run?.active)
+    }));
+    if (els.mechanicToast && !state.paused) {
+      els.mechanicToastIcon.textContent="!";
+      els.mechanicToastTitle.textContent="Progress saved";
+      els.mechanicToastText.textContent="Something glitched. Your current puzzle state was saved so you can safely reopen the game.";
+      els.mechanicToast.classList.remove("hidden");
+    }
+  } catch (_) {}
+}
+window.addEventListener("error",event=>reportClientError(event.error || event.message));
+window.addEventListener("unhandledrejection",event=>reportClientError(event.reason));
+
+migrateStorageV4();
 initLevel({restore:true,paused:true});
 openHomeScreen();
 if ("serviceWorker" in navigator) {
