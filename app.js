@@ -60,7 +60,11 @@ const els = {
   mechanicToast: document.getElementById("mechanicToast"),
   mechanicToastIcon: document.getElementById("mechanicToastIcon"),
   mechanicToastTitle: document.getElementById("mechanicToastTitle"),
-  mechanicToastText: document.getElementById("mechanicToastText")
+  mechanicToastText: document.getElementById("mechanicToastText"),
+  phaseOverlay: document.getElementById("phaseOverlay"),
+  phaseOverlayKicker: document.getElementById("phaseOverlayKicker"),
+  phaseOverlayTitle: document.getElementById("phaseOverlayTitle"),
+  phaseOverlayText: document.getElementById("phaseOverlayText")
 };
 
 let state = {
@@ -78,6 +82,8 @@ let state = {
   paused: false,
   activeSwitches: [],
   exitStep: 0,
+  bossPhase: 0,
+  phaseTransitioning: false,
   run: {active:false,queue:[],position:0,totalSeconds:0,totalMoves:0,returnIndex:0,complete:false}
 };
 state.levelIndex = Math.max(0, Math.min(state.levelIndex, LEVELS.length - 1));
@@ -88,7 +94,13 @@ const REDUCE_MOTION = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.m
 const SESSION_KEY = `bf-session-v3-${ACTIVE_DIFFICULTY}`;
 
 function cloneBlocks(blocks) { return blocks.map(b => ({w:1,h:1,...b})); }
-function level() { return LEVELS[state.levelIndex]; }
+function baseLevel() { return LEVELS[state.levelIndex]; }
+function level() {
+  const base=baseLevel();
+  const phase=base?.phases?.[state.bossPhase];
+  return phase ? {...base,...phase,phases:base.phases,boss:true} : base;
+}
+function totalPerfectFor(item=baseLevel()) { return item?.bossPar ?? item?.par ?? 0; }
 function cols() { return level().cols || 6; }
 function rows() { return level().rows || 6; }
 function list(name) { return level()[name] || []; }
@@ -110,8 +122,9 @@ function formatTime(seconds) {
   const minutes=Math.floor(safe/60);
   return `${minutes}:${String(safe%60).padStart(2,"0")}`;
 }
-function timeTargetFor(item=level()) {
-  return Math.max(20,Number(item.time)||60);
+function timeTargetFor(item=baseLevel()) {
+  if (item?.boss && item?.bossTime) return Math.max(20,Number(item.bossTime)||60);
+  return Math.max(20,Number(item?.time)||60);
 }
 function unlockedThrough() {
   const stored = Number(localStorage.getItem(`bf-unlocked-${ACTIVE_DIFFICULTY}`) || 0);
@@ -126,7 +139,7 @@ function unlockLevel(index) {
 function starsFor(index) {
   const best = bestFor(index);
   if (best == null) return "☆☆☆";
-  const target = LEVELS[index].par;
+  const target = totalPerfectFor(LEVELS[index]);
   const count = best <= target ? 3 : best <= target + 3 ? 2 : 1;
   return "★".repeat(count) + "☆".repeat(3 - count);
 }
@@ -185,6 +198,7 @@ function sessionPayload() {
     history:state.history.slice(-40),
     activeSwitches:[...state.activeSwitches],
     exitStep:state.exitStep,
+    bossPhase:state.bossPhase,
     elapsedSeconds:state.elapsedSeconds,
     timeLeft:Number.isFinite(state.timeLeft)?state.timeLeft:null,
     run:{...state.run,queue:[...(state.run?.queue||[])]}
@@ -212,6 +226,7 @@ function restoreSession() {
     state.history=Array.isArray(saved.history)?saved.history.slice(-40):[];
     state.activeSwitches=Array.isArray(saved.activeSwitches)?[...saved.activeSwitches]:[];
     state.exitStep=Number(saved.exitStep)||0;
+    state.bossPhase=Math.max(0,Number(saved.bossPhase)||0);
     state.elapsedSeconds=Math.max(0,Number(saved.elapsedSeconds)||0);
     state.timeLeft=saved.timeLeft==null?Infinity:Math.max(0,Number(saved.timeLeft)||0);
     if (saved.run?.active && Array.isArray(saved.run.queue)) {
@@ -473,13 +488,15 @@ function initLevel(options={}) {
   clearInterval(state.timerId);
   const restored=Boolean(options.restore && restoreSession());
   if (!restored) {
-    state.blocks = cloneBlocks(level().blocks);
     state.moves = 0;
     state.history = [];
     state.activeSwitches = [];
     state.exitStep = 0;
+    state.bossPhase = 0;
+    state.phaseTransitioning = false;
+    state.blocks = cloneBlocks(level().blocks);
     state.elapsedSeconds = 0;
-    state.timeLeft = state.mode === "rush" ? Math.max(14, Math.floor(timeTargetFor(level()) * .62)) : Infinity;
+    state.timeLeft = state.mode === "rush" ? Math.max(14, Math.floor(timeTargetFor(baseLevel()) * .62)) : Infinity;
   }
   state.running = true;
   state.paused = Boolean(options.paused);
@@ -510,20 +527,26 @@ function startTimer() {
 
 function renderAll() {
   const l = level();
-  els.title.textContent = `Level ${state.levelIndex + 1} · ${l.name}`;
+  els.title.textContent = baseLevel().boss
+    ? `Boss · ${baseLevel().name}`
+    : `Level ${state.levelIndex + 1} · ${l.name}`;
   const req = nextExitRequirement();
-  els.hint.textContent = req ? `${l.hint}  Next out: ${req.toUpperCase()}.` : l.hint;
+  const phaseLead=baseLevel().boss && l.intro ? `${l.label}: ${l.intro}` : l.hint;
+  els.hint.textContent = req ? `${phaseLead}  Next out: ${req.toUpperCase()}.` : phaseLead;
   els.moves.textContent = state.moves;
-  els.par.textContent = l.par;
+  els.par.textContent = totalPerfectFor(baseLevel());
   els.timeLabel.textContent = state.mode==="rush" ? "Left" : "Time";
   els.timer.textContent = state.mode==="rush" ? formatTime(state.timeLeft) : formatTime(state.elapsedSeconds);
   els.modeExplainer.textContent = state.mode==="chill"
     ? "No pressure · solve time still recorded."
     : state.mode==="classic"
-      ? `Beat the target without a fail state · ${formatTime(timeTargetFor(l))}.`
-      : `Countdown pressure · ${formatTime(Math.max(14,Math.floor(timeTargetFor(l)*.62)))} on a fresh run.`;
-  els.bossBadge.classList.toggle("hidden",!l.boss);
-  document.body.classList.toggle("boss-level",Boolean(l.boss));
+      ? `Beat the target without a fail state · ${formatTime(timeTargetFor(baseLevel()))}.`
+      : `Countdown pressure · ${formatTime(Math.max(14,Math.floor(timeTargetFor(baseLevel())*.62)))} on a fresh run.`;
+  els.bossBadge.classList.toggle("hidden",!baseLevel().boss);
+  els.bossBadge.textContent=baseLevel().boss && baseLevel().phases?.length
+    ? `BOSS · PHASE ${state.bossPhase+1}/${baseLevel().phases.length}`
+    : "BOSS";
+  document.body.classList.toggle("boss-level",Boolean(baseLevel().boss));
   renderRunBanner();
   els.progressText.textContent = `${state.levelIndex + 1} / ${LEVELS.length}`;
   els.progressFill.style.width = `${((state.levelIndex + 1) / LEVELS.length) * 100}%`;
