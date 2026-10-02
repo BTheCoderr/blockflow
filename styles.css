@@ -180,3 +180,10 @@ button:focus-visible{outline:3px solid var(--world-accent);outline-offset:3px}
 .legal-card h2{margin:0 0 6px;font-size:18px}
 .legal-card p{margin:0;color:#b7c4d2;font-size:13px}
 .legal-link{display:block;margin-top:14px;text-align:center;text-decoration:none}
+
+/* Coarse-pointer hit-area assist v15 */
+@media (pointer:coarse){
+  .block{overflow:visible}
+  .block::after{content:"";position:absolute;inset:-6px;border-radius:18px}
+  .block.long-block::after{inset:-5px}
+}
