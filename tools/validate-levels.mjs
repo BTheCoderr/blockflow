@@ -59,6 +59,20 @@ for (const [index, level] of levels.entries()) {
   }
 }
 
+const easyLevels=levels.filter(level=>level.difficulty==="easy");
+const easyLayouts=new Set();
+for (const level of easyLevels) {
+  if (!level.boss && level.par<10) errors.push(`easy ${level.name}: Perfect target must be at least 10 moves after the Easy rebuild`);
+  if (level.boss && Number(level.bossPar)<40) errors.push(`easy boss ${level.name}: multi-phase Perfect target must be at least 40 moves`);
+  const fingerprint=JSON.stringify({
+    cols:level.cols,rows:level.rows,blocks:level.blocks,gates:level.gates,walls:level.walls||[],
+    voids:level.voids||[],ice:level.ice||[],portals:level.portals||[],switches:level.switches||[],
+    barriers:level.barriers||[],oneWays:level.oneWays||[],exitOrder:level.exitOrder||[]
+  });
+  if (easyLayouts.has(fingerprint)) errors.push(`easy ${level.name}: duplicate base layout`);
+  easyLayouts.add(fingerprint);
+}
+
 const expectedCounts = { easy:19, intermediate:19, hard:19, extreme:18 };
 for (const d of difficulties) {
   const count = levels.filter(l => l.difficulty === d).length;
