@@ -1176,7 +1176,8 @@ function attemptMove(id,dir,options={}) {
   if (canExit(block,dir)) {
     snapshot(); state.moves++;
     exitBlock(block,dir,effects);
-    renderAll(); playMoveEffects(id,from,effects); saveSession(); checkWin();
+    renderAll(); playMoveEffects(id,from,effects); checkWin();
+    if (state.running && !state.phaseTransitioning && state.blocks.length) saveSession();
     return true;
   }
   const [dx,dy] = DIRS[dir];
@@ -1190,7 +1191,8 @@ function attemptMove(id,dir,options={}) {
   block.x=nx; block.y=ny; state.moves++;
   playTone(420); buzz(options.fromDrag?5:8);
   resolveMotion(block,dir,effects);
-  renderAll(); playMoveEffects(id,from,effects); saveSession(); checkWin();
+  renderAll(); playMoveEffects(id,from,effects); checkWin();
+  if (state.running && !state.phaseTransitioning && state.blocks.length) saveSession();
   return true;
 }
 
