@@ -287,21 +287,31 @@ function similarity(a,b) {
 }
 
 const results=[];
-for (const level of levels) {
-  const solved=solveLevel(level);
+function recordSolved(candidate,{parentName=null,phaseIndex=null}={}) {
+  const solved=solveLevel(candidate);
   results.push({
-    difficulty:level.difficulty,
-    name:level.name,
-    target:level.par,
+    difficulty:candidate.difficulty,
+    name:candidate.name,
+    parentName,
+    phaseIndex,
+    target:candidate.par,
     ...solved,
     fingerprint:solved.solution.map(x=>x.split(":")[1][0]).join("")
   });
   const mark=solved.solvable ? "✓" : solved.status==="limit" ? "!" : "✗";
-  console.log(`${mark} ${level.difficulty.padEnd(12)} ${level.name.padEnd(20)} optimal=${String(solved.optimalMoves ?? "-").padStart(3)} target=${String(level.par).padStart(3)} states=${solved.visited}`);
+  const phaseLabel=parentName ? ` phase=${phaseIndex+1}` : "";
+  console.log(`${mark} ${candidate.difficulty.padEnd(12)} ${candidate.name.padEnd(28)} optimal=${String(solved.optimalMoves ?? "-").padStart(3)} target=${String(candidate.par).padStart(3)} states=${solved.visited}${phaseLabel}`);
+}
+for (const level of levels) {
+  recordSolved(level);
+  for (const [phaseIndex,phase] of (level.phases||[]).entries()) {
+    const candidate={...level,...phase,boss:false,phases:undefined,name:`${level.name} · Phase ${phaseIndex+1}`};
+    recordSolved(candidate,{parentName:level.name,phaseIndex});
+  }
 }
 
 for (const difficulty of ["easy","intermediate","hard","extreme"]) {
-  const group=results.filter(r=>r.difficulty===difficulty);
+  const group=results.filter(r=>r.difficulty===difficulty && !r.parentName);
   for (let i=1;i<group.length;i++) {
     const score=similarity(group[i-1].solution,group[i].solution);
     group[i].similarityToPrevious=Number(score.toFixed(2));
@@ -314,6 +324,8 @@ const summary={
   engine:"BlockFlow solver v2 A*",
   stateLimit:LIMIT,
   total:results.length,
+  baseLevels:levels.length,
+  bossPhases:results.filter(r=>r.parentName).length,
   solved:results.filter(r=>r.solvable).length,
   unresolved:results.filter(r=>!r.solvable).length,
   targetMismatches:results.filter(r=>r.solvable && r.target!==r.optimalMoves).length,
