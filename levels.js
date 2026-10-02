@@ -1,738 +1,25 @@
 const ALL_LEVELS = [
   {
     "difficulty": "easy",
-    "name": "Glass Lane",
+    "name": "First Flow",
+    "par": 20,
     "cols": 6,
-    "rows": 5,
-    "par": 5,
-    "time": 44,
-    "mechanics": [
-      "Ice ❄"
-    ],
-    "hint": "Ice does the travel for you. Line it up once, then let it slide.",
-    "ice": [
-      {
-        "x": 2,
-        "y": 2
-      },
-      {
-        "x": 3,
-        "y": 2
-      },
-      {
-        "x": 4,
-        "y": 2
-      }
-    ],
-    "blocks": [
-      {
-        "id": "b1",
-        "color": "blue",
-        "x": 1,
-        "y": 2
-      },
-      {
-        "id": "r1",
-        "color": "red",
-        "x": 1,
-        "y": 4
-      },
-      {
-        "id": "g1",
-        "color": "green",
-        "x": 4,
-        "y": 0
-      }
-    ],
-    "gates": [
-      {
-        "color": "blue",
-        "x": 5,
-        "y": 2,
-        "dir": "right"
-      },
-      {
-        "color": "red",
-        "x": 0,
-        "y": 4,
-        "dir": "left"
-      },
-      {
-        "color": "green",
-        "x": 4,
-        "y": 0,
-        "dir": "up"
-      }
-    ],
-    "id": "glass-lane"
-  },
-  {
-    "difficulty": "easy",
-    "name": "Ice Break",
-    "cols": 6,
-    "rows": 5,
-    "par": 5,
-    "time": 42,
-    "mechanics": [
-      "Ice ❄"
-    ],
-    "hint": "Once a block hits ice, it keeps sliding in that direction.",
-    "ice": [
-      {
-        "x": 2,
-        "y": 2
-      },
-      {
-        "x": 3,
-        "y": 2
-      },
-      {
-        "x": 4,
-        "y": 2
-      }
-    ],
-    "blocks": [
-      {
-        "id": "b1",
-        "color": "blue",
-        "x": 1,
-        "y": 2
-      },
-      {
-        "id": "r1",
-        "color": "red",
-        "x": 1,
-        "y": 4
-      },
-      {
-        "id": "g1",
-        "color": "green",
-        "x": 4,
-        "y": 0
-      }
-    ],
-    "gates": [
-      {
-        "color": "blue",
-        "x": 5,
-        "y": 2,
-        "dir": "right"
-      },
-      {
-        "color": "red",
-        "x": 0,
-        "y": 4,
-        "dir": "left"
-      },
-      {
-        "color": "green",
-        "x": 4,
-        "y": 0,
-        "dir": "up"
-      }
-    ],
-    "id": "ice-break"
-  },
-  {
-    "difficulty": "easy",
-    "name": "Clean Sweep",
-    "cols": 5,
-    "rows": 5,
-    "par": 6,
-    "time": 42,
+    "rows": 6,
+    "time": 45,
     "mechanics": [
       "Slide",
       "Match"
     ],
-    "hint": "Three short routes. Clear the middle lane before it becomes traffic.",
-    "blocks": [
-      {
-        "id": "r1",
-        "color": "red",
-        "x": 1,
-        "y": 1
-      },
-      {
-        "id": "b1",
-        "color": "blue",
-        "x": 3,
-        "y": 2
-      },
-      {
-        "id": "g1",
-        "color": "green",
-        "x": 2,
-        "y": 3
-      }
-    ],
-    "gates": [
-      {
-        "color": "red",
-        "x": 0,
-        "y": 1,
-        "dir": "left"
-      },
-      {
-        "color": "blue",
-        "x": 4,
-        "y": 2,
-        "dir": "right"
-      },
-      {
-        "color": "green",
-        "x": 2,
-        "y": 4,
-        "dir": "down"
-      }
-    ],
-    "id": "clean-sweep"
-  },
-  {
-    "difficulty": "easy",
-    "name": "Corner Cut",
-    "cols": 5,
-    "rows": 5,
-    "par": 6,
-    "time": 35,
-    "mechanics": [
-      "Irregular board"
-    ],
-    "hint": "Missing tiles change what counts as an edge.",
-    "voids": [
-      {
-        "x": 3,
-        "y": 0
-      },
-      {
-        "x": 4,
-        "y": 0
-      },
-      {
-        "x": 4,
-        "y": 1
-      }
-    ],
+    "hint": "The exits look open, but the center block has to move before the lanes clear.",
     "walls": [
       {
         "x": 2,
         "y": 2
-      }
-    ],
-    "blocks": [
-      {
-        "id": "r1",
-        "color": "red",
-        "x": 1,
-        "y": 3
-      },
-      {
-        "id": "b1",
-        "color": "blue",
-        "x": 2,
-        "y": 1
-      },
-      {
-        "id": "y1",
-        "color": "yellow",
-        "x": 3,
-        "y": 3
-      }
-    ],
-    "gates": [
-      {
-        "color": "red",
-        "x": 0,
-        "y": 3,
-        "dir": "left"
-      },
-      {
-        "color": "blue",
-        "x": 2,
-        "y": 0,
-        "dir": "up"
-      },
-      {
-        "color": "yellow",
-        "x": 4,
-        "y": 3,
-        "dir": "right"
-      }
-    ],
-    "id": "corner-cut"
-  },
-  {
-    "difficulty": "easy",
-    "name": "Long Turn",
-    "cols": 6,
-    "rows": 6,
-    "par": 6,
-    "time": 48,
-    "mechanics": [
-      "Long blocks"
-    ],
-    "hint": "Long pieces need a clean lane. Move the small block out of the way first.",
-    "blocks": [
-      {
-        "id": "r1",
-        "color": "red",
-        "x": 1,
-        "y": 2,
-        "w": 2,
-        "h": 1
-      },
-      {
-        "id": "b1",
-        "color": "blue",
-        "x": 4,
-        "y": 3,
-        "w": 1,
-        "h": 2
-      },
-      {
-        "id": "g1",
-        "color": "green",
-        "x": 2,
-        "y": 4
-      }
-    ],
-    "gates": [
-      {
-        "color": "red",
-        "x": 0,
-        "y": 2,
-        "dir": "left"
-      },
-      {
-        "color": "blue",
-        "x": 4,
-        "y": 5,
-        "dir": "down"
-      },
-      {
-        "color": "green",
-        "x": 2,
-        "y": 5,
-        "dir": "down"
-      }
-    ],
-    "id": "long-turn"
-  },
-  {
-    "difficulty": "easy",
-    "name": "Pocket Portal",
-    "cols": 6,
-    "rows": 6,
-    "par": 6,
-    "time": 46,
-    "mechanics": [
-      "Portal ◎"
-    ],
-    "hint": "The portal skips the center. Keep its landing spot open.",
-    "portals": [
-      {
-        "id": "A",
-        "a": {
-          "x": 2,
-          "y": 4
-        },
-        "b": {
-          "x": 4,
-          "y": 1
-        }
-      }
-    ],
-    "blocks": [
-      {
-        "id": "g1",
-        "color": "green",
-        "x": 1,
-        "y": 4
-      },
-      {
-        "id": "r1",
-        "color": "red",
-        "x": 1,
-        "y": 1
-      },
-      {
-        "id": "y1",
-        "color": "yellow",
-        "x": 3,
-        "y": 5
-      }
-    ],
-    "gates": [
-      {
-        "color": "green",
-        "x": 5,
-        "y": 1,
-        "dir": "right"
-      },
-      {
-        "color": "red",
-        "x": 0,
-        "y": 1,
-        "dir": "left"
-      },
-      {
-        "color": "yellow",
-        "x": 3,
-        "y": 5,
-        "dir": "down"
-      }
-    ],
-    "id": "pocket-portal"
-  },
-  {
-    "difficulty": "easy",
-    "name": "Pocket Turn",
-    "cols": 6,
-    "rows": 6,
-    "par": 6,
-    "time": 42,
-    "mechanics": [
-      "Irregular board"
-    ],
-    "hint": "The missing corner opens a shortcut. Use the shape, not just the outer edge.",
-    "voids": [
-      {
-        "x": 4,
-        "y": 0
-      },
-      {
-        "x": 5,
-        "y": 0
-      },
-      {
-        "x": 5,
-        "y": 1
-      }
-    ],
-    "blocks": [
-      {
-        "id": "r1",
-        "color": "red",
-        "x": 1,
-        "y": 4
-      },
-      {
-        "id": "b1",
-        "color": "blue",
-        "x": 3,
-        "y": 1
-      },
-      {
-        "id": "g1",
-        "color": "green",
-        "x": 4,
-        "y": 4
-      }
-    ],
-    "gates": [
-      {
-        "color": "red",
-        "x": 0,
-        "y": 4,
-        "dir": "left"
-      },
-      {
-        "color": "blue",
-        "x": 3,
-        "y": 0,
-        "dir": "up"
-      },
-      {
-        "color": "green",
-        "x": 5,
-        "y": 4,
-        "dir": "right"
-      }
-    ],
-    "id": "pocket-turn"
-  },
-  {
-    "difficulty": "easy",
-    "name": "Short Slide",
-    "cols": 6,
-    "rows": 6,
-    "par": 6,
-    "time": 44,
-    "mechanics": [
-      "Ice ❄"
-    ],
-    "hint": "Use the ice lane for one fast move, then finish the other colors normally.",
-    "ice": [
-      {
-        "x": 2,
-        "y": 3
       },
       {
         "x": 3,
         "y": 3
-      },
-      {
-        "x": 4,
-        "y": 3
       }
-    ],
-    "blocks": [
-      {
-        "id": "b1",
-        "color": "blue",
-        "x": 1,
-        "y": 3
-      },
-      {
-        "id": "r1",
-        "color": "red",
-        "x": 1,
-        "y": 5
-      },
-      {
-        "id": "y1",
-        "color": "yellow",
-        "x": 4,
-        "y": 1
-      }
-    ],
-    "gates": [
-      {
-        "color": "blue",
-        "x": 5,
-        "y": 3,
-        "dir": "right"
-      },
-      {
-        "color": "red",
-        "x": 0,
-        "y": 5,
-        "dir": "left"
-      },
-      {
-        "color": "yellow",
-        "x": 4,
-        "y": 0,
-        "dir": "up"
-      }
-    ],
-    "id": "short-slide"
-  },
-  {
-    "difficulty": "easy",
-    "name": "Side Door",
-    "cols": 6,
-    "rows": 6,
-    "par": 6,
-    "time": 48,
-    "mechanics": [
-      "Portal ◎"
-    ],
-    "hint": "One color has a shortcut through the middle. Keep its landing cell clear.",
-    "portals": [
-      {
-        "id": "A",
-        "a": {
-          "x": 1,
-          "y": 3
-        },
-        "b": {
-          "x": 4,
-          "y": 2
-        }
-      }
-    ],
-    "blocks": [
-      {
-        "id": "g1",
-        "color": "green",
-        "x": 0,
-        "y": 3
-      },
-      {
-        "id": "r1",
-        "color": "red",
-        "x": 1,
-        "y": 1
-      },
-      {
-        "id": "y1",
-        "color": "yellow",
-        "x": 4,
-        "y": 5
-      }
-    ],
-    "gates": [
-      {
-        "color": "green",
-        "x": 5,
-        "y": 2,
-        "dir": "right"
-      },
-      {
-        "color": "red",
-        "x": 0,
-        "y": 1,
-        "dir": "left"
-      },
-      {
-        "color": "yellow",
-        "x": 4,
-        "y": 5,
-        "dir": "down"
-      }
-    ],
-    "id": "side-door"
-  },
-  {
-    "difficulty": "easy",
-    "name": "Warp 101",
-    "cols": 6,
-    "rows": 6,
-    "par": 6,
-    "time": 46,
-    "mechanics": [
-      "Portals ◎"
-    ],
-    "hint": "Step onto a portal to jump to its partner.",
-    "portals": [
-      {
-        "id": "A",
-        "a": {
-          "x": 2,
-          "y": 4
-        },
-        "b": {
-          "x": 4,
-          "y": 1
-        }
-      }
-    ],
-    "blocks": [
-      {
-        "id": "g1",
-        "color": "green",
-        "x": 1,
-        "y": 4
-      },
-      {
-        "id": "r1",
-        "color": "red",
-        "x": 1,
-        "y": 1
-      },
-      {
-        "id": "y1",
-        "color": "yellow",
-        "x": 3,
-        "y": 5
-      }
-    ],
-    "gates": [
-      {
-        "color": "green",
-        "x": 5,
-        "y": 1,
-        "dir": "right"
-      },
-      {
-        "color": "red",
-        "x": 0,
-        "y": 1,
-        "dir": "left"
-      },
-      {
-        "color": "yellow",
-        "x": 3,
-        "y": 5,
-        "dir": "down"
-      }
-    ],
-    "id": "warp-101",
-    "boss": true,
-    "bossTime": 120,
-    "phases": [
-      {
-        "label": "Warm-up",
-        "intro": "One block. Learn the warp rhythm.",
-        "par": 1,
-        "blocks": [
-          {
-            "id": "y1",
-            "color": "yellow",
-            "x": 3,
-            "y": 5
-          }
-        ],
-        "gates": [
-          {
-            "color": "yellow",
-            "x": 3,
-            "y": 5,
-            "dir": "down"
-          }
-        ]
-      },
-      {
-        "label": "Second current",
-        "intro": "The board resets, but the clock keeps running.",
-        "par": 2,
-        "blocks": [
-          {
-            "id": "r1",
-            "color": "red",
-            "x": 1,
-            "y": 1
-          }
-        ],
-        "gates": [
-          {
-            "color": "red",
-            "x": 0,
-            "y": 1,
-            "dir": "left"
-          }
-        ]
-      },
-      {
-        "label": "Portal finish",
-        "intro": "Use the portal cleanly to finish the boss.",
-        "par": 3,
-        "blocks": [
-          {
-            "id": "g1",
-            "color": "green",
-            "x": 1,
-            "y": 4
-          }
-        ],
-        "gates": [
-          {
-            "color": "green",
-            "x": 5,
-            "y": 1,
-            "dir": "right"
-          }
-        ]
-      }
-    ],
-    "bossPar": 6
-  },
-  {
-    "difficulty": "easy",
-    "name": "Color Queue",
-    "cols": 6,
-    "rows": 6,
-    "par": 7,
-    "time": 54,
-    "mechanics": [
-      "Exit order"
-    ],
-    "hint": "Every exit is close. The trick is sending colors in the right order.",
-    "exitOrder": [
-      "green",
-      "blue",
-      "red",
-      "yellow"
     ],
     "blocks": [
       {
@@ -745,98 +32,32 @@ const ALL_LEVELS = [
         "id": "b1",
         "color": "blue",
         "x": 4,
-        "y": 1
+        "y": 3
       },
       {
         "id": "g1",
         "color": "green",
         "x": 3,
-        "y": 4
-      },
-      {
-        "id": "y1",
-        "color": "yellow",
-        "x": 5,
-        "y": 3
-      }
-    ],
-    "gates": [
-      {
-        "color": "red",
-        "x": 0,
-        "y": 2,
-        "dir": "left"
-      },
-      {
-        "color": "blue",
-        "x": 4,
-        "y": 0,
-        "dir": "up"
-      },
-      {
-        "color": "green",
-        "x": 3,
-        "y": 5,
-        "dir": "down"
-      },
-      {
-        "color": "yellow",
-        "x": 5,
-        "y": 3,
-        "dir": "right"
-      }
-    ],
-    "id": "color-queue"
-  },
-  {
-    "difficulty": "easy",
-    "name": "First Flow",
-    "cols": 5,
-    "rows": 5,
-    "par": 7,
-    "time": 32,
-    "mechanics": [
-      "Slide",
-      "Match"
-    ],
-    "hint": "Clear all three colors. Think about lanes before swiping.",
-    "blocks": [
-      {
-        "id": "r1",
-        "color": "red",
-        "x": 1,
-        "y": 3
-      },
-      {
-        "id": "b1",
-        "color": "blue",
-        "x": 3,
-        "y": 1
-      },
-      {
-        "id": "g1",
-        "color": "green",
-        "x": 2,
         "y": 2
       }
     ],
     "gates": [
       {
         "color": "red",
+        "x": 5,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
         "x": 0,
         "y": 3,
         "dir": "left"
       },
       {
-        "color": "blue",
-        "x": 3,
-        "y": 0,
-        "dir": "up"
-      },
-      {
         "color": "green",
-        "x": 2,
-        "y": 4,
+        "x": 3,
+        "y": 5,
         "dir": "down"
       }
     ],
@@ -844,86 +65,34 @@ const ALL_LEVELS = [
   },
   {
     "difficulty": "easy",
-    "name": "Order Up",
+    "name": "Corner Cut",
+    "par": 18,
     "cols": 6,
     "rows": 6,
-    "par": 7,
-    "time": 52,
+    "time": 50,
     "mechanics": [
-      "Exit order"
+      "Walls",
+      "Turns"
     ],
-    "hint": "Four colors are close to home, but only one order is accepted.",
-    "exitOrder": [
-      "yellow",
-      "blue",
-      "red",
-      "green"
-    ],
-    "blocks": [
+    "hint": "The straight route is blocked. Find the open corner before committing.",
+    "walls": [
       {
-        "id": "r1",
-        "color": "red",
-        "x": 1,
-        "y": 2
-      },
-      {
-        "id": "b1",
-        "color": "blue",
-        "x": 4,
+        "x": 2,
         "y": 1
       },
       {
-        "id": "g1",
-        "color": "green",
-        "x": 3,
+        "x": 2,
+        "y": 2
+      },
+      {
+        "x": 2,
         "y": 4
       },
       {
-        "id": "y1",
-        "color": "yellow",
-        "x": 5,
+        "x": 4,
         "y": 3
       }
     ],
-    "gates": [
-      {
-        "color": "red",
-        "x": 0,
-        "y": 2,
-        "dir": "left"
-      },
-      {
-        "color": "blue",
-        "x": 4,
-        "y": 0,
-        "dir": "up"
-      },
-      {
-        "color": "green",
-        "x": 3,
-        "y": 5,
-        "dir": "down"
-      },
-      {
-        "color": "yellow",
-        "x": 5,
-        "y": 3,
-        "dir": "right"
-      }
-    ],
-    "id": "order-up"
-  },
-  {
-    "difficulty": "easy",
-    "name": "Twin Gates",
-    "cols": 6,
-    "rows": 5,
-    "par": 7,
-    "time": 40,
-    "mechanics": [
-      "Same-color exits"
-    ],
-    "hint": "Two red blocks can leave through either red gate. Pick the cleaner lanes.",
     "blocks": [
       {
         "id": "r1",
@@ -932,233 +101,52 @@ const ALL_LEVELS = [
         "y": 1
       },
       {
-        "id": "r2",
-        "color": "red",
-        "x": 4,
-        "y": 3
-      },
-      {
-        "id": "b1",
-        "color": "blue",
-        "x": 2,
-        "y": 2
-      }
-    ],
-    "gates": [
-      {
-        "color": "red",
-        "x": 0,
-        "y": 1,
-        "dir": "left"
-      },
-      {
-        "color": "red",
-        "x": 5,
-        "y": 3,
-        "dir": "right"
-      },
-      {
-        "color": "blue",
-        "x": 2,
-        "y": 4,
-        "dir": "down"
-      }
-    ],
-    "id": "twin-gates"
-  },
-  {
-    "difficulty": "easy",
-    "name": "Long Haul",
-    "cols": 6,
-    "rows": 6,
-    "par": 8,
-    "time": 42,
-    "mechanics": [
-      "Long blocks"
-    ],
-    "hint": "Long blocks take more room, so keep their lane clear.",
-    "blocks": [
-      {
-        "id": "r1",
-        "color": "red",
-        "x": 1,
-        "y": 4,
-        "w": 2,
-        "h": 1
-      },
-      {
         "id": "b1",
         "color": "blue",
         "x": 4,
-        "y": 1,
-        "w": 1,
-        "h": 2
-      },
-      {
-        "id": "g1",
-        "color": "green",
-        "x": 2,
-        "y": 2
-      }
-    ],
-    "gates": [
-      {
-        "color": "red",
-        "x": 0,
-        "y": 4,
-        "dir": "left"
-      },
-      {
-        "color": "blue",
-        "x": 4,
-        "y": 0,
-        "dir": "up"
-      },
-      {
-        "color": "green",
-        "x": 2,
-        "y": 5,
-        "dir": "down"
-      }
-    ],
-    "id": "long-haul"
-  },
-  {
-    "difficulty": "easy",
-    "name": "Tall Order",
-    "cols": 6,
-    "rows": 6,
-    "par": 8,
-    "time": 46,
-    "mechanics": [
-      "Long blocks"
-    ],
-    "hint": "A tall block needs a full lane. Make room before you commit.",
-    "blocks": [
-      {
-        "id": "b1",
-        "color": "blue",
-        "x": 4,
-        "y": 1,
-        "w": 1,
-        "h": 2
-      },
-      {
-        "id": "r1",
-        "color": "red",
-        "x": 1,
-        "y": 4,
-        "w": 2,
-        "h": 1
-      },
-      {
-        "id": "g1",
-        "color": "green",
-        "x": 2,
-        "y": 2
-      }
-    ],
-    "gates": [
-      {
-        "color": "blue",
-        "x": 4,
-        "y": 0,
-        "dir": "up"
-      },
-      {
-        "color": "red",
-        "x": 0,
-        "y": 4,
-        "dir": "left"
-      },
-      {
-        "color": "green",
-        "x": 2,
-        "y": 5,
-        "dir": "down"
-      }
-    ],
-    "id": "tall-order"
-  },
-  {
-    "difficulty": "easy",
-    "name": "Open Sesame",
-    "cols": 6,
-    "rows": 6,
-    "par": 9,
-    "time": 46,
-    "mechanics": [
-      "Switch ◆",
-      "Barrier ▥"
-    ],
-    "hint": "Touch the switch, then use the newly opened lane.",
-    "switches": [
-      {
-        "id": "A",
-        "x": 1,
         "y": 4
-      }
-    ],
-    "barriers": [
+      },
       {
-        "id": "A",
+        "id": "g1",
+        "color": "green",
         "x": 3,
         "y": 2
       }
     ],
-    "blocks": [
-      {
-        "id": "g1",
-        "color": "green",
-        "x": 1,
-        "y": 3
-      },
-      {
-        "id": "r1",
-        "color": "red",
-        "x": 2,
-        "y": 2
-      },
-      {
-        "id": "b1",
-        "color": "blue",
-        "x": 4,
-        "y": 4
-      }
-    ],
     "gates": [
       {
-        "color": "green",
-        "x": 1,
-        "y": 5,
-        "dir": "down"
-      },
-      {
         "color": "red",
         "x": 5,
-        "y": 2,
+        "y": 1,
         "dir": "right"
       },
       {
         "color": "blue",
-        "x": 5,
+        "x": 0,
         "y": 4,
-        "dir": "right"
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 3,
+        "y": 5,
+        "dir": "down"
       }
     ],
-    "id": "open-sesame"
+    "id": "corner-cut"
   },
   {
     "difficulty": "easy",
-    "name": "The Lane",
+    "name": "Lane Change",
+    "par": 18,
     "cols": 7,
-    "rows": 5,
-    "par": 9,
-    "time": 38,
+    "rows": 6,
+    "time": 55,
     "mechanics": [
+      "Traffic",
       "Corridors"
     ],
-    "hint": "Use the openings instead of fighting the walls.",
+    "hint": "Everyone wants the middle lane. Park one color before sending the next through.",
     "walls": [
       {
         "x": 3,
@@ -1170,11 +158,101 @@ const ALL_LEVELS = [
       },
       {
         "x": 3,
-        "y": 3
+        "y": 4
       },
       {
         "x": 3,
-        "y": 4
+        "y": 5
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 5,
+        "y": 3
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 3
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 4,
+        "y": 2
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 6,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 3,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 5,
+        "dir": "down"
+      },
+      {
+        "color": "yellow",
+        "x": 4,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "lane-change"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Pocket Turn",
+    "par": 17,
+    "cols": 7,
+    "rows": 6,
+    "time": 58,
+    "mechanics": [
+      "Irregular board",
+      "Traffic"
+    ],
+    "hint": "The missing corner changes the edge. Use the pocket to make room.",
+    "voids": [
+      {
+        "x": 5,
+        "y": 0
+      },
+      {
+        "x": 6,
+        "y": 0
+      },
+      {
+        "x": 6,
+        "y": 1
+      }
+    ],
+    "walls": [
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 3
       }
     ],
     "blocks": [
@@ -1188,22 +266,116 @@ const ALL_LEVELS = [
         "id": "b1",
         "color": "blue",
         "x": 5,
-        "y": 3
+        "y": 4
       },
       {
         "id": "g1",
         "color": "green",
         "x": 2,
-        "y": 2
+        "y": 4
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 4,
+        "y": 1
       }
     ],
     "gates": [
       {
         "color": "red",
+        "x": 6,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
         "x": 0,
-        "y": 1,
+        "y": 4,
         "dir": "left"
       },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 5,
+        "dir": "down"
+      },
+      {
+        "color": "yellow",
+        "x": 4,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "pocket-turn"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Ice Break",
+    "par": 12,
+    "cols": 7,
+    "rows": 6,
+    "time": 60,
+    "mechanics": [
+      "Ice ❄",
+      "Traffic"
+    ],
+    "hint": "The ice lane is fast, but only after you clear its landing space.",
+    "ice": [
+      {
+        "x": 2,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 3
+      }
+    ],
+    "walls": [
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 5
+      }
+    ],
+    "blocks": [
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 1,
+        "y": 3
+      },
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 5,
+        "y": 2
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 4
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 5,
+        "y": 4
+      }
+    ],
+    "gates": [
       {
         "color": "blue",
         "x": 6,
@@ -1211,38 +383,131 @@ const ALL_LEVELS = [
         "dir": "right"
       },
       {
-        "color": "green",
-        "x": 6,
+        "color": "red",
+        "x": 0,
         "y": 2,
-        "dir": "right"
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 5,
+        "dir": "down"
+      },
+      {
+        "color": "yellow",
+        "x": 5,
+        "y": 5,
+        "dir": "down"
       }
     ],
-    "id": "the-lane"
+    "id": "ice-break"
   },
   {
     "difficulty": "easy",
-    "name": "Two Doors",
-    "cols": 6,
-    "rows": 6,
-    "par": 9,
-    "time": 48,
+    "name": "Long Turn",
+    "par": 12,
+    "cols": 7,
+    "rows": 7,
+    "time": 65,
     "mechanics": [
-      "Switch ◆",
-      "Barrier ▥"
+      "Long blocks",
+      "Traffic"
     ],
-    "hint": "Hit the switch first. The opened lane stays open.",
-    "switches": [
+    "hint": "The long pieces need turning room. Clear the square block before forcing a lane.",
+    "walls": [
       {
-        "id": "A",
-        "x": 1,
-        "y": 4
+        "x": 3,
+        "y": 3
       }
     ],
-    "barriers": [
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2,
+        "w": 2,
+        "h": 1
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 5,
+        "y": 4,
+        "w": 1,
+        "h": 2
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 4
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 4,
+        "y": 1
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 6,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 5,
+        "y": 6,
+        "dir": "down"
+      },
+      {
+        "color": "green",
+        "x": 0,
+        "y": 4,
+        "dir": "left"
+      },
+      {
+        "color": "yellow",
+        "x": 4,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "long-turn"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Pocket Portal",
+    "par": 13,
+    "cols": 7,
+    "rows": 7,
+    "time": 68,
+    "mechanics": [
+      "Portal ◎",
+      "Traffic"
+    ],
+    "hint": "The portal is useful only if its landing tile stays open.",
+    "portals": [
       {
         "id": "A",
+        "a": {
+          "x": 1,
+          "y": 5
+        },
+        "b": {
+          "x": 5,
+          "y": 1
+        }
+      }
+    ],
+    "walls": [
+      {
         "x": 3,
-        "y": 2
+        "y": 3
       }
     ],
     "blocks": [
@@ -1250,7 +515,94 @@ const ALL_LEVELS = [
         "id": "g1",
         "color": "green",
         "x": 1,
+        "y": 4
+      },
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 5,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 2,
+        "y": 5
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 4,
+        "y": 1
+      }
+    ],
+    "gates": [
+      {
+        "color": "green",
+        "x": 6,
+        "y": 1,
+        "dir": "right"
+      },
+      {
+        "color": "red",
+        "x": 0,
+        "y": 2,
+        "dir": "left"
+      },
+      {
+        "color": "blue",
+        "x": 2,
+        "y": 6,
+        "dir": "down"
+      },
+      {
+        "color": "yellow",
+        "x": 4,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "pocket-portal"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Switch Step",
+    "par": 16,
+    "cols": 7,
+    "rows": 7,
+    "time": 72,
+    "mechanics": [
+      "Switch ◆",
+      "Barrier ▥",
+      "Traffic"
+    ],
+    "hint": "The switch opens the direct lane. Getting to the switch is the actual puzzle.",
+    "switches": [
+      {
+        "id": "A",
+        "x": 1,
+        "y": 5
+      }
+    ],
+    "barriers": [
+      {
+        "id": "A",
+        "x": 4,
+        "y": 2
+      }
+    ],
+    "walls": [
+      {
+        "x": 3,
         "y": 3
+      }
+    ],
+    "blocks": [
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 1,
+        "y": 4
       },
       {
         "id": "r1",
@@ -1261,99 +613,1310 @@ const ALL_LEVELS = [
       {
         "id": "b1",
         "color": "blue",
-        "x": 4,
+        "x": 5,
         "y": 4
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 5,
+        "y": 1
       }
     ],
     "gates": [
       {
         "color": "green",
         "x": 1,
-        "y": 5,
+        "y": 6,
         "dir": "down"
       },
       {
         "color": "red",
-        "x": 5,
+        "x": 6,
         "y": 2,
         "dir": "right"
       },
       {
         "color": "blue",
-        "x": 5,
+        "x": 0,
         "y": 4,
-        "dir": "right"
+        "dir": "left"
+      },
+      {
+        "color": "yellow",
+        "x": 5,
+        "y": 0,
+        "dir": "up"
       }
     ],
-    "id": "two-doors",
+    "id": "switch-step"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Twin Gates",
+    "par": 10,
+    "cols": 7,
+    "rows": 6,
+    "time": 75,
+    "mechanics": [
+      "Same-color exits",
+      "Traffic"
+    ],
+    "hint": "Two red blocks share two exits. Decide which red clears which side before you move.",
+    "walls": [
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 4
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "id": "r2",
+        "color": "red",
+        "x": 5,
+        "y": 3
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 2,
+        "y": 3
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 4,
+        "y": 2
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 0,
+        "y": 2,
+        "dir": "left"
+      },
+      {
+        "color": "red",
+        "x": 6,
+        "y": 3,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 2,
+        "y": 5,
+        "dir": "down"
+      },
+      {
+        "color": "green",
+        "x": 4,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "twin-gates"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Warp 101",
+    "par": 21,
+    "cols": 7,
+    "rows": 7,
+    "time": 150,
     "boss": true,
-    "bossTime": 120,
+    "bossTime": 150,
+    "bossPar": 42,
+    "mechanics": [
+      "Portal ◎",
+      "Traffic",
+      "Boss"
+    ],
+    "hint": "Three waves use the same portal differently. Keep the landing zone open.",
+    "portals": [
+      {
+        "id": "A",
+        "a": {
+          "x": 1,
+          "y": 5
+        },
+        "b": {
+          "x": 5,
+          "y": 1
+        }
+      }
+    ],
+    "walls": [
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 4
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 5,
+        "y": 4
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 1,
+        "y": 4
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 5,
+        "y": 2
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 6,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 4,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 6,
+        "y": 1,
+        "dir": "right"
+      },
+      {
+        "color": "yellow",
+        "x": 0,
+        "y": 2,
+        "dir": "left"
+      }
+    ],
     "phases": [
       {
-        "label": "Find the lane",
-        "intro": "The first block is simple. The lock comes next.",
-        "par": 2,
+        "label": "Portal setup",
+        "intro": "Two colors share the portal lane. Make room before committing.",
+        "par": 9,
         "blocks": [
           {
-            "id": "b1",
-            "color": "blue",
-            "x": 4,
+            "id": "r1",
+            "color": "red",
+            "x": 1,
+            "y": 2
+          },
+          {
+            "id": "g1",
+            "color": "green",
+            "x": 1,
             "y": 4
           }
         ],
         "gates": [
           {
-            "color": "blue",
-            "x": 5,
-            "y": 4,
+            "color": "red",
+            "x": 6,
+            "y": 2,
+            "dir": "right"
+          },
+          {
+            "color": "green",
+            "x": 6,
+            "y": 1,
             "dir": "right"
           }
         ]
       },
       {
-        "label": "Hit the switch",
-        "intro": "Open the route for the final phase.",
-        "par": 3,
+        "label": "Reverse traffic",
+        "intro": "The second wave attacks the same arena from the other side.",
+        "par": 12,
         "blocks": [
           {
-            "id": "g1",
-            "color": "green",
-            "x": 1,
-            "y": 3
+            "id": "b1",
+            "color": "blue",
+            "x": 5,
+            "y": 4
+          },
+          {
+            "id": "y1",
+            "color": "yellow",
+            "x": 5,
+            "y": 2
           }
         ],
         "gates": [
           {
-            "color": "green",
-            "x": 1,
-            "y": 5,
-            "dir": "down"
+            "color": "blue",
+            "x": 0,
+            "y": 4,
+            "dir": "left"
+          },
+          {
+            "color": "yellow",
+            "x": 0,
+            "y": 2,
+            "dir": "left"
           }
         ]
       },
       {
-        "label": "Locked finish",
-        "intro": "The barrier is back. Solve the full route under the same clock.",
-        "par": 6,
+        "label": "Full warp",
+        "intro": "All four colors arrive. Keep the portal landing clear to finish.",
+        "par": 21,
         "blocks": [
           {
             "id": "r1",
             "color": "red",
-            "x": 2,
+            "x": 1,
+            "y": 2
+          },
+          {
+            "id": "b1",
+            "color": "blue",
+            "x": 5,
+            "y": 4
+          },
+          {
+            "id": "g1",
+            "color": "green",
+            "x": 1,
+            "y": 4
+          },
+          {
+            "id": "y1",
+            "color": "yellow",
+            "x": 5,
             "y": 2
           }
         ],
         "gates": [
           {
             "color": "red",
-            "x": 5,
+            "x": 6,
             "y": 2,
             "dir": "right"
+          },
+          {
+            "color": "blue",
+            "x": 0,
+            "y": 4,
+            "dir": "left"
+          },
+          {
+            "color": "green",
+            "x": 6,
+            "y": 1,
+            "dir": "right"
+          },
+          {
+            "color": "yellow",
+            "x": 0,
+            "y": 2,
+            "dir": "left"
           }
         ]
       }
     ],
-    "bossPar": 11
+    "id": "warp-101"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Color Queue",
+    "par": 20,
+    "cols": 7,
+    "rows": 7,
+    "time": 80,
+    "mechanics": [
+      "Exit order",
+      "Traffic"
+    ],
+    "hint": "The exits are available, but only one color is allowed out at a time.",
+    "exitOrder": [
+      "green",
+      "blue",
+      "red",
+      "yellow"
+    ],
+    "walls": [
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 4
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 5,
+        "y": 2
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 5
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 5,
+        "y": 5
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 6,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 2,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 6,
+        "dir": "down"
+      },
+      {
+        "color": "yellow",
+        "x": 5,
+        "y": 6,
+        "dir": "down"
+      }
+    ],
+    "id": "color-queue"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Cross Lane",
+    "par": 16,
+    "cols": 7,
+    "rows": 7,
+    "time": 82,
+    "mechanics": [
+      "Traffic",
+      "Corridors"
+    ],
+    "hint": "Two colors cross the same center. Make a parking move before the first crossing.",
+    "walls": [
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 5
+      },
+      {
+        "x": 1,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 3
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 5,
+        "y": 4
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 5
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 4,
+        "y": 1
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 6,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 4,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 6,
+        "dir": "down"
+      },
+      {
+        "color": "yellow",
+        "x": 4,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "cross-lane"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Cold Traffic",
+    "par": 12,
+    "cols": 7,
+    "rows": 7,
+    "time": 85,
+    "mechanics": [
+      "Ice ❄",
+      "Exit order",
+      "Traffic"
+    ],
+    "hint": "The ice lane is blocked. Make room without sending the wrong color out.",
+    "exitOrder": [
+      "green",
+      "blue",
+      "red",
+      "yellow"
+    ],
+    "ice": [
+      {
+        "x": 1,
+        "y": 3
+      },
+      {
+        "x": 2,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 3
+      }
+    ],
+    "walls": [
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 5
+      },
+      {
+        "x": 5,
+        "y": 4
+      }
+    ],
+    "blocks": [
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 0,
+        "y": 3
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 5
+      },
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 1
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 5,
+        "y": 3
+      }
+    ],
+    "gates": [
+      {
+        "color": "blue",
+        "x": 6,
+        "y": 3,
+        "dir": "right"
+      },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 6,
+        "dir": "down"
+      },
+      {
+        "color": "red",
+        "x": 0,
+        "y": 1,
+        "dir": "left"
+      },
+      {
+        "color": "yellow",
+        "x": 5,
+        "y": 6,
+        "dir": "down"
+      }
+    ],
+    "id": "cold-traffic"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Arrow Intro",
+    "par": 12,
+    "cols": 7,
+    "rows": 7,
+    "time": 88,
+    "mechanics": [
+      "One-way →",
+      "Traffic"
+    ],
+    "hint": "Touching an arrow commits the next move. Set the board before you step on one.",
+    "oneWays": [
+      {
+        "x": 2,
+        "y": 4,
+        "dir": "up"
+      },
+      {
+        "x": 4,
+        "y": 2,
+        "dir": "right"
+      }
+    ],
+    "walls": [
+      {
+        "x": 3,
+        "y": 3
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 2,
+        "y": 4
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 4,
+        "y": 2
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 1,
+        "y": 5
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 5,
+        "y": 1
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 2,
+        "y": 0,
+        "dir": "up"
+      },
+      {
+        "color": "blue",
+        "x": 6,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "green",
+        "x": 0,
+        "y": 5,
+        "dir": "left"
+      },
+      {
+        "color": "yellow",
+        "x": 5,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "arrow-intro"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Long Haul",
+    "par": 16,
+    "cols": 8,
+    "rows": 7,
+    "time": 90,
+    "mechanics": [
+      "Long blocks",
+      "Traffic"
+    ],
+    "hint": "The long blocks cannot turn through occupied space. Clear a turning bay first.",
+    "walls": [
+      {
+        "x": 4,
+        "y": 3
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2,
+        "w": 2,
+        "h": 1
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 5,
+        "y": 4,
+        "w": 2,
+        "h": 1
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 5
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 5,
+        "y": 1
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 7,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 4,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 6,
+        "dir": "down"
+      },
+      {
+        "color": "yellow",
+        "x": 5,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "long-haul"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Side Door",
+    "par": 15,
+    "cols": 8,
+    "rows": 7,
+    "time": 92,
+    "mechanics": [
+      "Portal ◎",
+      "Irregular board"
+    ],
+    "hint": "The missing edge and the portal create two routes. Only one keeps the center open.",
+    "voids": [
+      {
+        "x": 6,
+        "y": 0
+      },
+      {
+        "x": 7,
+        "y": 0
+      },
+      {
+        "x": 7,
+        "y": 1
+      }
+    ],
+    "portals": [
+      {
+        "id": "A",
+        "a": {
+          "x": 1,
+          "y": 5
+        },
+        "b": {
+          "x": 6,
+          "y": 2
+        }
+      }
+    ],
+    "walls": [
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 3
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 6,
+        "y": 5
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 1,
+        "y": 4
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 5,
+        "y": 1
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 7,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 5,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 7,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "yellow",
+        "x": 5,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "side-door"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Open Sesame",
+    "par": 18,
+    "cols": 8,
+    "rows": 7,
+    "time": 95,
+    "mechanics": [
+      "Switch ◆",
+      "Barrier ▥",
+      "Exit order"
+    ],
+    "hint": "Open the barrier first, then respect the color order through the shared lane.",
+    "exitOrder": [
+      "green",
+      "blue",
+      "red",
+      "yellow"
+    ],
+    "switches": [
+      {
+        "id": "A",
+        "x": 1,
+        "y": 5
+      }
+    ],
+    "barriers": [
+      {
+        "id": "A",
+        "x": 5,
+        "y": 2
+      }
+    ],
+    "walls": [
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 3
+      }
+    ],
+    "blocks": [
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 1,
+        "y": 4
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 6,
+        "y": 4
+      },
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 2,
+        "y": 2
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 6,
+        "y": 1
+      }
+    ],
+    "gates": [
+      {
+        "color": "green",
+        "x": 1,
+        "y": 6,
+        "dir": "down"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 4,
+        "dir": "left"
+      },
+      {
+        "color": "red",
+        "x": 7,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "yellow",
+        "x": 6,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "open-sesame"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Easy Relay",
+    "par": 21,
+    "cols": 8,
+    "rows": 8,
+    "time": 100,
+    "mechanics": [
+      "Portal ◎",
+      "Switch ◆",
+      "Barrier ▥"
+    ],
+    "hint": "The switch and portal help different colors. Decide which job comes first.",
+    "portals": [
+      {
+        "id": "A",
+        "a": {
+          "x": 1,
+          "y": 6
+        },
+        "b": {
+          "x": 6,
+          "y": 1
+        }
+      }
+    ],
+    "switches": [
+      {
+        "id": "B",
+        "x": 2,
+        "y": 6
+      }
+    ],
+    "barriers": [
+      {
+        "id": "B",
+        "x": 5,
+        "y": 3
+      }
+    ],
+    "walls": [
+      {
+        "x": 4,
+        "y": 2
+      },
+      {
+        "x": 4,
+        "y": 5
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 2,
+        "y": 3
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 6,
+        "y": 5
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 1,
+        "y": 5
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 6,
+        "y": 2
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 7,
+        "y": 3,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 5,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 7,
+        "y": 1,
+        "dir": "right"
+      },
+      {
+        "color": "yellow",
+        "x": 6,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "id": "easy-relay"
+  },
+  {
+    "difficulty": "easy",
+    "name": "Two Doors",
+    "par": 20,
+    "cols": 8,
+    "rows": 8,
+    "time": 180,
+    "boss": true,
+    "bossTime": 180,
+    "bossPar": 42,
+    "mechanics": [
+      "Switch ◆",
+      "Barrier ▥",
+      "Traffic",
+      "Boss"
+    ],
+    "hint": "Three waves reuse two doors. Open space before opening the lane.",
+    "switches": [
+      {
+        "id": "A",
+        "x": 1,
+        "y": 6
+      },
+      {
+        "id": "B",
+        "x": 6,
+        "y": 1
+      }
+    ],
+    "barriers": [
+      {
+        "id": "A",
+        "x": 5,
+        "y": 2
+      },
+      {
+        "id": "B",
+        "x": 2,
+        "y": 5
+      }
+    ],
+    "walls": [
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 4
+      }
+    ],
+    "blocks": [
+      {
+        "id": "r1",
+        "color": "red",
+        "x": 2,
+        "y": 2
+      },
+      {
+        "id": "b1",
+        "color": "blue",
+        "x": 5,
+        "y": 5
+      },
+      {
+        "id": "g1",
+        "color": "green",
+        "x": 2,
+        "y": 5
+      },
+      {
+        "id": "y1",
+        "color": "yellow",
+        "x": 5,
+        "y": 2
+      }
+    ],
+    "gates": [
+      {
+        "color": "red",
+        "x": 7,
+        "y": 2,
+        "dir": "right"
+      },
+      {
+        "color": "blue",
+        "x": 0,
+        "y": 5,
+        "dir": "left"
+      },
+      {
+        "color": "green",
+        "x": 2,
+        "y": 7,
+        "dir": "down"
+      },
+      {
+        "color": "yellow",
+        "x": 5,
+        "y": 0,
+        "dir": "up"
+      }
+    ],
+    "phases": [
+      {
+        "label": "First key",
+        "intro": "Use the lower switch without trapping the red lane.",
+        "par": 11,
+        "blocks": [
+          {
+            "id": "r1",
+            "color": "red",
+            "x": 2,
+            "y": 2
+          },
+          {
+            "id": "g1",
+            "color": "green",
+            "x": 2,
+            "y": 5
+          }
+        ],
+        "gates": [
+          {
+            "color": "red",
+            "x": 7,
+            "y": 2,
+            "dir": "right"
+          },
+          {
+            "color": "green",
+            "x": 2,
+            "y": 7,
+            "dir": "down"
+          }
+        ]
+      },
+      {
+        "label": "Second key",
+        "intro": "Now the opposite door controls the clean route.",
+        "par": 11,
+        "blocks": [
+          {
+            "id": "b1",
+            "color": "blue",
+            "x": 5,
+            "y": 5
+          },
+          {
+            "id": "y1",
+            "color": "yellow",
+            "x": 5,
+            "y": 2
+          }
+        ],
+        "gates": [
+          {
+            "color": "blue",
+            "x": 0,
+            "y": 5,
+            "dir": "left"
+          },
+          {
+            "color": "yellow",
+            "x": 5,
+            "y": 0,
+            "dir": "up"
+          }
+        ]
+      },
+      {
+        "label": "Both doors",
+        "intro": "All four colors return. Open both lanes and clear the traffic.",
+        "par": 20,
+        "blocks": [
+          {
+            "id": "r1",
+            "color": "red",
+            "x": 2,
+            "y": 2
+          },
+          {
+            "id": "b1",
+            "color": "blue",
+            "x": 5,
+            "y": 5
+          },
+          {
+            "id": "g1",
+            "color": "green",
+            "x": 2,
+            "y": 5
+          },
+          {
+            "id": "y1",
+            "color": "yellow",
+            "x": 5,
+            "y": 2
+          }
+        ],
+        "gates": [
+          {
+            "color": "red",
+            "x": 7,
+            "y": 2,
+            "dir": "right"
+          },
+          {
+            "color": "blue",
+            "x": 0,
+            "y": 5,
+            "dir": "left"
+          },
+          {
+            "color": "green",
+            "x": 2,
+            "y": 7,
+            "dir": "down"
+          },
+          {
+            "color": "yellow",
+            "x": 5,
+            "y": 0,
+            "dir": "up"
+          }
+        ]
+      }
+    ],
+    "id": "two-doors"
   },
   {
     "difficulty": "intermediate",
