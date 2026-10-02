@@ -10,7 +10,9 @@
   if (badge) { badge.textContent = label; badge.dataset.difficulty = active; }
   if (journey) journey.textContent = `${world.name} · ${label.replace(" ☠️","")}`;
   document.querySelectorAll(".difficulty-chip").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.difficulty === active);
+    const selected=btn.dataset.difficulty === active;
+    btn.classList.toggle("active", selected);
+    btn.setAttribute("aria-pressed",selected?"true":"false");
     btn.addEventListener("click", () => {
       const next = btn.dataset.difficulty;
       if (next === active) return;
