@@ -214,8 +214,10 @@ function closeLevelSelect() {
 
 function sessionPayload() {
   return {
-    version:3,
-    levelId:level().id,
+    version:StateCore.SESSION_VERSION,
+    savedAt:Date.now(),
+    lifecycle:state.lifecycle,
+    levelId:baseLevel().id,
     levelIndex:state.levelIndex,
     mode:state.mode,
     blocks:cloneBlocks(state.blocks),
@@ -226,7 +228,12 @@ function sessionPayload() {
     bossPhase:state.bossPhase,
     elapsedSeconds:state.elapsedSeconds,
     timeLeft:Number.isFinite(state.timeLeft)?state.timeLeft:null,
-    run:{...state.run,queue:[...(state.run?.queue||[])]}
+    lastResult:state.lastResult ? {...state.lastResult} : null,
+    run:{
+      ...state.run,
+      queue:[...(state.run?.queue||[])],
+      returnState:state.run?.returnState ? JSON.parse(JSON.stringify(state.run.returnState)) : null
+    }
   };
 }
 function saveSession() {
@@ -238,8 +245,11 @@ function restoreSession() {
     const raw=localStorage.getItem(SESSION_KEY);
     if (!raw) return false;
     const saved=JSON.parse(raw);
+    if (!StateCore.sessionCompatible(saved,LEVELS)) {
+      localStorage.removeItem(SESSION_KEY);
+      return false;
+    }
     const index=LEVELS.findIndex(item=>item.id===saved.levelId);
-    if (index<0 || !Array.isArray(saved.blocks)) return false;
     state.levelIndex=index;
     if (!saved.run?.active) localStorage.setItem("bf-level",String(index));
     if (["chill","classic","rush"].includes(saved.mode)) {
@@ -247,26 +257,22 @@ function restoreSession() {
       localStorage.setItem("bf-mode",saved.mode);
     }
     state.blocks=cloneBlocks(saved.blocks);
-    state.moves=Number(saved.moves)||0;
+    state.moves=Math.max(0,Number(saved.moves)||0);
     state.history=Array.isArray(saved.history)?saved.history.slice(-40):[];
     state.activeSwitches=Array.isArray(saved.activeSwitches)?[...saved.activeSwitches]:[];
-    state.exitStep=Number(saved.exitStep)||0;
+    state.exitStep=Math.max(0,Number(saved.exitStep)||0);
     state.bossPhase=Math.max(0,Number(saved.bossPhase)||0);
     state.elapsedSeconds=Math.max(0,Number(saved.elapsedSeconds)||0);
     state.timeLeft=saved.timeLeft==null?Infinity:Math.max(0,Number(saved.timeLeft)||0);
-    if (saved.run?.active && Array.isArray(saved.run.queue)) {
-      state.run={
-        active:true,
-        queue:saved.run.queue.map(Number).filter(Number.isFinite),
-        position:Math.max(0,Number(saved.run.position)||0),
-        totalSeconds:Math.max(0,Number(saved.run.totalSeconds)||0),
-        totalMoves:Math.max(0,Number(saved.run.totalMoves)||0),
-        returnIndex:Math.max(0,Number(saved.run.returnIndex)||0),
-        complete:Boolean(saved.run.complete)
-      };
-    }
+    state.lifecycle=saved.lifecycle||"playing";
+    state.lastResult=saved.lastResult && typeof saved.lastResult==="object" ? {...saved.lastResult} : null;
+    state.run=StateCore.sanitizeRun(saved.run,LEVELS.length) || emptyRun();
+    state.clockAnchorMs=null;
     return true;
-  } catch (_) { return false; }
+  } catch (_) {
+    localStorage.removeItem(SESSION_KEY);
+    return false;
+  }
 }
 function clearSession() { localStorage.removeItem(SESSION_KEY); }
 
