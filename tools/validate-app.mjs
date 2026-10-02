@@ -41,6 +41,9 @@ assert.ok(app.includes('addEventListener("unhandledrejection"'),"Unhandled promi
 assert.ok(app.includes('aria-keyshortcuts'),"Blocks must expose keyboard move shortcuts");
 assert.ok(app.includes("cancelWorldRun"),"World Run cancellation guard must exist");
 assert.ok(app.includes("copyPlaytestReport"),"Playtest diagnostics export must exist");
+assert.ok(app.includes("RuntimeCore.dragIntent"),"Drag input must use the precision runtime helper");
+assert.ok(!app.includes("guard++<5"),"One pointer event must never fire a burst of grid moves");
+assert.ok(runtime.includes("threshold=.62") && runtime.includes("cooldownMs=75"),"Precision drag thresholds must be defined in runtime-core");
 assert.ok(index.includes('id="copyPlaytestBtn"'),"Playtest diagnostics control must be present");
 assert.ok(support.includes("Report a problem") && privacy.includes("Game data stays on your device"),"Support and privacy content must be present");
 
