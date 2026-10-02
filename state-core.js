@@ -23,7 +23,7 @@
   }
 
   function sanitizeRun(run,count) {
-    if (!run?.active) return {active:false,queue:[],position:0,totalSeconds:0,totalMoves:0,returnIndex:0,complete:false};
+    if (!run?.active) return {active:false,queue:[],position:0,totalSeconds:0,totalMoves:0,returnIndex:0,returnState:null,complete:false};
     const maxIndex=Math.max(0,(Number(count)||1)-1);
     const queue=(Array.isArray(run.queue)?run.queue:[])
       .map(Number)
@@ -39,6 +39,7 @@
       totalSeconds:Math.max(0,Number(run.totalSeconds)||0),
       totalMoves:Math.max(0,Number(run.totalMoves)||0),
       returnIndex:Math.max(0,Math.min(maxIndex,Number(run.returnIndex)||0)),
+      returnState:run.returnState && typeof run.returnState==="object" ? run.returnState : null,
       complete:Boolean(run.complete)
     };
   }
