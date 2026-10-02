@@ -1720,12 +1720,12 @@ const ALL_LEVELS = [
     "barriers": [
       {
         "id": "A",
-        "x": 5,
+        "x": 4,
         "y": 2
       },
       {
         "id": "B",
-        "x": 2,
+        "x": 3,
         "y": 5
       }
     ],
