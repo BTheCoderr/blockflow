@@ -15,9 +15,12 @@ Block Flow is a mobile-first color-routing puzzle game built to stay approachabl
 - Five-puzzle World Runs with one cumulative clock and cumulative move count
 - Per-world World Run best time and best-move records
 - Chill records time without pressure; Classic is count-up against a target; Rush remains a countdown
+- Foreground wall-clock timing is deterministic; backgrounding/pausing intentionally pauses the clock
 - Eight milestone Boss puzzles across Harbor, Garden, Forge, and Void
 - Three-phase Boss engine: the same arena reloads new blocks/objectives while moves and solve time continue across phases
 - Boss phase state survives pause, refresh, and app backgrounding
+- Save-state schema v4 validates restored boards and safely restores completed World Run stages
+- World Runs preserve the campaign puzzle they interrupted and can never unlock locked campaign levels
 - Every boss phase is independently solver-verified in CI
 - Results cards show moves, Perfect moves, solve time, best time, and new-record callouts
 - Exact puzzle-state resume after refresh/backgrounding, including Undo history
@@ -36,10 +39,12 @@ Block Flow is a mobile-first color-routing puzzle game built to stay approachabl
 - Multi-mechanic Hard and Extreme boards, including 40–52 move solver-optimal challenges
 - Chill / Classic / Rush pressure modes
 - Undo and instant restart
-- Colorblind patterns, haptics, and lightweight sound feedback
+- Five unique colorblind patterns, keyboard block controls, focus-trapped dialogs, haptics, and lightweight sound feedback
 - Local progress / best-score persistence
-- Installable offline PWA shell
-- GitHub Actions solver gate rejects unsolvable levels or incorrect Perfect scores
+- Installable offline PWA shell with 192px/512px maskable icons
+- Privacy and support pages plus privacy-preserving local playtest diagnostics export
+- Production CSP, nosniff, referrer, and device-permission headers
+- GitHub Actions checks JavaScript syntax, app shell integrity, state regressions, level structure, and every solver target
 
 ## Difficulty curve
 
