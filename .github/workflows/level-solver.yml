@@ -28,6 +28,8 @@ jobs:
         run: node tools/validate-app.mjs
       - name: Run state regression tests
         run: node tools/test-app-state.mjs
+      - name: Run runtime clock regression tests
+        run: node tools/test-runtime-core.mjs
       - name: Validate level structure
         run: node tools/validate-levels.mjs
       - name: Solve every level and boss phase
