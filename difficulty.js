@@ -14,6 +14,7 @@
     btn.addEventListener("click", () => {
       const next = btn.dataset.difficulty;
       if (next === active) return;
+      for (const version of ["v4","v3","v2"]) localStorage.removeItem(`bf-session-${version}-${active}`);
       localStorage.setItem("bf-difficulty", next);
       localStorage.setItem("bf-level", "0");
       window.location.reload();
