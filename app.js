@@ -198,6 +198,8 @@ function renderLevelSelect() {
 }
 function openLevelSelect(origin="game") {
   levelPickerOrigin = origin;
+  if (state.run.active) cancelWorldRun();
+  stopClockAnchor();
   state.paused = true;
   saveSession();
   els.homeScreen.classList.add("hidden");
@@ -432,7 +434,13 @@ function renderHomeStats() {
     return `<div class="reward-badge ${unlocked?"unlocked":"locked"}"><span>${unlocked?reward.icon:"⌁"}</span><strong>${reward.name}</strong><small>${unlocked?"Unlocked":`${reward.at} clears`}</small></div>`;
   }).join("");
   const runTime=worldRunBestTime(), runMoves=worldRunBestMoves();
-  els.worldRunMeta.textContent=runTime==null?"Best —":`Best ${formatTime(runTime)} · ${runMoves??"—"} moves`;
+  const unlocked=unlockedThrough();
+  const canRun=unlocked>=4;
+  els.worldRunBtn.disabled=!canRun;
+  els.worldRunMeta.textContent=!canRun
+    ? `Unlock ${5-(unlocked+1)} more`
+    : runTime==null?"Best —":`Best ${formatTime(runTime)} · ${runMoves??"—"} moves`;
+  els.homeLevelsBtn.textContent=state.run.active?"Exit Run & Level Select":"Level Select";
   els.homeCurrent.textContent=state.run.active
     ? `World Run · Stage ${state.run.position+1}/${state.run.queue.length} · ${level().name}`
     : `${DIFFICULTY_LABELS[ACTIVE_DIFFICULTY]} · Level ${state.levelIndex+1} · ${level().name}`;
