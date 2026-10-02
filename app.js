@@ -205,6 +205,13 @@ function migrateStorageV4() {
   for (const difficulty of DIFFICULTIES) {
     for (const version of ["v3","v2"]) localStorage.removeItem(`bf-session-${version}-${difficulty}`);
   }
+  const unlockedKey=`bf-unlocked-${ACTIVE_DIFFICULTY}`;
+  const safeUnlock=Math.max(0,Math.min(LEVELS.length-1,Number(localStorage.getItem(unlockedKey))||0));
+  const storedLevel=Math.max(0,Number(localStorage.getItem("bf-level"))||0);
+  if (storedLevel>safeUnlock) {
+    localStorage.setItem("bf-level",String(safeUnlock));
+    state.levelIndex=safeUnlock;
+  }
   for (const item of ALL_LEVELS.filter(level=>level.boss)) {
     localStorage.removeItem(`bf-best-${item.id}`);
     localStorage.removeItem(`bf-best-time-${item.id}`);
