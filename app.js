@@ -102,7 +102,9 @@ let lastAutosaveSecond = -1;
 const REDUCE_MOTION = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 const SESSION_KEY = `bf-session-v4-${ACTIVE_DIFFICULTY}`;
 const StateCore = globalThis.BlockFlowState;
+const RuntimeCore = globalThis.BlockFlowRuntime;
 if (!StateCore) throw new Error("Block Flow state core failed to load");
+if (!RuntimeCore) throw new Error("Block Flow runtime core failed to load");
 
 let focusStack=[];
 function focusDialog(dialog) {
@@ -249,13 +251,17 @@ function clockCanRun() {
 }
 function syncClock(now=Date.now(),force=false) {
   const canRun=force ? state.running && !state.paused : clockCanRun();
-  if (!state.clockAnchorMs || !canRun) return 0;
-  const delta=Math.floor((now-state.clockAnchorMs)/1000);
-  if (delta<1) return 0;
-  state.clockAnchorMs+=delta*1000;
-  state.elapsedSeconds+=delta;
-  if (state.mode==="rush") state.timeLeft=Math.max(0,state.timeLeft-delta);
-  return delta;
+  const consumed=RuntimeCore.consumeClock(state.clockAnchorMs,now,canRun);
+  if (!consumed.seconds) return 0;
+  state.clockAnchorMs=consumed.anchorMs;
+  const applied=RuntimeCore.applyElapsed({
+    elapsedSeconds:state.elapsedSeconds,
+    timeLeft:state.timeLeft,
+    mode:state.mode
+  },consumed.seconds);
+  state.elapsedSeconds=applied.elapsedSeconds;
+  state.timeLeft=applied.timeLeft;
+  return consumed.seconds;
 }
 function startClockAnchor() {
   if (clockCanRun()) state.clockAnchorMs=Date.now();
@@ -874,7 +880,7 @@ function startTimer() {
       handleRushExpiry();
       return;
     }
-    if (Math.floor(state.elapsedSeconds/5)>Math.floor(lastAutosaveSecond/5)) {
+    if (RuntimeCore.shouldAutosave(lastAutosaveSecond,state.elapsedSeconds,5)) {
       lastAutosaveSecond=state.elapsedSeconds;
       saveSession();
     }
