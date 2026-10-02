@@ -288,9 +288,10 @@ function totalStats() {
     if (!Number.isFinite(best)) continue;
     cleared++;
     byDifficulty[item.difficulty].cleared++;
-    const count=best<=item.par?3:best<=item.par+3?2:1;
+    const target=totalPerfectFor(item);
+    const count=best<=target?3:best<=target+3?2:1;
     stars+=count;
-    if (best<=item.par) perfect++;
+    if (best<=target) perfect++;
   }
   return {cleared,perfect,stars,total:ALL_LEVELS.length,byDifficulty};
 }
