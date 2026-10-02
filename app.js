@@ -261,9 +261,11 @@ function openLevelSelect(origin="game") {
   els.pause.classList.add("hidden");
   renderLevelSelect();
   els.levelModal.classList.remove("hidden");
+  focusDialog(els.levelModal);
 }
 function closeLevelSelect() {
   els.levelModal.classList.add("hidden");
+  restoreDialogFocus();
   if (levelPickerOrigin === "home") openHomeScreen();
   else if (levelPickerOrigin === "pause") openPauseMenu();
   else resumeGame({ onboarding:false });
