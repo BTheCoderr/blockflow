@@ -670,6 +670,7 @@ function portalAt(x,y) {
 
 function initLevel(options={}) {
   clearInterval(state.timerId);
+  stopClockAnchor();
   const restored=Boolean(options.restore && restoreSession());
   if (!restored) {
     state.moves = 0;
@@ -681,32 +682,63 @@ function initLevel(options={}) {
     state.blocks = cloneBlocks(level().blocks);
     state.elapsedSeconds = 0;
     state.timeLeft = state.mode === "rush" ? Math.max(14, Math.floor(timeTargetFor(baseLevel()) * .62)) : Infinity;
+    state.lifecycle="playing";
+    state.lastResult=null;
   }
-  state.running = true;
+  state.clockAnchorMs=null;
   state.paused = Boolean(options.paused);
+  state.running = state.lifecycle==="playing";
   els.win.classList.add("hidden");
   els.fail.classList.add("hidden");
   renderAll();
   if (!restored) saveSession();
+
+  if (state.lifecycle==="run-stage-complete" && state.lastResult) {
+    state.running=false;
+    showStoredResult();
+    return;
+  }
+  if (state.lifecycle==="failed") {
+    state.running=false;
+    els.fail.classList.remove("hidden");
+    focusDialog(els.fail);
+    return;
+  }
   startTimer();
 }
 
+function handleRushExpiry() {
+  if (!state.running || state.mode!=="rush" || state.timeLeft>0) return;
+  stopClockAnchor();
+  state.running=false;
+  state.lifecycle="failed";
+  state.lastResult=null;
+  clearInterval(state.timerId);
+  if (state.run.active) saveSession(); else clearSession();
+  els.fail.classList.remove("hidden");
+  focusDialog(els.fail);
+  buzz([50,35,90]);
+}
 function startTimer() {
   clearInterval(state.timerId);
-  state.timerId = setInterval(() => {
+  lastAutosaveSecond=state.elapsedSeconds;
+  renderClock();
+  if (!state.running) return;
+  startClockAnchor();
+  state.timerId=setInterval(()=>{
     if (!state.running || state.paused) return;
-    state.elapsedSeconds++;
-    if (state.mode === "rush") state.timeLeft=Math.max(0,state.timeLeft-1);
-    els.timer.textContent = state.mode==="rush" ? formatTime(state.timeLeft) : formatTime(state.elapsedSeconds);
-    renderRunBanner();
-    if (state.elapsedSeconds % 5 === 0) saveSession();
-    if (state.mode==="rush" && state.timeLeft <= 0) {
-      state.running = false;
-      clearInterval(state.timerId);
-      els.fail.classList.remove("hidden");
-      buzz([50,35,90]);
+    const changed=syncClock();
+    if (!changed) return;
+    renderClock();
+    if (state.mode==="rush" && state.timeLeft<=0) {
+      handleRushExpiry();
+      return;
     }
-  }, 1000);
+    if (Math.floor(state.elapsedSeconds/5)>Math.floor(lastAutosaveSecond/5)) {
+      lastAutosaveSecond=state.elapsedSeconds;
+      saveSession();
+    }
+  },250);
 }
 
 function renderAll() {
