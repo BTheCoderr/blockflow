@@ -493,6 +493,7 @@ function worldRunBestMoves() {
   return raw==null?null:Number(raw);
 }
 function startWorldRun() {
+  if (state.run.active) return;
   const queue=worldRunQueue();
   if (queue.length<5) return;
   updateRunMetric("starts");
@@ -550,11 +551,13 @@ function renderHomeStats() {
   }).join("");
   const runTime=worldRunBestTime(), runMoves=worldRunBestMoves();
   const unlocked=unlockedThrough();
-  const canRun=unlocked>=4;
+  const canRun=unlocked>=4 && !state.run.active;
   els.worldRunBtn.disabled=!canRun;
-  els.worldRunMeta.textContent=!canRun
-    ? `Unlock ${5-(unlocked+1)} more`
-    : runTime==null?"Best —":`Best ${formatTime(runTime)} · ${runMoves??"—"} moves`;
+  els.worldRunMeta.textContent=state.run.active
+    ? "Run in progress"
+    : unlocked<4
+      ? `Unlock ${5-(unlocked+1)} more`
+      : runTime==null?"Best —":`Best ${formatTime(runTime)} · ${runMoves??"—"} moves`;
   els.homeLevelsBtn.textContent=state.run.active?"Exit Run & Level Select":"Level Select";
   els.homeCurrent.textContent=state.run.active
     ? `World Run · Stage ${state.run.position+1}/${state.run.queue.length} · ${level().name}`
@@ -1417,12 +1420,23 @@ function setMode(mode) {
   showMechanicIntro();
 }
 function buzz(pattern) { if (navigator.vibrate) navigator.vibrate(pattern); }
+let audioContext=null;
 function playTone(freq) {
   if (!state.sound) return;
   try {
-    const AC=window.AudioContext||window.webkitAudioContext, ctx=new AC(), osc=ctx.createOscillator(), gain=ctx.createGain();
-    osc.type="sine"; osc.frequency.value=freq; gain.gain.setValueAtTime(.025,ctx.currentTime); gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.08);
-    osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime+.08);
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if (!AC) return;
+    audioContext ||= new AC();
+    if (audioContext.state==="suspended") audioContext.resume?.();
+    const osc=audioContext.createOscillator(), gain=audioContext.createGain();
+    osc.type="sine";
+    osc.frequency.value=freq;
+    gain.gain.setValueAtTime(.025,audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.0001,audioContext.currentTime+.08);
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+    osc.start();
+    osc.stop(audioContext.currentTime+.08);
   } catch (_) {}
 }
 
