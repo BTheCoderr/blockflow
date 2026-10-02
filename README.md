@@ -26,6 +26,7 @@ Block Flow is a mobile-first color-routing puzzle game built to stay approachabl
 - Exact puzzle-state resume after refresh/backgrounding, including Undo history
 - First-run drag onboarding plus one-time mechanic introductions
 - Animated board-to-board transitions
+- Precision drag input: one deliberate grid step at a time, direction-change re-anchoring, and a short repeat cadence while ice/portals remain fast
 - Level select with unlock progression, stars, best score, and replay
 - Variable board sizes and irregular board shapes
 - Edge and internal exits
@@ -48,7 +49,7 @@ Block Flow is a mobile-first color-routing puzzle game built to stay approachabl
 
 ## Difficulty curve
 
-Easy introduces mechanics without punishing experimentation. Intermediate mixes rules with shorter solutions. Hard requires more setup, routing, and dependency management. Extreme uses long dependency chains, shared bottlenecks, forced ordering, and multi-step traffic planning.
+Easy is now a real puzzle tier: every non-Boss Easy board has a solver-optimal target of at least 10 moves, uses traffic/setup decisions instead of straight-line clears, and the two Easy Bosses total 42 Perfect moves across three phases. Intermediate mixes rules with shorter solutions. Hard requires more setup, routing, and dependency management. Extreme uses long dependency chains, shared bottlenecks, forced ordering, and multi-step traffic planning.
 
 The target library remains 100 levels: 25 Easy, 25 Intermediate, 25 Hard, and 25 Extreme.
 
