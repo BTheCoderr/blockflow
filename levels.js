@@ -648,7 +648,74 @@ const ALL_LEVELS = [
       }
     ],
     "id": "warp-101",
-    "boss": true
+    "boss": true,
+    "bossTime": 120,
+    "phases": [
+      {
+        "label": "Warm-up",
+        "intro": "One block. Learn the warp rhythm.",
+        "par": 1,
+        "blocks": [
+          {
+            "id": "y1",
+            "color": "yellow",
+            "x": 3,
+            "y": 5
+          }
+        ],
+        "gates": [
+          {
+            "color": "yellow",
+            "x": 3,
+            "y": 5,
+            "dir": "down"
+          }
+        ]
+      },
+      {
+        "label": "Second current",
+        "intro": "The board resets, but the clock keeps running.",
+        "par": 2,
+        "blocks": [
+          {
+            "id": "r1",
+            "color": "red",
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "gates": [
+          {
+            "color": "red",
+            "x": 0,
+            "y": 1,
+            "dir": "left"
+          }
+        ]
+      },
+      {
+        "label": "Portal finish",
+        "intro": "Use the portal cleanly to finish the boss.",
+        "par": 3,
+        "blocks": [
+          {
+            "id": "g1",
+            "color": "green",
+            "x": 1,
+            "y": 4
+          }
+        ],
+        "gates": [
+          {
+            "color": "green",
+            "x": 5,
+            "y": 1,
+            "dir": "right"
+          }
+        ]
+      }
+    ],
+    "bossPar": 6
   },
   {
     "difficulty": "easy",
@@ -1219,7 +1286,74 @@ const ALL_LEVELS = [
       }
     ],
     "id": "two-doors",
-    "boss": true
+    "boss": true,
+    "bossTime": 120,
+    "phases": [
+      {
+        "label": "Find the lane",
+        "intro": "The first block is simple. The lock comes next.",
+        "par": 2,
+        "blocks": [
+          {
+            "id": "b1",
+            "color": "blue",
+            "x": 4,
+            "y": 4
+          }
+        ],
+        "gates": [
+          {
+            "color": "blue",
+            "x": 5,
+            "y": 4,
+            "dir": "right"
+          }
+        ]
+      },
+      {
+        "label": "Hit the switch",
+        "intro": "Open the route for the final phase.",
+        "par": 3,
+        "blocks": [
+          {
+            "id": "g1",
+            "color": "green",
+            "x": 1,
+            "y": 3
+          }
+        ],
+        "gates": [
+          {
+            "color": "green",
+            "x": 1,
+            "y": 5,
+            "dir": "down"
+          }
+        ]
+      },
+      {
+        "label": "Locked finish",
+        "intro": "The barrier is back. Solve the full route under the same clock.",
+        "par": 6,
+        "blocks": [
+          {
+            "id": "r1",
+            "color": "red",
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "gates": [
+          {
+            "color": "red",
+            "x": 5,
+            "y": 2,
+            "dir": "right"
+          }
+        ]
+      }
+    ],
+    "bossPar": 11
   },
   {
     "difficulty": "intermediate",
@@ -2108,7 +2242,96 @@ const ALL_LEVELS = [
       }
     ],
     "id": "false-start",
-    "boss": true
+    "boss": true,
+    "bossTime": 210,
+    "phases": [
+      {
+        "label": "Read the wall",
+        "intro": "Start with the obvious route.",
+        "par": 2,
+        "blocks": [
+          {
+            "id": "r1",
+            "color": "red",
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "gates": [
+          {
+            "color": "red",
+            "x": 0,
+            "y": 2,
+            "dir": "left"
+          }
+        ],
+        "exitOrder": [
+          "red"
+        ]
+      },
+      {
+        "label": "Use the warp",
+        "intro": "The next wave changes the useful side of the board.",
+        "par": 3,
+        "blocks": [
+          {
+            "id": "p1",
+            "color": "purple",
+            "x": 2,
+            "y": 5
+          }
+        ],
+        "gates": [
+          {
+            "color": "purple",
+            "x": 6,
+            "y": 1,
+            "dir": "right"
+          }
+        ],
+        "exitOrder": [
+          "purple"
+        ]
+      },
+      {
+        "label": "Two-way finish",
+        "intro": "Two colors arrive together. Clear them in order.",
+        "par": 4,
+        "blocks": [
+          {
+            "id": "b1",
+            "color": "blue",
+            "x": 5,
+            "y": 2
+          },
+          {
+            "id": "g1",
+            "color": "green",
+            "x": 1,
+            "y": 4
+          }
+        ],
+        "gates": [
+          {
+            "color": "blue",
+            "x": 6,
+            "y": 2,
+            "dir": "right"
+          },
+          {
+            "color": "green",
+            "x": 0,
+            "y": 4,
+            "dir": "left"
+          }
+        ],
+        "exitOrder": [
+          "blue",
+          "green"
+        ]
+      }
+    ],
+    "bossPar": 9
   },
   {
     "difficulty": "intermediate",
@@ -2901,7 +3124,74 @@ const ALL_LEVELS = [
       }
     ],
     "id": "gate-relay",
-    "boss": true
+    "boss": true,
+    "bossTime": 210,
+    "phases": [
+      {
+        "label": "Open space",
+        "intro": "Use the lower lane first.",
+        "par": 3,
+        "blocks": [
+          {
+            "id": "g1",
+            "color": "green",
+            "x": 1,
+            "y": 4
+          }
+        ],
+        "gates": [
+          {
+            "color": "green",
+            "x": 1,
+            "y": 6,
+            "dir": "down"
+          }
+        ]
+      },
+      {
+        "label": "Relay the switch",
+        "intro": "The locked crossing now matters.",
+        "par": 7,
+        "blocks": [
+          {
+            "id": "r1",
+            "color": "red",
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "gates": [
+          {
+            "color": "red",
+            "x": 6,
+            "y": 2,
+            "dir": "right"
+          }
+        ]
+      },
+      {
+        "label": "Final crossing",
+        "intro": "Finish through the longest lane without resetting the clock.",
+        "par": 8,
+        "blocks": [
+          {
+            "id": "b1",
+            "color": "blue",
+            "x": 5,
+            "y": 4
+          }
+        ],
+        "gates": [
+          {
+            "color": "blue",
+            "x": 0,
+            "y": 4,
+            "dir": "left"
+          }
+        ]
+      }
+    ],
+    "bossPar": 18
   },
   {
     "difficulty": "hard",
@@ -3969,7 +4259,86 @@ const ALL_LEVELS = [
       }
     ],
     "id": "arrow-circuit",
-    "boss": true
+    "boss": true,
+    "bossTime": 300,
+    "phases": [
+      {
+        "label": "Commit north",
+        "intro": "The first arrow removes your escape route.",
+        "par": 6,
+        "blocks": [
+          {
+            "id": "r1",
+            "color": "red",
+            "x": 2,
+            "y": 5
+          }
+        ],
+        "gates": [
+          {
+            "color": "red",
+            "x": 2,
+            "y": 0,
+            "dir": "up"
+          }
+        ]
+      },
+      {
+        "label": "Commit west",
+        "intro": "A second one-way lane flips the problem.",
+        "par": 6,
+        "blocks": [
+          {
+            "id": "b1",
+            "color": "blue",
+            "x": 5,
+            "y": 2
+          }
+        ],
+        "gates": [
+          {
+            "color": "blue",
+            "x": 0,
+            "y": 2,
+            "dir": "left"
+          }
+        ]
+      },
+      {
+        "label": "Split finish",
+        "intro": "Two final blocks share the remaining space.",
+        "par": 6,
+        "blocks": [
+          {
+            "id": "g1",
+            "color": "green",
+            "x": 1,
+            "y": 6
+          },
+          {
+            "id": "y1",
+            "color": "yellow",
+            "x": 4,
+            "y": 6
+          }
+        ],
+        "gates": [
+          {
+            "color": "green",
+            "x": 0,
+            "y": 6,
+            "dir": "left"
+          },
+          {
+            "color": "yellow",
+            "x": 7,
+            "y": 6,
+            "dir": "right"
+          }
+        ]
+      }
+    ],
+    "bossPar": 18
   },
   {
     "difficulty": "hard",
@@ -4933,7 +5302,96 @@ const ALL_LEVELS = [
       }
     ],
     "id": "crossed-orders",
-    "boss": true
+    "boss": true,
+    "bossTime": 300,
+    "phases": [
+      {
+        "label": "Eastbound",
+        "intro": "One long crossing opens the boss.",
+        "par": 10,
+        "blocks": [
+          {
+            "id": "r1",
+            "color": "red",
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "gates": [
+          {
+            "color": "red",
+            "x": 8,
+            "y": 2,
+            "dir": "right"
+          }
+        ],
+        "exitOrder": [
+          "red"
+        ]
+      },
+      {
+        "label": "Westbound",
+        "intro": "Now solve the opposite direction.",
+        "par": 10,
+        "blocks": [
+          {
+            "id": "y1",
+            "color": "yellow",
+            "x": 7,
+            "y": 6
+          }
+        ],
+        "gates": [
+          {
+            "color": "yellow",
+            "x": 0,
+            "y": 6,
+            "dir": "left"
+          }
+        ],
+        "exitOrder": [
+          "yellow"
+        ]
+      },
+      {
+        "label": "Cross traffic",
+        "intro": "Two colors must cross the center in sequence.",
+        "par": 20,
+        "blocks": [
+          {
+            "id": "b1",
+            "color": "blue",
+            "x": 7,
+            "y": 2
+          },
+          {
+            "id": "g1",
+            "color": "green",
+            "x": 1,
+            "y": 6
+          }
+        ],
+        "gates": [
+          {
+            "color": "blue",
+            "x": 0,
+            "y": 2,
+            "dir": "left"
+          },
+          {
+            "color": "green",
+            "x": 8,
+            "y": 6,
+            "dir": "right"
+          }
+        ],
+        "exitOrder": [
+          "blue",
+          "green"
+        ]
+      }
+    ],
+    "bossPar": 40
   },
   {
     "difficulty": "extreme",
@@ -6139,7 +6597,86 @@ const ALL_LEVELS = [
       }
     ],
     "id": "four-corners",
-    "boss": true
+    "boss": true,
+    "bossTime": 480,
+    "phases": [
+      {
+        "label": "First crossing",
+        "intro": "One corner must reach the far side.",
+        "par": 8,
+        "blocks": [
+          {
+            "id": "g1",
+            "color": "green",
+            "x": 1,
+            "y": 7
+          }
+        ],
+        "gates": [
+          {
+            "color": "green",
+            "x": 8,
+            "y": 7,
+            "dir": "right"
+          }
+        ]
+      },
+      {
+        "label": "Second crossing",
+        "intro": "The opposite corner takes its turn.",
+        "par": 8,
+        "blocks": [
+          {
+            "id": "y1",
+            "color": "yellow",
+            "x": 7,
+            "y": 7
+          }
+        ],
+        "gates": [
+          {
+            "color": "yellow",
+            "x": 0,
+            "y": 7,
+            "dir": "left"
+          }
+        ]
+      },
+      {
+        "label": "Double crossing",
+        "intro": "The final two compete for the same center.",
+        "par": 18,
+        "blocks": [
+          {
+            "id": "r1",
+            "color": "red",
+            "x": 1,
+            "y": 1
+          },
+          {
+            "id": "b1",
+            "color": "blue",
+            "x": 7,
+            "y": 1
+          }
+        ],
+        "gates": [
+          {
+            "color": "red",
+            "x": 8,
+            "y": 1,
+            "dir": "right"
+          },
+          {
+            "color": "blue",
+            "x": 0,
+            "y": 1,
+            "dir": "left"
+          }
+        ]
+      }
+    ],
+    "bossPar": 34
   },
   {
     "difficulty": "extreme",
@@ -7185,7 +7722,96 @@ const ALL_LEVELS = [
       }
     ],
     "id": "spiral-order",
-    "boss": true
+    "boss": true,
+    "bossTime": 480,
+    "phases": [
+      {
+        "label": "Enter the spiral",
+        "intro": "Trace the corridor before you move.",
+        "par": 13,
+        "blocks": [
+          {
+            "id": "b1",
+            "color": "blue",
+            "x": 8,
+            "y": 7
+          }
+        ],
+        "gates": [
+          {
+            "color": "blue",
+            "x": 0,
+            "y": 7,
+            "dir": "left"
+          }
+        ],
+        "exitOrder": [
+          "blue"
+        ]
+      },
+      {
+        "label": "Reverse the flow",
+        "intro": "The second wave uses the same maze in reverse.",
+        "par": 13,
+        "blocks": [
+          {
+            "id": "g1",
+            "color": "green",
+            "x": 1,
+            "y": 7
+          }
+        ],
+        "gates": [
+          {
+            "color": "green",
+            "x": 9,
+            "y": 7,
+            "dir": "right"
+          }
+        ],
+        "exitOrder": [
+          "green"
+        ]
+      },
+      {
+        "label": "Spiral finale",
+        "intro": "Two colors share the full spiral under one clock.",
+        "par": 26,
+        "blocks": [
+          {
+            "id": "r1",
+            "color": "red",
+            "x": 1,
+            "y": 2
+          },
+          {
+            "id": "y1",
+            "color": "yellow",
+            "x": 8,
+            "y": 2
+          }
+        ],
+        "gates": [
+          {
+            "color": "yellow",
+            "x": 0,
+            "y": 2,
+            "dir": "left"
+          },
+          {
+            "color": "red",
+            "x": 9,
+            "y": 2,
+            "dir": "right"
+          }
+        ],
+        "exitOrder": [
+          "yellow",
+          "red"
+        ]
+      }
+    ],
+    "bossPar": 52
   }
 ];
 
