@@ -363,6 +363,9 @@ function hideCoach() {
   els.coach.classList.add("hidden");
   state.paused=false;
   showMechanicIntro();
+  if (baseLevel().boss && baseLevel().phases?.length && state.moves===0 && state.elapsedSeconds===0) {
+    setTimeout(showPhaseOverlay,120);
+  }
 }
 const MECHANIC_GUIDES=[
   {key:"ice",match:/Ice/,icon:"❄",title:"Ice",text:"Enter ice and the block keeps sliding until something stops it."},
@@ -392,7 +395,12 @@ function resumeGame({onboarding=true}={}) {
   state.paused=false;
   saveSession();
   if (onboarding && localStorage.getItem("bf-onboarded")!=="1") showCoach();
-  else showMechanicIntro();
+  else {
+    showMechanicIntro();
+    if (baseLevel().boss && baseLevel().phases?.length && state.moves===0 && state.elapsedSeconds===0) {
+      setTimeout(showPhaseOverlay,120);
+    }
+  }
 }
 function openPauseMenu() {
   if (!state.running) return;
