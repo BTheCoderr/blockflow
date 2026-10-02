@@ -2,10 +2,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const source = fs.readFileSync(new URL("../levels.js", import.meta.url), "utf8");
-const context = {
-  localStorage: { getItem: () => null },
-  console
-};
+const context = { localStorage: { getItem: () => null }, console };
 vm.createContext(context);
 vm.runInContext(`${source}\nglobalThis.__levels = ALL_LEVELS;`, context);
 const levels = context.__levels;
@@ -14,11 +11,7 @@ const difficulties = ["easy", "intermediate", "hard", "extreme"];
 const dirs = { left:[-1,0], right:[1,0], up:[0,-1], down:[0,1] };
 const names = new Set();
 
-for (const [index, level] of levels.entries()) {
-  const prefix = `#${index + 1} ${level.name}`;
-  if (names.has(level.name)) errors.push(`${prefix}: duplicate name`);
-  names.add(level.name);
-  if (!difficulties.includes(level.difficulty)) errors.push(`${prefix}: invalid difficulty`);
+function validateLayout(level,prefix) {
   const cols = level.cols || 6, rows = level.rows || 6;
   const voids = new Set((level.voids || []).map(v => `${v.x},${v.y}`));
   const playable = (x,y) => x >= 0 && x < cols && y >= 0 && y < rows && !voids.has(`${x},${y}`);
@@ -40,6 +33,30 @@ for (const [index, level] of levels.entries()) {
     if (!playable(gate.x,gate.y)) errors.push(`${prefix}: gate anchored to non-playable ${gate.x},${gate.y}`);
     if (playable(gate.x+delta[0],gate.y+delta[1])) errors.push(`${prefix}: gate ${gate.color} ${gate.dir} does not face an edge/void`);
   }
+  if (!(level.blocks||[]).length) errors.push(`${prefix}: no blocks`);
+  if (!(level.gates||[]).length) errors.push(`${prefix}: no gates`);
+  if (!Number.isFinite(level.par) || level.par < 1) errors.push(`${prefix}: invalid par`);
+}
+
+for (const [index, level] of levels.entries()) {
+  const prefix = `#${index + 1} ${level.name}`;
+  if (names.has(level.name)) errors.push(`${prefix}: duplicate name`);
+  names.add(level.name);
+  if (!difficulties.includes(level.difficulty)) errors.push(`${prefix}: invalid difficulty`);
+  validateLayout(level,prefix);
+
+  if (level.phases?.length) {
+    if (!level.boss) errors.push(`${prefix}: phases require boss=true`);
+    if (level.phases.length < 2) errors.push(`${prefix}: boss needs at least 2 phases`);
+    const phasePar=level.phases.reduce((sum,phase)=>sum+(Number(phase.par)||0),0);
+    if (phasePar !== level.bossPar) errors.push(`${prefix}: bossPar ${level.bossPar} does not match phase total ${phasePar}`);
+    for (const [phaseIndex,phase] of level.phases.entries()) {
+      const merged={...level,...phase,phases:undefined,boss:false};
+      validateLayout(merged,`${prefix} phase ${phaseIndex+1}`);
+      if (!phase.label) errors.push(`${prefix} phase ${phaseIndex+1}: missing label`);
+      if (!phase.intro) errors.push(`${prefix} phase ${phaseIndex+1}: missing intro`);
+    }
+  }
 }
 
 const expectedCounts = { easy:19, intermediate:19, hard:19, extreme:18 };
@@ -52,4 +69,5 @@ if (errors.length) {
   console.error(errors.join("\n"));
   process.exit(1);
 }
-console.log(`Validated ${levels.length} levels (${difficulties.map(d => `${d}: ${levels.filter(l => l.difficulty===d).length}`).join(", ")}).`);
+const phaseCount=levels.reduce((sum,l)=>sum+(l.phases?.length||0),0);
+console.log(`Validated ${levels.length} levels + ${phaseCount} boss phases (${difficulties.map(d => `${d}: ${levels.filter(l => l.difficulty===d).length}`).join(", ")}).`);
