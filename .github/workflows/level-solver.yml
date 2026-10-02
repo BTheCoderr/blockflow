@@ -24,6 +24,7 @@ jobs:
           node --check app.js
           node --check difficulty.js
           node --check state-core.js
+          node --check runtime-core.js
       - name: Validate app shell
         run: node tools/validate-app.mjs
       - name: Run state regression tests
