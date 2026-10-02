@@ -58,6 +58,7 @@ const els = {
   pauseHomeBtn: document.getElementById("pauseHomeBtn"),
   worldRunBtn: document.getElementById("worldRunBtn"),
   worldRunMeta: document.getElementById("worldRunMeta"),
+  copyPlaytestBtn: document.getElementById("copyPlaytestBtn"),
   runBanner: document.getElementById("runBanner"),
   runBannerText: document.getElementById("runBannerText"),
   coach: document.getElementById("coachModal"),
@@ -100,7 +101,6 @@ let mechanicToastTimer = null;
 let lastAutosaveSecond = -1;
 const REDUCE_MOTION = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 const SESSION_KEY = `bf-session-v4-${ACTIVE_DIFFICULTY}`;
-const LEGACY_SESSION_KEYS = [`bf-session-v3-${ACTIVE_DIFFICULTY}`,`bf-session-v2-${ACTIVE_DIFFICULTY}`];
 const StateCore = globalThis.BlockFlowState;
 if (!StateCore) throw new Error("Block Flow state core failed to load");
 
@@ -146,6 +146,58 @@ function emptyRun() { return {active:false,queue:[],position:0,totalSeconds:0,to
 function cols() { return level().cols || 6; }
 function rows() { return level().rows || 6; }
 function list(name) { return level()[name] || []; }
+
+const METRICS_KEY="bf-playtest-v1";
+function readMetrics() {
+  try {
+    return JSON.parse(localStorage.getItem(METRICS_KEY)||'{"levels":{},"worldRuns":{"starts":0,"completions":0}}');
+  } catch (_) {
+    return {levels:{},worldRuns:{starts:0,completions:0}};
+  }
+}
+function updateLevelMetric(id,field,amount=1) {
+  try {
+    const metrics=readMetrics();
+    metrics.levels ||= {};
+    metrics.levels[id] ||= {starts:0,restarts:0,undos:0,completions:0,totalSeconds:0,totalMoves:0};
+    metrics.levels[id][field]=(Number(metrics.levels[id][field])||0)+amount;
+    localStorage.setItem(METRICS_KEY,JSON.stringify(metrics));
+  } catch (_) {}
+}
+function updateRunMetric(field,amount=1) {
+  try {
+    const metrics=readMetrics();
+    metrics.worldRuns ||= {starts:0,completions:0};
+    metrics.worldRuns[field]=(Number(metrics.worldRuns[field])||0)+amount;
+    localStorage.setItem(METRICS_KEY,JSON.stringify(metrics));
+  } catch (_) {}
+}
+async function copyPlaytestReport() {
+  const payload={
+    schema:1,
+    generatedAt:new Date().toISOString(),
+    build:"v13",
+    difficulty:ACTIVE_DIFFICULTY,
+    metrics:readMetrics()
+  };
+  const text=JSON.stringify(payload,null,2);
+  try {
+    await navigator.clipboard.writeText(text);
+    els.copyPlaytestBtn.textContent="Copied ✓";
+  } catch (_) {
+    const area=document.createElement("textarea");
+    area.value=text;
+    area.setAttribute("readonly","");
+    area.style.position="fixed";
+    area.style.opacity="0";
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand?.("copy");
+    area.remove();
+    els.copyPlaytestBtn.textContent="Copied ✓";
+  }
+  setTimeout(()=>{els.copyPlaytestBtn.textContent="Copy playtest report";},1800);
+}
 
 function migrateStorageV4() {
   const marker="bf-storage-v4-migrated";
@@ -443,6 +495,7 @@ function worldRunBestMoves() {
 function startWorldRun() {
   const queue=worldRunQueue();
   if (queue.length<5) return;
+  updateRunMetric("starts");
   syncClock();
   const returnState=campaignSnapshot();
   state.run={active:true,queue,position:0,totalSeconds:0,totalMoves:0,returnIndex:state.levelIndex,returnState,complete:false};
@@ -453,6 +506,7 @@ function startWorldRun() {
   saveSession();
 }
 function finishWorldRun() {
+  updateRunMetric("completions");
   const bestTime=worldRunBestTime();
   const bestMoves=worldRunBestMoves();
   if (bestTime==null || state.run.totalSeconds<bestTime) localStorage.setItem(`bf-run-best-time-${ACTIVE_DIFFICULTY}`,String(state.run.totalSeconds));
@@ -606,6 +660,7 @@ function closePauseMenu() {
   saveSession();
 }
 function restartLevel() {
+  updateLevelMetric(baseLevel().id,"restarts");
   clearSession();
   state.lifecycle="playing";
   state.lastResult=null;
@@ -747,6 +802,7 @@ function initLevel(options={}) {
   stopClockAnchor();
   const restored=Boolean(options.restore && restoreSession());
   if (!restored) {
+    updateLevelMetric(baseLevel().id,"starts");
     state.moves = 0;
     state.history = [];
     state.activeSwitches = [];
@@ -1219,6 +1275,7 @@ function attemptMove(id,dir,options={}) {
 
 function undo() {
   if (!state.running || state.paused || state.phaseTransitioning || !state.history.length) return;
+  updateLevelMetric(baseLevel().id,"undos");
   const prev=state.history.pop();
   state.blocks=prev.blocks; state.moves=prev.moves; state.activeSwitches=prev.activeSwitches; state.exitStep=prev.exitStep;
   renderAll();
@@ -1262,6 +1319,9 @@ function checkWin() {
   const newMoveBest=state.moves<oldBest;
   const newTimeBest=solvedTime<oldTime;
   const inRun=state.run.active;
+  updateLevelMetric(baseLevel().id,"completions");
+  updateLevelMetric(baseLevel().id,"totalSeconds",solvedTime);
+  updateLevelMetric(baseLevel().id,"totalMoves",state.moves);
 
   if (!inRun && newMoveBest) localStorage.setItem(bestKey,String(state.moves));
   if (!inRun && newTimeBest) localStorage.setItem(timeKey,String(solvedTime));
@@ -1372,6 +1432,7 @@ els.levelModal.addEventListener("click",event=>{ if(event.target===els.levelModa
 document.getElementById("continueBtn").addEventListener("click",()=>resumeGame());
 els.homeLevelsBtn.addEventListener("click",()=>openLevelSelect("home"));
 els.worldRunBtn.addEventListener("click",startWorldRun);
+els.copyPlaytestBtn?.addEventListener("click",copyPlaytestReport);
 document.getElementById("resumeBtn").addEventListener("click",closePauseMenu);
 els.pauseLevelsBtn.addEventListener("click",()=>openLevelSelect("pause"));
 document.getElementById("pauseRestartBtn").addEventListener("click",restartLevel);
