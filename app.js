@@ -178,7 +178,7 @@ async function copyPlaytestReport() {
   const payload={
     schema:1,
     generatedAt:new Date().toISOString(),
-    build:"v14",
+    build:"v16",
     difficulty:ACTIVE_DIFFICULTY,
     metrics:readMetrics()
   };
@@ -1157,7 +1157,10 @@ function attachSwipe(el,id) {
       lastX:e.clientX,
       lastY:e.clientY,
       moved:false,
-      steps:0
+      steps:0,
+      axis:null,
+      lastDir:null,
+      lastStepAt:0
     };
     els.board.classList.add("drag-active");
     el.classList.add("dragging");
@@ -1167,25 +1170,38 @@ function attachSwipe(el,id) {
 function handleDragMove(e) {
   if (!dragSession || e.pointerId!==dragSession.pointerId || !state.running || state.paused || state.phaseTransitioning) return;
   e.preventDefault();
-  let guard=0;
-  while (guard++<5 && dragSession && state.blocks.some(b=>b.id===dragSession.id)) {
-    const {cw,ch}=boardMetrics();
-    const dx=e.clientX-dragSession.lastX, dy=e.clientY-dragSession.lastY;
-    const horizontal=Math.abs(dx/cw)>Math.abs(dy/ch);
-    const threshold=(horizontal?cw:ch)*.46;
-    const amount=horizontal?Math.abs(dx):Math.abs(dy);
-    if (amount<threshold) break;
-    const dir=horizontal?(dx>0?"right":"left"):(dy>0?"down":"up");
-    const moved=attemptMove(dragSession.id,dir,{fromDrag:true});
-    if (!moved) {
-      dragSession.lastX=e.clientX;
-      dragSession.lastY=e.clientY;
-      break;
-    }
+  if (!state.blocks.some(b=>b.id===dragSession.id)) return;
+  const {cw,ch}=boardMetrics();
+  const dx=e.clientX-dragSession.lastX, dy=e.clientY-dragSession.lastY;
+  const intent=RuntimeCore.dragIntent({
+    dx,dy,cw,ch,
+    axis:dragSession.axis,
+    lastDir:dragSession.lastDir,
+    lastStepAt:dragSession.lastStepAt,
+    nowMs:performance.now()
+  });
+  if (intent.reanchor) {
+    dragSession.axis=intent.axis;
+    dragSession.lastDir=intent.dir;
+    dragSession.lastX=e.clientX;
+    dragSession.lastY=e.clientY;
+    applyDragVisual(e.clientX,e.clientY);
+    return;
+  }
+  if (!intent.ready) {
+    if (!dragSession.axis && intent.axis) dragSession.axis=intent.axis;
+    applyDragVisual(e.clientX,e.clientY);
+    return;
+  }
+  const moved=attemptMove(dragSession.id,intent.dir,{fromDrag:true});
+  dragSession.axis=intent.axis;
+  dragSession.lastDir=intent.dir;
+  dragSession.lastStepAt=performance.now();
+  dragSession.lastX=e.clientX;
+  dragSession.lastY=e.clientY;
+  if (moved) {
     dragSession.moved=true;
     dragSession.steps++;
-    if (horizontal) dragSession.lastX += (dx>0?1:-1)*cw*.72;
-    else dragSession.lastY += (dy>0?1:-1)*ch*.72;
     if (dragSession.steps>=2 && localStorage.getItem("bf-drag-tip-seen")!=="1") {
       localStorage.setItem("bf-drag-tip-seen","1");
       els.gestureTip?.classList.add("learned");
