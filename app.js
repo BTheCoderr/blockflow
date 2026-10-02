@@ -509,21 +509,27 @@ function renderHomeStats() {
   }).join("");
 }
 function openHomeScreen() {
+  stopClockAnchor();
   state.paused=true;
   saveSession();
   els.pause.classList.add("hidden");
   els.levelModal.classList.add("hidden");
   renderHomeStats();
   els.homeScreen.classList.remove("hidden");
+  focusDialog(els.homeScreen);
 }
 function showCoach() {
+  stopClockAnchor();
   state.paused=true;
   els.coach.classList.remove("hidden");
+  focusDialog(els.coach);
 }
 function hideCoach() {
   localStorage.setItem("bf-onboarded","1");
   els.coach.classList.add("hidden");
+  restoreDialogFocus();
   state.paused=false;
+  startClockAnchor();
   showMechanicIntro();
   if (baseLevel().boss && baseLevel().phases?.length && state.moves===0 && state.elapsedSeconds===0) {
     setTimeout(showPhaseOverlay,120);
@@ -554,7 +560,20 @@ function showMechanicIntro() {
 function resumeGame({onboarding=true}={}) {
   els.homeScreen.classList.add("hidden");
   els.pause.classList.add("hidden");
+  restoreDialogFocus();
+  if (state.lifecycle==="run-stage-complete" && state.lastResult) {
+    state.paused=true;
+    showStoredResult();
+    return;
+  }
+  if (state.lifecycle==="failed") {
+    state.paused=true;
+    els.fail.classList.remove("hidden");
+    focusDialog(els.fail);
+    return;
+  }
   state.paused=false;
+  startClockAnchor();
   saveSession();
   if (onboarding && localStorage.getItem("bf-onboarded")!=="1") showCoach();
   else {
@@ -567,20 +586,30 @@ function resumeGame({onboarding=true}={}) {
 function openPauseMenu() {
   if (!state.running) return;
   clearDragVisual();
+  stopClockAnchor();
   state.paused=true;
   saveSession();
+  els.pauseLevelsBtn.textContent=state.run.active?"Exit Run & Level Select":"Level Select";
   els.pause.classList.remove("hidden");
+  focusDialog(els.pause);
 }
 function closePauseMenu() {
   els.pause.classList.add("hidden");
+  restoreDialogFocus();
   state.paused=false;
+  startClockAnchor();
   saveSession();
 }
 function restartLevel() {
   clearSession();
+  state.lifecycle="playing";
+  state.lastResult=null;
   initLevel();
   state.paused=false;
   els.pause.classList.add("hidden");
+  els.win.classList.add("hidden");
+  els.fail.classList.add("hidden");
+  restoreDialogFocus();
   showMechanicIntro();
 }
 function transitionToLevel(action) {
