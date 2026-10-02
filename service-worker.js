@@ -1,5 +1,5 @@
-const CACHE = "block-flow-v10";
-const ASSETS = ["./","./index.html","./styles.css?v=10","./difficulty.css?v=10","./levels.js?v=10","./difficulty.js?v=10","./app.js?v=10","./manifest.webmanifest"];
+const CACHE = "block-flow-v11";
+const ASSETS = ["./","./index.html","./styles.css?v=11","./difficulty.css?v=11","./levels.js?v=11","./difficulty.js?v=11","./app.js?v=11","./manifest.webmanifest"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
   self.skipWaiting();
