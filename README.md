@@ -16,6 +16,9 @@ Block Flow is a mobile-first color-routing puzzle game built to stay approachabl
 - Per-world World Run best time and best-move records
 - Chill records time without pressure; Classic is count-up against a target; Rush remains a countdown
 - Eight milestone Boss puzzles across Harbor, Garden, Forge, and Void
+- Three-phase Boss engine: the same arena reloads new blocks/objectives while moves and solve time continue across phases
+- Boss phase state survives pause, refresh, and app backgrounding
+- Every boss phase is independently solver-verified in CI
 - Results cards show moves, Perfect moves, solve time, best time, and new-record callouts
 - Exact puzzle-state resume after refresh/backgrounding, including Undo history
 - First-run drag onboarding plus one-time mechanic introductions
