@@ -1300,6 +1300,9 @@ function checkWin() {
 }
 function nextLevel() {
   els.win.classList.add("hidden");
+  restoreDialogFocus();
+  state.lastResult=null;
+  state.lifecycle="playing";
   if (state.run.active) {
     if (state.run.complete) {
       finishWorldRun();
@@ -1325,12 +1328,7 @@ function nextLevel() {
   });
 }
 function setMode(mode) {
-  if (state.run.active) {
-    const returnIndex=state.run.returnIndex;
-    state.run={active:false,queue:[],position:0,totalSeconds:0,totalMoves:0,returnIndex:0,complete:false};
-    state.levelIndex=Math.min(returnIndex,LEVELS.length-1);
-    localStorage.setItem("bf-level",String(state.levelIndex));
-  }
+  if (state.run.active) cancelWorldRun();
   state.mode=mode;
   localStorage.setItem("bf-mode",mode);
   clearSession();
