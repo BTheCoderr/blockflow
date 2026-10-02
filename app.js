@@ -25,6 +25,7 @@ const els = {
   winSummary: document.getElementById("winSummary"),
   winTitle: document.getElementById("winTitle"),
   nextBtn: document.getElementById("nextBtn"),
+  replayBtn: document.getElementById("replayBtn"),
   yourMoves: document.getElementById("yourMoves"),
   perfectMoves: document.getElementById("perfectMoves"),
   yourTime: document.getElementById("yourTime"),
@@ -102,6 +103,36 @@ const SESSION_KEY = `bf-session-v4-${ACTIVE_DIFFICULTY}`;
 const LEGACY_SESSION_KEYS = [`bf-session-v3-${ACTIVE_DIFFICULTY}`,`bf-session-v2-${ACTIVE_DIFFICULTY}`];
 const StateCore = globalThis.BlockFlowState;
 if (!StateCore) throw new Error("Block Flow state core failed to load");
+
+let focusStack=[];
+function focusDialog(dialog) {
+  if (!dialog) return;
+  const active=document.activeElement;
+  if (active && active!==document.body && !dialog.contains(active)) focusStack.push(active);
+  requestAnimationFrame(()=>{
+    const target=dialog.querySelector('button:not([disabled]),[href],[tabindex]:not([tabindex="-1"])');
+    target?.focus?.();
+  });
+}
+function restoreDialogFocus() {
+  const target=focusStack.pop();
+  if (target?.isConnected) target.focus?.();
+}
+function visibleDialog() {
+  return [els.coach,els.levelModal,els.pause,els.win,els.fail,els.homeScreen]
+    .find(dialog=>dialog && !dialog.classList.contains("hidden"));
+}
+function trapDialogFocus(event) {
+  if (event.key!=="Tab") return;
+  const dialog=visibleDialog();
+  if (!dialog) return;
+  const items=[...dialog.querySelectorAll('button:not([disabled]),[href],[tabindex]:not([tabindex="-1"])')]
+    .filter(item=>!item.hidden && item.offsetParent!==null);
+  if (!items.length) return;
+  const first=items[0],last=items[items.length-1];
+  if (event.shiftKey && document.activeElement===first) { event.preventDefault(); last.focus(); }
+  else if (!event.shiftKey && document.activeElement===last) { event.preventDefault(); first.focus(); }
+}
 
 function cloneBlocks(blocks) { return blocks.map(b => ({w:1,h:1,...b})); }
 function baseLevel() { return LEVELS[state.levelIndex]; }
