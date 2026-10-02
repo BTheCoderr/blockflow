@@ -889,10 +889,14 @@ function renderBoard() {
     const d = document.createElement("div");
     d.className = `block ${state.colorblind ? PATTERNS[b.color] : ""} ${(b.w||1)>1 || (b.h||1)>1 ? "long-block" : ""}`;
     d.dataset.id = b.id;
-    d.setAttribute("aria-label", `${b.color} block`);
+    d.tabIndex=0;
+    d.setAttribute("role","button");
+    d.setAttribute("aria-keyshortcuts","ArrowUp ArrowDown ArrowLeft ArrowRight");
+    d.setAttribute("aria-label", `${b.color} block. Drag it, or use the arrow keys to move.`);
     d.style.background = COLORS[b.color];
     place(d,b.x,b.y,b.w||1,b.h||1);
     attachSwipe(d,b.id);
+    attachKeyboard(d,b.id);
     els.board.appendChild(d);
   });
 }
@@ -1044,6 +1048,20 @@ function celebrateWin() {
     {filter:"brightness(1.35)"},
     {filter:"brightness(1)"}
   ],{duration:320,easing:"ease-out"});
+}
+function attachKeyboard(el,id) {
+  el.addEventListener("keydown",event=>{
+    const dir={
+      ArrowUp:"up",
+      ArrowDown:"down",
+      ArrowLeft:"left",
+      ArrowRight:"right"
+    }[event.key];
+    if (!dir || !state.running || state.paused || state.phaseTransitioning) return;
+    event.preventDefault();
+    attemptMove(id,dir);
+    requestAnimationFrame(()=>blockElement(id)?.focus());
+  });
 }
 function attachSwipe(el,id) {
   el.addEventListener("pointerdown", e => {
