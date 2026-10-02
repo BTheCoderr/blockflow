@@ -63,7 +63,7 @@
     if (saved.blocks.some(b=>!b || !allowedIds.has(b.id))) return false;
     const lifecycle=saved.lifecycle || "playing";
     if (lifecycle==="playing" && saved.blocks.length===0) return false;
-    if (lifecycle==="run-stage-complete" && !saved.run?.active) return false;
+    if (lifecycle==="run-stage-complete" && (!saved.run?.active || !saved.lastResult)) return false;
     if (saved.run?.active && !sanitizeRun(saved.run,levels.length)) return false;
     return true;
   }
