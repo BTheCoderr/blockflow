@@ -188,8 +188,9 @@ function timeTargetFor(item=baseLevel()) {
 function clockCanRun() {
   return state.running && !state.paused && !document.hidden;
 }
-function syncClock(now=Date.now()) {
-  if (!state.clockAnchorMs || !clockCanRun()) return 0;
+function syncClock(now=Date.now(),force=false) {
+  const canRun=force ? state.running && !state.paused : clockCanRun();
+  if (!state.clockAnchorMs || !canRun) return 0;
   const delta=Math.floor((now-state.clockAnchorMs)/1000);
   if (delta<1) return 0;
   state.clockAnchorMs+=delta*1000;
@@ -201,7 +202,7 @@ function startClockAnchor() {
   if (clockCanRun()) state.clockAnchorMs=Date.now();
 }
 function stopClockAnchor() {
-  syncClock();
+  syncClock(Date.now(),true);
   state.clockAnchorMs=null;
 }
 function renderClock() {
